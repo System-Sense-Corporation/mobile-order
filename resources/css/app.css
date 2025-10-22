@@ -8,4 +8,41 @@
 @theme {
     --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
         'Segoe UI Symbol', 'Noto Color Emoji';
+    --color-background: #ffffff;
+    --color-accent: #b30000;
+    --color-text: #111111;
+}
+
+@layer base {
+    body {
+        font-family: var(--font-sans);
+        background-color: var(--color-background);
+        color: var(--color-text);
+    }
+}
+
+@layer components {
+    .menu-card {
+        @apply flex flex-col rounded-lg bg-white p-6 shadow-sm ring-1 ring-black/5 transition-transform hover:-translate-y-0.5 hover:shadow-lg;
+    }
+
+    .form-field {
+        @apply flex flex-col gap-2;
+    }
+
+    .form-label {
+        @apply text-sm font-medium text-black/70;
+    }
+
+    .form-input {
+        @apply w-full rounded-md border border-black/10 bg-white px-3 py-2 text-sm shadow-inner transition focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/30;
+    }
+
+    .btn-primary {
+        @apply inline-flex items-center justify-center rounded-md bg-accent px-4 py-2 text-sm font-semibold text-white shadow transition hover:bg-accent/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent;
+    }
+
+    .btn-secondary {
+        @apply inline-flex items-center justify-center rounded-md border border-accent px-4 py-2 text-sm font-semibold text-accent transition hover:bg-accent/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent;
+    }
 }
