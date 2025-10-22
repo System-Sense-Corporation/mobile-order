@@ -1,0 +1,57 @@
+body {
+  margin: 0;
+  font-family: "Noto Sans JP", sans-serif;
+  background: #ffffff;
+  color: #111;
+}
+.appbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #b30000;
+  color: #fff;
+  padding: 14px 16px;
+  font-size: 18px;
+}
+.lang-select {
+  background: #fff;
+  color: #111;
+  border-radius: 6px;
+  padding: 4px 8px;
+  border: none;
+  font-size: 16px;
+}
+.container {
+  max-width: 640px;
+  margin: 30px auto;
+  padding: 0 16px;
+}
+.card {
+  background: #fff;
+  border: 2px solid #b30000;
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 0 12px rgba(0,0,0,0.05);
+}
+.grid {
+  display: grid;
+  gap: 12px;
+}
+.btn {
+  display: inline-block;
+  padding: 10px 14px;
+  border-radius: 8px;
+  border: none;
+  background: #b30000;
+  color: #fff;
+  font-weight: bold;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+}
+.btn.primary { background: #b30000; }
+.footer {
+  text-align: center;
+  color: #999;
+  padding: 20px;
+}
