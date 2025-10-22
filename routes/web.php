@@ -2,12 +2,9 @@
 
 use Illuminate\Support\Facades\Route;
 
-// トップページ → 自作の index.blade.php に変更
-Route::view('/', 'index');
-
-// その他のモック画面
-Route::view('/mobile-order', 'mobile-order');
-Route::view('/orders', 'orders');
-Route::view('/products', 'products');
-Route::view('/customers', 'customers');
-Route::view('/settings', 'settings');
+Route::get('/', fn () => view('index'))->name('home');
+Route::get('/mobile-order', fn () => view('mobile-order'))->name('mobile-order');
+Route::get('/orders', fn () => view('orders'))->name('orders');
+Route::get('/products', fn () => view('products'))->name('products');
+Route::get('/customers', fn () => view('customers'))->name('customers');
+Route::get('/settings', fn () => view('settings'))->name('settings');

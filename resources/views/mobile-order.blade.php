@@ -1,43 +1,53 @@
-<!doctype html>
-<html lang="ja">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>受注登録（Thai Sushi Thonglor）</title>
-<link rel="stylesheet" href="css/styles.css">
-</head>
-<body>
-<header class="appbar"><h1>受注登録フォーム</h1></header>
-<main class="container narrow">
-  <form id="order-form" class="card">
-    <label>店舗名<input required name="restaurant" value="Thai Sushi Thonglor"></label>
-    <label>担当者<input required name="contact" value="Somchai"></label>
-    <label>電話番号<input name="phone" value="0987654321"></label>
-    <label>希望納期<input required type="date" name="delivery_date" value="2025-11-30"></label>
-    <fieldset class="items">
-      <legend>商品</legend>
-      <div id="item-list"></div>
-      <button type="button" id="add-item" class="btn small">＋ 行を追加</button>
-    </fieldset>
-    <label>備考<textarea name="notes" rows="3" placeholder="例：本マグロ フィレ 2kg希望"></textarea></label>
-    <button class="btn primary" type="submit">📝 登録</button>
-    <p id="result" class="success" style="display:none;">登録が完了しました。</p>
-  </form>
-  <a class="btn link" href="index.html">← メニューへ戻る</a>
-</main>
-<script>
-document.getElementById('add-item').addEventListener('click', () => {
-  const div = document.createElement('div');
-  div.className = 'item-row';
-  div.innerHTML = `
-    <input placeholder="商品名">
-    <input placeholder="数量">
-    <input placeholder="単位">
-    <button type="button" class="btn small del">削除</button>
-  `;
-  div.querySelector('.del').onclick = () => div.remove();
-  document.getElementById('item-list').appendChild(div);
-});
-</script>
-</body>
-</html>
+@extends('layouts.app')
+
+@section('title', 'Mobile Order - 受注登録')
+
+@section('page-title', '受注登録')
+
+@section('content')
+    <div class="rounded-lg bg-white p-6 shadow-sm ring-1 ring-black/5">
+        <form class="space-y-6">
+            <div class="grid gap-4 sm:grid-cols-2">
+                <label class="form-field">
+                    <span class="form-label">受注日</span>
+                    <input type="date" class="form-input" value="{{ now()->format('Y-m-d') }}">
+                </label>
+                <label class="form-field">
+                    <span class="form-label">納品希望日</span>
+                    <input type="date" class="form-input" value="{{ now()->addDay()->format('Y-m-d') }}">
+                </label>
+            </div>
+            <label class="form-field">
+                <span class="form-label">顧客</span>
+                <select class="form-input">
+                    <option>鮮魚酒場 波しぶき</option>
+                    <option>レストラン 潮彩</option>
+                    <option>ホテル ブルーサンズ</option>
+                </select>
+            </label>
+            <div class="grid gap-4 sm:grid-cols-3">
+                <label class="form-field sm:col-span-2">
+                    <span class="form-label">商品</span>
+                    <select class="form-input">
+                        <option>本マグロ 柵 500g</option>
+                        <option>サーモン フィレ 1kg</option>
+                        <option>ボタンエビ 20尾</option>
+                        <option>真鯛 1尾</option>
+                    </select>
+                </label>
+                <label class="form-field">
+                    <span class="form-label">数量</span>
+                    <input type="number" class="form-input" min="1" value="1">
+                </label>
+            </div>
+            <label class="form-field">
+                <span class="form-label">備考</span>
+                <textarea rows="3" class="form-input" placeholder="特記事項があれば入力してください"></textarea>
+            </label>
+            <div class="flex justify-end gap-3">
+                <button type="reset" class="btn-secondary">クリア</button>
+                <button type="submit" class="btn-primary">仮登録</button>
+            </div>
+        </form>
+    </div>
+@endsection
