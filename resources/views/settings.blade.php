@@ -1,36 +1,36 @@
 @extends('layouts.app')
 
-@section('title', 'Mobile Order - 設定')
+@section('title', __('messages.app.name') . ' - ' . __('messages.settings.title'))
 
-@section('page-title', '設定')
+@section('page-title', __('messages.settings.title'))
 
 @section('content')
     <div class="grid gap-6 lg:grid-cols-2">
         <div class="space-y-6 rounded-lg bg-white p-6 shadow-sm ring-1 ring-black/5">
-            <h2 class="text-lg font-semibold text-accent">通知設定</h2>
+            <h2 class="text-lg font-semibold text-accent">{{ __('messages.settings.notifications.title') }}</h2>
             <form class="space-y-4">
                 <label class="form-field">
-                    <span class="form-label">注文通知メール</span>
-                    <input type="email" class="form-input" placeholder="orders@example.com" value="orders@example.com">
+                    <span class="form-label">{{ __('messages.settings.notifications.order_mail') }}</span>
+                    <input type="email" class="form-input" placeholder="{{ __('messages.settings.placeholders.order_mail') }}" value="{{ __('messages.settings.placeholders.order_mail') }}">
                 </label>
                 <label class="form-field">
-                    <span class="form-label">緊急連絡メール</span>
-                    <input type="email" class="form-input" placeholder="alert@example.com">
+                    <span class="form-label">{{ __('messages.settings.notifications.alert_mail') }}</span>
+                    <input type="email" class="form-input" placeholder="{{ __('messages.settings.placeholders.alert_mail') }}">
                 </label>
                 <label class="form-field">
-                    <span class="form-label">Slack Webhook URL</span>
-                    <input type="url" class="form-input" placeholder="https://hooks.slack.com/services/...">
+                    <span class="form-label">{{ __('messages.settings.notifications.slack') }}</span>
+                    <input type="url" class="form-input" placeholder="{{ __('messages.settings.placeholders.slack') }}">
                 </label>
                 <div class="flex justify-end">
-                    <button type="submit" class="btn-primary">保存</button>
+                    <button type="submit" class="btn-primary">{{ __('messages.settings.buttons.save') }}</button>
                 </div>
             </form>
         </div>
         <div class="space-y-6 rounded-lg bg-white p-6 shadow-sm ring-1 ring-black/5">
-            <h2 class="text-lg font-semibold text-accent">システム設定</h2>
+            <h2 class="text-lg font-semibold text-accent">{{ __('messages.settings.system.title') }}</h2>
             <form class="space-y-4">
                 <label class="form-field">
-                    <span class="form-label">タイムゾーン</span>
+                    <span class="form-label">{{ __('messages.settings.system.timezone') }}</span>
                     <select class="form-input">
                         <option value="Asia/Tokyo">Asia/Tokyo</option>
                         <option value="Asia/Bangkok" selected>Asia/Bangkok</option>
@@ -39,15 +39,15 @@
                     </select>
                 </label>
                 <label class="form-field">
-                    <span class="form-label">営業開始時間</span>
+                    <span class="form-label">{{ __('messages.settings.system.open_time') }}</span>
                     <input type="time" class="form-input" value="05:00">
                 </label>
                 <label class="form-field">
-                    <span class="form-label">営業終了時間</span>
+                    <span class="form-label">{{ __('messages.settings.system.close_time') }}</span>
                     <input type="time" class="form-input" value="14:00">
                 </label>
                 <div class="flex justify-end">
-                    <button type="submit" class="btn-secondary">下書き保存</button>
+                    <button type="submit" class="btn-secondary">{{ __('messages.settings.buttons.draft') }}</button>
                 </div>
             </form>
         </div>

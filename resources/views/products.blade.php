@@ -1,8 +1,8 @@
 @extends('layouts.app')
 
-@section('title', 'Mobile Order - 商品マスタ')
+@section('title', __('messages.app.name') . ' - ' . __('messages.products.title'))
 
-@section('page-title', '商品マスタ')
+@section('page-title', __('messages.products.title'))
 
 @php
     $products = [
@@ -19,10 +19,10 @@
         <table class="min-w-full divide-y divide-black/10">
             <thead class="bg-black/5 text-left text-sm uppercase tracking-wide text-black/60">
                 <tr>
-                    <th class="px-4 py-3">商品コード</th>
-                    <th class="px-4 py-3">商品名</th>
-                    <th class="px-4 py-3">単位</th>
-                    <th class="px-4 py-3 text-right">単価 (円)</th>
+                    <th class="px-4 py-3">{{ __('messages.products.table.code') }}</th>
+                    <th class="px-4 py-3">{{ __('messages.products.table.name') }}</th>
+                    <th class="px-4 py-3">{{ __('messages.products.table.unit') }}</th>
+                    <th class="px-4 py-3 text-right">{{ __('messages.products.table.price') }}</th>
                 </tr>
             </thead>
             <tbody class="divide-y divide-black/5 text-sm">
