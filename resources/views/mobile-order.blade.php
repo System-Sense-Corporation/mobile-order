@@ -1,43 +1,57 @@
-<!doctype html>
-<html lang="ja">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>受注登録（Thai Sushi Thonglor）</title>
-<link rel="stylesheet" href="css/styles.css">
-</head>
-<body>
-<header class="appbar"><h1>受注登録フォーム</h1></header>
-<main class="container narrow">
-  <form id="order-form" class="card">
-    <label>店舗名<input required name="restaurant" value="Thai Sushi Thonglor"></label>
-    <label>担当者<input required name="contact" value="Somchai"></label>
-    <label>電話番号<input name="phone" value="0987654321"></label>
-    <label>希望納期<input required type="date" name="delivery_date" value="2025-11-30"></label>
-    <fieldset class="items">
-      <legend>商品</legend>
-      <div id="item-list"></div>
-      <button type="button" id="add-item" class="btn small">＋ 行を追加</button>
-    </fieldset>
-    <label>備考<textarea name="notes" rows="3" placeholder="例：本マグロ フィレ 2kg希望"></textarea></label>
-    <button class="btn primary" type="submit">📝 登録</button>
-    <p id="result" class="success" style="display:none;">登録が完了しました。</p>
-  </form>
-  <a class="btn link" href="index.html">← メニューへ戻る</a>
-</main>
-<script>
-document.getElementById('add-item').addEventListener('click', () => {
-  const div = document.createElement('div');
-  div.className = 'item-row';
-  div.innerHTML = `
-    <input placeholder="商品名">
-    <input placeholder="数量">
-    <input placeholder="単位">
-    <button type="button" class="btn small del">削除</button>
-  `;
-  div.querySelector('.del').onclick = () => div.remove();
-  document.getElementById('item-list').appendChild(div);
-});
-</script>
-</body>
-</html>
+@extends('layouts.app')
+
+@section('title', __('messages.app.name') . ' - ' . __('messages.mobile_order.title'))
+
+@section('page-title', __('messages.mobile_order.title'))
+
+@php
+    $customerOptions = __('messages.mobile_order.options.customers');
+    $productOptions = __('messages.mobile_order.options.products');
+@endphp
+
+@section('content')
+    <div class="rounded-lg bg-white p-6 shadow-sm ring-1 ring-black/5">
+        <form class="space-y-6">
+            <div class="grid gap-4 sm:grid-cols-2">
+                <label class="form-field">
+                    <span class="form-label">{{ __('messages.mobile_order.fields.order_date') }}</span>
+                    <input type="date" class="form-input" value="{{ now()->format('Y-m-d') }}">
+                </label>
+                <label class="form-field">
+                    <span class="form-label">{{ __('messages.mobile_order.fields.delivery_date') }}</span>
+                    <input type="date" class="form-input" value="{{ now()->addDay()->format('Y-m-d') }}">
+                </label>
+            </div>
+            <label class="form-field">
+                <span class="form-label">{{ __('messages.mobile_order.fields.customer') }}</span>
+                <select class="form-input">
+                    @foreach ($customerOptions as $customer)
+                        <option>{{ $customer }}</option>
+                    @endforeach
+                </select>
+            </label>
+            <div class="grid gap-4 sm:grid-cols-3">
+                <label class="form-field sm:col-span-2">
+                    <span class="form-label">{{ __('messages.mobile_order.fields.product') }}</span>
+                    <select class="form-input">
+                        @foreach ($productOptions as $product)
+                            <option>{{ $product }}</option>
+                        @endforeach
+                    </select>
+                </label>
+                <label class="form-field">
+                    <span class="form-label">{{ __('messages.mobile_order.fields.quantity') }}</span>
+                    <input type="number" class="form-input" min="1" value="1">
+                </label>
+            </div>
+            <label class="form-field">
+                <span class="form-label">{{ __('messages.mobile_order.fields.notes') }}</span>
+                <textarea rows="3" class="form-input" placeholder="{{ __('messages.mobile_order.placeholders.notes') }}"></textarea>
+            </label>
+            <div class="flex justify-end gap-3">
+                <button type="reset" class="btn-secondary">{{ __('messages.mobile_order.buttons.reset') }}</button>
+                <button type="submit" class="btn-primary">{{ __('messages.mobile_order.buttons.submit') }}</button>
+            </div>
+        </form>
+    </div>
+@endsection

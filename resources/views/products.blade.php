@@ -1,19 +1,40 @@
-<!doctype html>
-<html lang="ja">
-<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>商品マスタ</title><link rel="stylesheet" href="css/styles.css"></head>
-<body>
-<header class="appbar"><h1>商品マスタ</h1></header>
-<main class="container">
-  <div class="card">
-    <table class="table">
-      <thead><tr><th>コード</th><th>商品名</th><th>単位</th><th>サイズ</th></tr></thead>
-      <tbody>
-        <tr><td>SALMON</td><td>サーモン切り身</td><td>kg</td><td>S,M,L</td></tr>
-        <tr><td>TUNA</td><td>マグロ赤身</td><td>kg</td><td>100g,200g,500g</td></tr>
-      </tbody>
-    </table>
-  </div>
-  <a class="btn link" href="index.html">← メニューへ戻る</a>
-</main>
-</body></html>
+@extends('layouts.app')
+
+@section('title', __('messages.app.name') . ' - ' . __('messages.products.title'))
+
+@section('page-title', __('messages.products.title'))
+
+@php
+    $products = [
+        ['code' => 'P-1001', 'name' => '本マグロ 柵 500g', 'unit' => '柵', 'price' => '4,500'],
+        ['code' => 'P-1002', 'name' => 'サーモン フィレ 1kg', 'unit' => 'パック', 'price' => '3,200'],
+        ['code' => 'P-1003', 'name' => 'ボタンエビ 20尾', 'unit' => 'ケース', 'price' => '5,800'],
+        ['code' => 'P-1004', 'name' => '真鯛 1尾 (約1.5kg)', 'unit' => '尾', 'price' => '2,400'],
+        ['code' => 'P-1005', 'name' => 'アジ 開き 10枚', 'unit' => 'セット', 'price' => '1,200'],
+    ];
+@endphp
+
+@section('content')
+    <div class="overflow-hidden rounded-lg bg-white shadow-sm ring-1 ring-black/5">
+        <table class="min-w-full divide-y divide-black/10">
+            <thead class="bg-black/5 text-left text-sm uppercase tracking-wide text-black/60">
+                <tr>
+                    <th class="px-4 py-3">{{ __('messages.products.table.code') }}</th>
+                    <th class="px-4 py-3">{{ __('messages.products.table.name') }}</th>
+                    <th class="px-4 py-3">{{ __('messages.products.table.unit') }}</th>
+                    <th class="px-4 py-3 text-right">{{ __('messages.products.table.price') }}</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-black/5 text-sm">
+                @foreach ($products as $product)
+                    <tr class="hover:bg-black/5">
+                        <td class="px-4 py-3 font-medium">{{ $product['code'] }}</td>
+                        <td class="px-4 py-3">{{ $product['name'] }}</td>
+                        <td class="px-4 py-3">{{ $product['unit'] }}</td>
+                        <td class="px-4 py-3 text-right">{{ $product['price'] }}</td>
+                    </tr>
+                @endforeach
+            </tbody>
+        </table>
+    </div>
+@endsection
