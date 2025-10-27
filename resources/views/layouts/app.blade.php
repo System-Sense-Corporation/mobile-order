@@ -20,17 +20,25 @@
                 $availableLocales = config('app.available_locales', []);
                 $currentLocale = app()->getLocale();
             @endphp
-            <div class="mx-auto flex w-full max-w-6xl flex-wrap items-center justify-between gap-3 px-6 py-4">
-                <a href="{{ route('home') }}" class="text-lg font-semibold tracking-wide text-white">
-                    {{ __('messages.app.name') }}
-                </a>
-                <div class="flex flex-wrap items-center gap-3 text-sm font-medium">
-                    <nav class="flex flex-wrap items-center gap-2">
-                        <a href="{{ route('home') }}" class="rounded px-3 py-2 text-white/90 transition hover:bg-white/15 hover:text-white">
+            <div class="mx-auto flex w-full max-w-6xl flex-col gap-3 px-6 py-4">
+                <div class="flex w-full items-center justify-between gap-3">
+                    <a href="{{ route('home') }}" class="text-lg font-semibold tracking-wide text-white">
+                        {{ __('messages.app.name') }}
+                    </a>
+                    <button type="button" class="inline-flex items-center justify-center rounded bg-white/10 p-2 text-white transition hover:bg-white/20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white/70 md:hidden" data-mobile-menu-toggle aria-controls="primary-navigation" aria-expanded="false">
+                        <span class="sr-only">{{ __('messages.navigation.toggle_menu') }}</span>
+                        <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6h16.5M3.75 12h16.5M3.75 18h16.5" />
+                        </svg>
+                    </button>
+                </div>
+                <div class="hidden flex-col gap-3 text-sm font-medium md:flex md:flex-row md:items-center md:justify-between" data-mobile-menu id="primary-navigation">
+                    <nav class="flex flex-col gap-2 md:flex-row md:items-center md:gap-2">
+                        <a href="{{ route('home') }}" class="block w-full rounded px-3 py-2 text-white/90 transition hover:bg-white/15 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white/70 md:inline-block md:w-auto">
                             {{ __('messages.navigation.home') }}
                         </a>
                         @foreach ($navigationLinks as $item)
-                            <a href="{{ route($item['route']) }}" class="rounded px-3 py-2 text-white/90 transition hover:bg-white/15 hover:text-white">
+                            <a href="{{ route($item['route']) }}" class="block w-full rounded px-3 py-2 text-white/90 transition hover:bg-white/15 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white/70 md:inline-block md:w-auto">
                                 {{ $item['label'] }}
                             </a>
                         @endforeach
@@ -39,7 +47,7 @@
                         <form method="POST" action="{{ route('locale.switch') }}" class="flex items-center gap-2">
                             @csrf
                             <label for="locale" class="sr-only">{{ __('messages.app.language.label') }}</label>
-                            <select id="locale" name="locale" class="form-input w-auto cursor-pointer rounded bg-white/10 text-white shadow-none ring-0 focus:border-white/70 focus:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/50" onchange="this.form.submit()">
+                            <select id="locale" name="locale" class="form-input w-full cursor-pointer rounded bg-white/10 text-white shadow-none ring-0 focus:border-white/70 focus:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/50 md:w-auto" onchange="this.form.submit()">
                                 @foreach ($availableLocales as $locale)
                                     <option value="{{ $locale }}" @selected($currentLocale === $locale)>
                                         {{ __('messages.app.language.options.' . $locale) }}
