@@ -25,7 +25,7 @@
                     <a href="{{ route('home') }}" class="text-lg font-semibold tracking-wide text-white">
                         {{ __('messages.app.name') }}
                     </a>
-                    <button type="button" class="inline-flex items-center justify-center rounded bg-white/10 p-2 text-white transition hover:bg-white/20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white/70 md:hidden" data-mobile-menu-toggle aria-controls="mobile-navigation-drawer" aria-expanded="false">
+                    <button type="button" class="relative z-[60] inline-flex items-center justify-center rounded bg-white/10 p-2 text-white transition hover:bg-white/20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white/70 md:hidden" data-mobile-menu-toggle aria-controls="mobile-navigation-drawer" aria-expanded="false">
                         <span class="sr-only">{{ __('messages.navigation.toggle_menu') }}</span>
                         <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" aria-hidden="true" data-mobile-menu-icon="open">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6h16.5M3.75 12h16.5M3.75 18h16.5" />
