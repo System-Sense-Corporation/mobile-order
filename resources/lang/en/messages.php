@@ -15,6 +15,7 @@ return [
     ],
     'navigation' => [
         'home' => 'Top Menu',
+        'menu_title' => 'Navigation menu',
         'mobile-order' => 'Order Entry',
         'orders' => "Today's Orders",
         'products' => 'Product Master',

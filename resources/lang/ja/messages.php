@@ -15,6 +15,7 @@ return [
     ],
     'navigation' => [
         'home' => 'トップメニュー',
+        'menu_title' => 'ナビゲーションメニュー',
         'mobile-order' => '受注登録',
         'orders' => '当日受注一覧',
         'products' => '商品マスタ',
