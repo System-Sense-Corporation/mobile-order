@@ -1,6 +1,6 @@
 import './bootstrap';
 
-document.addEventListener('DOMContentLoaded', () => {
+function initMobileMenu() {
     const toggleButton = document.querySelector('[data-mobile-menu-toggle]');
     const drawer = document.querySelector('[data-mobile-menu-panel]');
     const overlay = document.querySelector('[data-mobile-menu-overlay]');
@@ -11,6 +11,12 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!toggleButton || !drawer || !overlay) {
         return;
     }
+
+    if (drawer.dataset.mobileMenuInitialized === 'true') {
+        return;
+    }
+
+    drawer.dataset.mobileMenuInitialized = 'true';
 
     const setExpanded = (expanded) => {
         drawer.classList.toggle('drawer-panel--open', expanded);
@@ -51,4 +57,14 @@ document.addEventListener('DOMContentLoaded', () => {
             setExpanded(false);
         }
     });
+}
+
+if (document.readyState !== 'loading') {
+    initMobileMenu();
+} else {
+    document.addEventListener('DOMContentLoaded', initMobileMenu, { once: true });
+}
+
+import.meta.hot?.accept(() => {
+    initMobileMenu();
 });
