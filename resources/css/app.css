@@ -45,4 +45,12 @@
     .btn-secondary {
         @apply inline-flex items-center justify-center rounded-md border border-accent px-4 py-2 text-sm font-semibold text-accent transition hover:bg-accent/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent;
     }
+
+    .mobile-menu-overlay-open {
+        @apply pointer-events-auto opacity-100;
+    }
+
+    .mobile-menu-drawer-open {
+        @apply translate-x-0;
+    }
 }
