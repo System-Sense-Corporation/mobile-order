@@ -20,7 +20,7 @@ return [
         'products' => 'Product Master',
         'customers' => 'Customer Master',
         'settings' => 'Settings',
-        'admin_users' => 'User Management',
+        'profile' => 'Profile',
     ],
     'index' => [
         'title' => 'Top Menu',
@@ -155,76 +155,27 @@ return [
         'failed' => 'The provided credentials do not match our records.',
         'logged_in_as' => 'Logged in as :name',
     ],
-    'admin' => [
-        'users' => [
-            'title' => 'User Management',
-            'description' => 'Manage login accounts for administrators and staff who use the Mobile Order system.',
-            'create_button' => 'Create New',
-            'create_title' => 'Create User',
-            'create_description' => 'Register a new administrator or staff account. Required fields are marked with an asterisk (*).',
-            'validation_error_heading' => 'Please check the following items:',
-            'table' => [
-                'name' => 'Name',
-                'email' => 'Email / Login ID',
-                'phone' => 'Mobile Phone',
-                'department' => 'Department',
-                'authority' => 'Authority',
+    'profile' => [
+        'title' => 'Profile',
+        'description' => 'Manage how you sign in and what happens to your account.',
+        'sections' => [
+            'password' => [
+                'title' => 'Update password',
+                'description' => 'Set a strong password to keep your account secure.',
+                'fields' => [
+                    'current' => 'Current password',
+                    'new' => 'New password',
+                    'confirmation' => 'Confirm new password',
+                ],
+                'helper' => 'Use at least 12 characters that combine letters, numbers, and symbols.',
+                'button' => 'Save new password',
             ],
-            'roles' => [
-                'admin' => 'Administrator',
-                'manager' => 'Manager',
-                'staff' => 'Staff',
-            ],
-            'role_descriptions' => [
-                'admin' => 'Full access to all settings and master data.',
-                'manager' => 'Can manage orders and users within their department.',
-                'staff' => 'Limited to viewing and editing assigned orders.',
-            ],
-            'form' => [
-                'name' => [
-                    'label' => 'Name',
-                ],
-                'email' => [
-                    'label' => 'Email / Login ID',
-                ],
-                'phone' => [
-                    'label' => 'Mobile Phone',
-                    'placeholder' => 'e.g. 080-1234-5678',
-                ],
-                'department' => [
-                    'label' => 'Department',
-                    'placeholder' => 'Select department',
-                    'options' => [
-                        'sales' => 'Sales',
-                        'support' => 'Customer Support',
-                        'logistics' => 'Logistics',
-                        'management' => 'Management',
-                    ],
-                ],
-                'authority' => [
-                    'label' => 'Authority',
-                ],
-                'notify_new_orders' => [
-                    'label' => 'Receive new order notifications',
-                    'help' => 'Send an email notification when a new order is submitted.',
-                ],
-                'require_password_change' => [
-                    'label' => 'Require password change at next login',
-                    'help' => 'Prompt the user to set their own password after the first sign-in.',
-                ],
-                'password' => [
-                    'label' => 'Temporary password',
-                    'placeholder' => 'At least 8 characters',
-                ],
-                'password_confirmation' => [
-                    'label' => 'Confirm password',
-                    'placeholder' => 'Re-enter temporary password',
-                ],
-                'cancel_button' => 'Cancel',
-                'submit_button' => 'Register User',
-            ],
-            'flash' => [
-                'created' => 'User registration saved (mock).',
+            'account' => [
+                'title' => 'Account management',
+                'description' => 'Control how your account is handled when you no longer need it.',
+                'delete_warning' => 'Deleting your account will remove all associated information. This action cannot be undone.',
+                'support' => 'Need help deciding? Contact our support team before continuing.',
+                'button' => 'Delete account',
             ],
         ],
     ],

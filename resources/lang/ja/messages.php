@@ -20,7 +20,7 @@ return [
         'products' => '商品マスタ',
         'customers' => '顧客マスタ',
         'settings' => '設定',
-        'admin_users' => 'ユーザー管理',
+        'profile' => 'プロフィール',
     ],
     'index' => [
         'title' => 'トップメニュー',
@@ -155,76 +155,27 @@ return [
         'failed' => '入力された認証情報が正しくありません。',
         'logged_in_as' => ':name としてログイン中',
     ],
-    'admin' => [
-        'users' => [
-            'title' => 'ユーザー管理',
-            'description' => 'Mobile Order を利用する管理者・担当者のログインアカウントを管理します。',
-            'create_button' => '新規作成',
-            'create_title' => 'ユーザー登録',
-            'create_description' => '新しい管理者または担当者アカウントを登録します。必須項目には「*」が表示されます。',
-            'validation_error_heading' => '入力内容をご確認ください。',
-            'table' => [
-                'name' => '氏名',
-                'email' => 'メール / ログインID',
-                'phone' => '携帯電話',
-                'department' => '所属部署',
-                'authority' => '権限',
+    'profile' => [
+        'title' => 'プロフィール',
+        'description' => 'サインイン方法とアカウントの扱いを管理します。',
+        'sections' => [
+            'password' => [
+                'title' => 'パスワードの更新',
+                'description' => '強固なパスワードでアカウントを保護しましょう。',
+                'fields' => [
+                    'current' => '現在のパスワード',
+                    'new' => '新しいパスワード',
+                    'confirmation' => '新しいパスワード（確認）',
+                ],
+                'helper' => '英数字や記号を組み合わせて12文字以上で設定してください。',
+                'button' => '新しいパスワードを保存',
             ],
-            'roles' => [
-                'admin' => '管理者',
-                'manager' => 'マネージャー',
-                'staff' => 'スタッフ',
-            ],
-            'role_descriptions' => [
-                'admin' => '全ての設定とマスタを操作できます。',
-                'manager' => '所属部署の注文やユーザーを管理できます。',
-                'staff' => '担当する注文の閲覧・編集ができます。',
-            ],
-            'form' => [
-                'name' => [
-                    'label' => '氏名',
-                ],
-                'email' => [
-                    'label' => 'メール / ログインID',
-                ],
-                'phone' => [
-                    'label' => '携帯電話',
-                    'placeholder' => '例）080-1234-5678',
-                ],
-                'department' => [
-                    'label' => '所属部署',
-                    'placeholder' => '部署を選択してください',
-                    'options' => [
-                        'sales' => '営業部',
-                        'support' => 'サポート部',
-                        'logistics' => '物流部',
-                        'management' => '管理部',
-                    ],
-                ],
-                'authority' => [
-                    'label' => '権限区分',
-                ],
-                'notify_new_orders' => [
-                    'label' => '新規受注の通知メールを送る',
-                    'help' => '新しい受注が登録された際にメール通知します。',
-                ],
-                'require_password_change' => [
-                    'label' => '初回ログイン時にパスワード変更を必須にする',
-                    'help' => '初回ログイン後に本人がパスワードを設定できるよう促します。',
-                ],
-                'password' => [
-                    'label' => '仮パスワード',
-                    'placeholder' => '8文字以上で入力してください',
-                ],
-                'password_confirmation' => [
-                    'label' => '仮パスワード（確認）',
-                    'placeholder' => 'もう一度入力してください',
-                ],
-                'cancel_button' => 'キャンセル',
-                'submit_button' => 'ユーザーを登録',
-            ],
-            'flash' => [
-                'created' => 'ユーザー情報を登録しました（モック）。',
+            'account' => [
+                'title' => 'アカウント管理',
+                'description' => '利用しなくなった際のアカウントの扱いを設定できます。',
+                'delete_warning' => 'アカウントを削除すると関連する情報がすべて失われます。この操作は元に戻せません。',
+                'support' => '迷った場合は、実行する前にサポートへご相談ください。',
+                'button' => 'アカウントを削除',
             ],
         ],
     ],
