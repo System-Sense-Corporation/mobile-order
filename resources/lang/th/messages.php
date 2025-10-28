@@ -20,6 +20,8 @@ return [
         'products' => 'ข้อมูลสินค้า',
         'customers' => 'ข้อมูลลูกค้า',
         'settings' => 'ตั้งค่า',
+        'toggle_menu' => 'สลับเมนู',
+        'close_menu' => 'ปิดเมนู',
     ],
     'index' => [
         'title' => 'เมนูหลัก',
