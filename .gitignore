@@ -64,3 +64,4 @@ Thumbs.db
 /.env.testing
 /.phpunit.cache
 database/database.sqlite
+database/database.sqlite
