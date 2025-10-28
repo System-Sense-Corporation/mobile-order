@@ -20,6 +20,7 @@ return [
         'products' => 'Product Master',
         'customers' => 'Customer Master',
         'settings' => 'Settings',
+        'toggle_menu' => 'Toggle navigation',
     ],
     'index' => [
         'title' => 'Top Menu',
