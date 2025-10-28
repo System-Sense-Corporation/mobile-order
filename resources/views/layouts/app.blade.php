@@ -51,6 +51,21 @@
                                 </a>
                             @endforeach
                         </nav>
+                        <div class="mt-6">
+                            @auth
+                                <p class="text-sm text-white/90">{{ __('messages.auth.logged_in_as', ['name' => auth()->user()->name]) }}</p>
+                                <form method="POST" action="{{ route('logout') }}" class="mt-3">
+                                    @csrf
+                                    <button type="submit" class="w-full rounded bg-white/15 px-3 py-2 text-sm font-semibold text-white transition hover:bg-white/25 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white/70">
+                                        {{ __('messages.auth.logout_button') }}
+                                    </button>
+                                </form>
+                            @else
+                                <a href="{{ route('login') }}" class="inline-flex w-full items-center justify-center rounded bg-white px-3 py-2 text-sm font-semibold text-accent transition hover:bg-white/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white/70">
+                                    {{ __('messages.auth.login_button') }}
+                                </a>
+                            @endauth
+                        </div>
                         @if ($availableLocales)
                             <form method="POST" action="{{ route('locale.switch') }}" class="mt-6 flex flex-col gap-2 text-sm font-medium">
                                 @csrf
@@ -77,19 +92,37 @@
                             </a>
                         @endforeach
                     </nav>
-                    @if ($availableLocales)
-                        <form method="POST" action="{{ route('locale.switch') }}" class="flex items-center gap-2">
-                            @csrf
-                            <label for="locale" class="sr-only">{{ __('messages.app.language.label') }}</label>
-                            <select id="locale" name="locale" class="form-input w-full cursor-pointer rounded bg-white/10 text-white shadow-none ring-0 focus:border-white/70 focus:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/50 md:w-auto" onchange="this.form.submit()">
-                                @foreach ($availableLocales as $locale)
-                                    <option value="{{ $locale }}" @selected($currentLocale === $locale)>
-                                        {{ __('messages.app.language.options.' . $locale) }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </form>
-                    @endif
+                    <div class="flex flex-col items-center gap-2 md:flex-row md:gap-4">
+                        @if ($availableLocales)
+                            <form method="POST" action="{{ route('locale.switch') }}" class="flex items-center gap-2">
+                                @csrf
+                                <label for="locale" class="sr-only">{{ __('messages.app.language.label') }}</label>
+                                <select id="locale" name="locale" class="form-input w-full cursor-pointer rounded bg-white/10 text-white shadow-none ring-0 focus:border-white/70 focus:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/50 md:w-auto" onchange="this.form.submit()">
+                                    @foreach ($availableLocales as $locale)
+                                        <option value="{{ $locale }}" @selected($currentLocale === $locale)>
+                                            {{ __('messages.app.language.options.' . $locale) }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </form>
+                        @endif
+
+                        @auth
+                            <div class="flex items-center gap-3 text-sm text-white/90">
+                                <span>{{ __('messages.auth.logged_in_as', ['name' => auth()->user()->name]) }}</span>
+                                <form method="POST" action="{{ route('logout') }}">
+                                    @csrf
+                                    <button type="submit" class="rounded bg-white px-3 py-2 font-semibold text-accent transition hover:bg-white/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white/70">
+                                        {{ __('messages.auth.logout_button') }}
+                                    </button>
+                                </form>
+                            </div>
+                        @else
+                            <a href="{{ route('login') }}" class="inline-flex items-center justify-center rounded bg-white px-3 py-2 font-semibold text-accent transition hover:bg-white/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white/70">
+                                {{ __('messages.auth.login_button') }}
+                            </a>
+                        @endauth
+                    </div>
                 </div>
             </div>
         </header>

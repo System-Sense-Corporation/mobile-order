@@ -1,14 +1,24 @@
 <?php
 
+use App\Http\Controllers\AuthController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', fn () => view('index'))->name('home');
-Route::get('/mobile-order', fn () => view('mobile-order'))->name('mobile-order');
-Route::get('/orders', fn () => view('orders'))->name('orders');
-Route::get('/products', fn () => view('products'))->name('products');
-Route::get('/customers', fn () => view('customers'))->name('customers');
-Route::get('/settings', fn () => view('settings'))->name('settings');
+Route::middleware('guest')->group(function () {
+    Route::get('/login', [AuthController::class, 'create'])->name('login');
+    Route::post('/login', [AuthController::class, 'store'])->name('login.store');
+});
+
+Route::middleware('auth')->group(function () {
+    Route::post('/logout', [AuthController::class, 'destroy'])->name('logout');
+
+    Route::get('/', fn () => view('index'))->name('home');
+    Route::get('/mobile-order', fn () => view('mobile-order'))->name('mobile-order');
+    Route::get('/orders', fn () => view('orders'))->name('orders');
+    Route::get('/products', fn () => view('products'))->name('products');
+    Route::get('/customers', fn () => view('customers'))->name('customers');
+    Route::get('/settings', fn () => view('settings'))->name('settings');
+});
 
 Route::post('/locale', function (Request $request) {
     $availableLocales = config('app.available_locales', []);
