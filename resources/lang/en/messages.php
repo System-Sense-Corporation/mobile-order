@@ -20,6 +20,7 @@ return [
         'products' => 'Product Master',
         'customers' => 'Customer Master',
         'settings' => 'Settings',
+        'profile' => 'Profile',
     ],
     'index' => [
         'title' => 'Top Menu',
@@ -153,5 +154,29 @@ return [
         'logout_button' => 'Log out',
         'failed' => 'The provided credentials do not match our records.',
         'logged_in_as' => 'Logged in as :name',
+    ],
+    'profile' => [
+        'title' => 'Profile',
+        'description' => 'Manage how you sign in and what happens to your account.',
+        'sections' => [
+            'password' => [
+                'title' => 'Update password',
+                'description' => 'Set a strong password to keep your account secure.',
+                'fields' => [
+                    'current' => 'Current password',
+                    'new' => 'New password',
+                    'confirmation' => 'Confirm new password',
+                ],
+                'helper' => 'Use at least 12 characters that combine letters, numbers, and symbols.',
+                'button' => 'Save new password',
+            ],
+            'account' => [
+                'title' => 'Account management',
+                'description' => 'Control how your account is handled when you no longer need it.',
+                'delete_warning' => 'Deleting your account will remove all associated information. This action cannot be undone.',
+                'support' => 'Need help deciding? Contact our support team before continuing.',
+                'button' => 'Delete account',
+            ],
+        ],
     ],
 ];

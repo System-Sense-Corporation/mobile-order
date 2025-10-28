@@ -18,6 +18,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/products', fn () => view('products'))->name('products');
     Route::get('/customers', fn () => view('customers'))->name('customers');
     Route::get('/settings', fn () => view('settings'))->name('settings');
+    Route::get('/profile', fn () => view('profile'))->name('profile');
 });
 
 Route::post('/locale', function (Request $request) {
