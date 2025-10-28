@@ -16,7 +16,7 @@
             <div>
                 <label for="email" class="block text-sm font-medium text-text">{{ __('messages.auth.email') }}</label>
                 <input id="email" name="email" type="email" value="{{ old('email') }}"
-                    class="form-input mt-1 w-full" required autofocus autocomplete="email">
+                    class="form-input mt-1 w-full" autofocus autocomplete="email">
                 @error('email')
                     <p class="mt-2 text-sm text-error">{{ $message }}</p>
                 @enderror
@@ -24,7 +24,7 @@
 
             <div>
                 <label for="password" class="block text-sm font-medium text-text">{{ __('messages.auth.password') }}</label>
-                <input id="password" name="password" type="password" class="form-input mt-1 w-full" required
+                <input id="password" name="password" type="password" class="form-input mt-1 w-full"
                     autocomplete="current-password">
                 @error('password')
                     <p class="mt-2 text-sm text-error">{{ $message }}</p>
