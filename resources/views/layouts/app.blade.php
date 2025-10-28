@@ -51,6 +51,22 @@
                                 </a>
                             @endforeach
                         </nav>
+                        <div class="mt-6 flex flex-col gap-2 text-sm font-medium">
+                            @auth
+                                <form method="POST" action="{{ route('logout') }}">
+                                    @csrf
+                                    <button type="submit"
+                                        class="block w-full rounded px-3 py-2 text-left text-white/90 transition hover:bg-white/15 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white/70">
+                                        {{ __('Log out') }}
+                                    </button>
+                                </form>
+                            @else
+                                <a href="{{ route('login') }}"
+                                    class="block w-full rounded px-3 py-2 text-white/90 transition hover:bg-white/15 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white/70">
+                                    {{ __('Log in') }}
+                                </a>
+                            @endauth
+                        </div>
                         @if ($availableLocales)
                             <form method="POST" action="{{ route('locale.switch') }}" class="mt-6 flex flex-col gap-2 text-sm font-medium">
                                 @csrf
@@ -77,19 +93,36 @@
                             </a>
                         @endforeach
                     </nav>
-                    @if ($availableLocales)
-                        <form method="POST" action="{{ route('locale.switch') }}" class="flex items-center gap-2">
-                            @csrf
-                            <label for="locale" class="sr-only">{{ __('messages.app.language.label') }}</label>
-                            <select id="locale" name="locale" class="form-input w-full cursor-pointer rounded bg-white/10 text-white shadow-none ring-0 focus:border-white/70 focus:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/50 md:w-auto" onchange="this.form.submit()">
-                                @foreach ($availableLocales as $locale)
-                                    <option value="{{ $locale }}" @selected($currentLocale === $locale)>
-                                        {{ __('messages.app.language.options.' . $locale) }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </form>
-                    @endif
+                    <div class="flex flex-col gap-3 md:flex-row md:items-center md:gap-3">
+                        @auth
+                            <form method="POST" action="{{ route('logout') }}" class="md:inline-block">
+                                @csrf
+                                <button type="submit"
+                                    class="block w-full rounded px-3 py-2 text-left text-white/90 transition hover:bg-white/15 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white/70 md:text-center">
+                                    {{ __('Log out') }}
+                                </button>
+                            </form>
+                        @else
+                            <a href="{{ route('login') }}"
+                                class="block w-full rounded px-3 py-2 text-white/90 transition hover:bg-white/15 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white/70 md:inline-block md:w-auto">
+                                {{ __('Log in') }}
+                            </a>
+                        @endauth
+
+                        @if ($availableLocales)
+                            <form method="POST" action="{{ route('locale.switch') }}" class="flex items-center gap-2">
+                                @csrf
+                                <label for="locale" class="sr-only">{{ __('messages.app.language.label') }}</label>
+                                <select id="locale" name="locale" class="form-input w-full cursor-pointer rounded bg-white/10 text-white shadow-none ring-0 focus:border-white/70 focus:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/50 md:w-auto" onchange="this.form.submit()">
+                                    @foreach ($availableLocales as $locale)
+                                        <option value="{{ $locale }}" @selected($currentLocale === $locale)>
+                                            {{ __('messages.app.language.options.' . $locale) }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </form>
+                        @endif
+                    </div>
                 </div>
             </div>
         </header>
