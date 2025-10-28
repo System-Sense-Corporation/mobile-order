@@ -3,47 +3,67 @@
 @section('title', __('messages.auth.login_title'))
 
 @section('content')
-    <div class="mx-auto w-full max-w-md rounded-lg bg-white p-8 shadow">
-        <h1 class="text-2xl font-semibold text-accent">{{ __('messages.auth.login_heading') }}</h1>
+    <div class="menu-card space-y-6">
+        <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+            <div>
+                <h1 class="text-2xl font-semibold text-accent">{{ __('messages.auth.login_heading') }}</h1>
+                <p class="mt-2 text-sm text-black/60">
+                    {{ __('messages.auth.login_subheading') }}
+                </p>
+            </div>
 
-        <p class="mt-2 text-sm text-muted">
-            {{ __('messages.auth.login_subheading') }}
-        </p>
+            <a href="{{ route('home') }}" class="btn-secondary whitespace-nowrap">
+                {{ __('messages.navigation.home') }}
+            </a>
+        </div>
 
-        <form method="POST" action="{{ route('login.store') }}" class="mt-6 space-y-5">
+        <form method="POST" action="{{ route('login.store') }}" class="space-y-5">
             @csrf
 
-            <div>
-                <label for="email" class="block text-sm font-medium text-text">{{ __('messages.auth.email') }}</label>
-                <input id="email" name="email" type="email" value="{{ old('email') }}"
-                    class="form-input mt-1 w-full" required autofocus autocomplete="email">
+            <div class="form-field">
+                <label for="email" class="form-label">{{ __('messages.auth.email') }}</label>
+                <input
+                    id="email"
+                    name="email"
+                    type="email"
+                    value="{{ old('email') }}"
+                    class="form-input"
+                    required
+                    autofocus
+                    autocomplete="email"
+                >
                 @error('email')
-                    <p class="mt-2 text-sm text-error">{{ $message }}</p>
+                    <p class="text-sm text-error">{{ $message }}</p>
                 @enderror
             </div>
 
-            <div>
-                <label for="password" class="block text-sm font-medium text-text">{{ __('messages.auth.password') }}</label>
-                <input id="password" name="password" type="password" class="form-input mt-1 w-full" required
-                    autocomplete="current-password">
+            <div class="form-field">
+                <label for="password" class="form-label">{{ __('messages.auth.password') }}</label>
+                <input
+                    id="password"
+                    name="password"
+                    type="password"
+                    class="form-input"
+                    required
+                    autocomplete="current-password"
+                >
                 @error('password')
-                    <p class="mt-2 text-sm text-error">{{ $message }}</p>
+                    <p class="text-sm text-error">{{ $message }}</p>
                 @enderror
             </div>
 
-            <div class="flex items-center justify-between">
-                <label class="flex items-center gap-2 text-sm text-text/80">
+            <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <label class="flex items-center gap-2 text-sm text-black/70">
                     <input type="checkbox" name="remember" value="1" class="form-checkbox" @checked(old('remember'))>
                     <span>{{ __('messages.auth.remember_me') }}</span>
                 </label>
 
-                <a href="{{ route('home') }}" class="text-sm font-medium text-accent hover:underline">
+                <a href="{{ route('home') }}" class="text-sm font-semibold text-accent hover:underline">
                     {{ __('messages.navigation.home') }}
                 </a>
             </div>
 
-            <button type="submit"
-                class="inline-flex w-full items-center justify-center rounded bg-accent px-4 py-2 text-sm font-semibold text-white transition hover:bg-accent/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent">
+            <button type="submit" class="btn-primary w-full">
                 {{ __('messages.auth.login_button') }}
             </button>
         </form>
