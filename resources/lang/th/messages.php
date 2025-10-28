@@ -142,4 +142,16 @@ return [
             'slack' => 'https://hooks.slack.com/services/...',
         ],
     ],
+    'auth' => [
+        'login_title' => 'เข้าสู่ระบบ',
+        'login_heading' => 'ลงชื่อเข้าใช้ Mobile Order',
+        'login_subheading' => 'กรอกอีเมลและรหัสผ่านที่ลงทะเบียนไว้เพื่อดำเนินการต่อ',
+        'email' => 'อีเมล',
+        'password' => 'รหัสผ่าน',
+        'remember_me' => 'จดจำการเข้าสู่ระบบ',
+        'login_button' => 'เข้าสู่ระบบ',
+        'logout_button' => 'ออกจากระบบ',
+        'failed' => 'ไม่พบข้อมูลสำหรับอีเมลหรือรหัสผ่านนี้',
+        'logged_in_as' => 'เข้าสู่ระบบเป็น :name',
+    ],
 ];

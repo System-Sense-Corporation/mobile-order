@@ -142,4 +142,16 @@ return [
             'slack' => 'https://hooks.slack.com/services/...',
         ],
     ],
+    'auth' => [
+        'login_title' => 'ログイン',
+        'login_heading' => 'Mobile Order にサインイン',
+        'login_subheading' => '登録済みのメールアドレスとパスワードを入力してください。',
+        'email' => 'メールアドレス',
+        'password' => 'パスワード',
+        'remember_me' => 'ログイン状態を保持する',
+        'login_button' => 'ログイン',
+        'logout_button' => 'ログアウト',
+        'failed' => '入力された認証情報が正しくありません。',
+        'logged_in_as' => ':name としてログイン中',
+    ],
 ];

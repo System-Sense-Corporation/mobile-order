@@ -142,4 +142,16 @@ return [
             'slack' => 'https://hooks.slack.com/services/...',
         ],
     ],
+    'auth' => [
+        'login_title' => 'Login',
+        'login_heading' => 'Sign in to Mobile Order',
+        'login_subheading' => 'Use your registered email address and password to continue.',
+        'email' => 'Email address',
+        'password' => 'Password',
+        'remember_me' => 'Keep me signed in',
+        'login_button' => 'Log in',
+        'logout_button' => 'Log out',
+        'failed' => 'The provided credentials do not match our records.',
+        'logged_in_as' => 'Logged in as :name',
+    ],
 ];
