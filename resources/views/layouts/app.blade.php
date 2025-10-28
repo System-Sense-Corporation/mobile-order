@@ -40,12 +40,6 @@
                     <div class="drawer-panel" data-mobile-menu-panel id="mobile-navigation-drawer" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="mobile-navigation-title">
                         <div class="flex items-center justify-between">
                             <span id="mobile-navigation-title" class="text-lg font-semibold tracking-wide text-white">{{ __('messages.app.name') }}</span>
-                            <button type="button" class="inline-flex items-center justify-center rounded bg-white/10 p-2 text-white transition hover:bg-white/20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white/70" data-mobile-menu-close>
-                                <span class="sr-only">{{ __('messages.navigation.toggle_menu') }}</span>
-                                <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-                                </svg>
-                            </button>
                         </div>
                         <nav class="mt-6 flex flex-col gap-2 text-sm font-medium">
                             <a href="{{ route('home') }}" class="block w-full rounded px-3 py-2 text-white/90 transition hover:bg-white/15 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white/70">
