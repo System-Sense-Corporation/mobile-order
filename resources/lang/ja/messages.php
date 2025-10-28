@@ -20,6 +20,8 @@ return [
         'products' => '商品マスタ',
         'customers' => '顧客マスタ',
         'settings' => '設定',
+        'toggle_menu' => 'メニューを開閉',
+        'close_menu' => 'メニューを閉じる',
     ],
     'index' => [
         'title' => 'トップメニュー',
