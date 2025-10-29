@@ -13,6 +13,12 @@ return [
         ],
         'footer' => '© :year Mobile Order Mock',
     ],
+    'common' => [
+        'name' => 'Account Name',
+        'email' => 'Email',
+        'telephone' => 'Phone Number',
+        'save' => 'Save',
+    ],
     'navigation' => [
         'home' => 'Top Menu',
         'mobile-order' => 'Order Entry',
@@ -153,5 +159,10 @@ return [
         'logout_button' => 'Log out',
         'failed' => 'The provided credentials do not match our records.',
         'logged_in_as' => 'Logged in as :name',
+    ],
+    'profile' => [
+        'sections' => [
+            'account_information' => 'Account Information',
+        ],
     ],
 ];
