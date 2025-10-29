@@ -179,4 +179,23 @@ return [
             ],
         ],
     ],
+
+    // เพิ่มชุดนี้เข้าไปใน return [...]
+'common' => [
+    'name'      => 'ชื่อ',
+    'email'     => 'อีเมล',
+    'telephone' => 'เบอร์โทรศัพท์',
+    'save'      => 'บันทึก',
+],
+
+'profile' => array_merge($GLOBALS['profile'] ?? [], [ // ถ้าไม่ใช้ $GLOBALS ให้รวมมือแทนได้
+    'sections' => [
+        // เพิ่ม block นี้
+        'account_information' => [
+            'title' => 'ข้อมูลบัญชีผู้ใช้',
+            'description' => 'อัปเดตชื่อ อีเมล และเบอร์โทรของคุณได้ที่นี่',
+        ],
+    ],
+]),
+
 ];
