@@ -142,6 +142,46 @@ return [
             'slack' => 'https://hooks.slack.com/services/...',
         ],
     ],
+    'admin' => [
+        'users' => [
+            'index' => [
+                'title' => 'การจัดการผู้ใช้',
+                'description' => 'จัดการสิทธิ์การเข้าใช้งานของผู้ดูแลและพนักงาน',
+                'create_button' => 'สร้างใหม่',
+                'table' => [
+                    'name' => 'ชื่อ',
+                    'email' => 'อีเมล',
+                    'role' => 'บทบาท',
+                    'created_at' => 'สร้างเมื่อ',
+                ],
+                'empty' => 'ยังไม่มีผู้ใช้ที่ถูกบันทึก',
+            ],
+            'create' => [
+                'title' => 'สร้างผู้ใช้',
+                'description' => 'ลงทะเบียนผู้ใช้ใหม่สำหรับหน้าจอผู้ดูแลระบบ',
+            ],
+            'fields' => [
+                'name' => 'ชื่อ',
+                'email' => 'อีเมล',
+                'password' => 'รหัสผ่าน',
+                'password_confirmation' => 'ยืนยันรหัสผ่าน',
+                'role' => 'บทบาท',
+                'role_placeholder' => 'เลือกบทบาท',
+            ],
+            'buttons' => [
+                'cancel' => 'ยกเลิก',
+                'save' => 'บันทึก',
+            ],
+            'messages' => [
+                'created' => 'สร้างผู้ใช้เรียบร้อยแล้ว',
+            ],
+            'roles' => [
+                'admin' => 'ผู้ดูแลระบบ',
+                'manager' => 'ผู้จัดการ',
+                'staff' => 'พนักงาน',
+            ],
+        ],
+    ],
     'auth' => [
         'login_title' => 'เข้าสู่ระบบ',
         'login_heading' => 'ลงชื่อเข้าใช้ Mobile Order',

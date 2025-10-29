@@ -142,6 +142,46 @@ return [
             'slack' => 'https://hooks.slack.com/services/...',
         ],
     ],
+    'admin' => [
+        'users' => [
+            'index' => [
+                'title' => 'ユーザー管理',
+                'description' => '管理者とスタッフのアカウントを管理します。',
+                'create_button' => '新規作成',
+                'table' => [
+                    'name' => '氏名',
+                    'email' => 'メールアドレス',
+                    'role' => '権限',
+                    'created_at' => '作成日時',
+                ],
+                'empty' => 'ユーザーが登録されていません。',
+            ],
+            'create' => [
+                'title' => 'ユーザー作成',
+                'description' => '管理画面で利用するユーザーを登録します。',
+            ],
+            'fields' => [
+                'name' => '氏名',
+                'email' => 'メールアドレス',
+                'password' => 'パスワード',
+                'password_confirmation' => 'パスワード（確認）',
+                'role' => '権限',
+                'role_placeholder' => '権限を選択してください',
+            ],
+            'buttons' => [
+                'cancel' => 'キャンセル',
+                'save' => '保存',
+            ],
+            'messages' => [
+                'created' => 'ユーザーを作成しました。',
+            ],
+            'roles' => [
+                'admin' => '管理者',
+                'manager' => 'マネージャー',
+                'staff' => 'スタッフ',
+            ],
+        ],
+    ],
     'auth' => [
         'login_title' => 'ログイン',
         'login_heading' => 'Mobile Order にサインイン',
