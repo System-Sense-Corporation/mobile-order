@@ -142,6 +142,46 @@ return [
             'slack' => 'https://hooks.slack.com/services/...',
         ],
     ],
+    'admin' => [
+        'users' => [
+            'index' => [
+                'title' => 'User Management',
+                'description' => 'Manage access for administrators and staff members.',
+                'create_button' => 'Create New',
+                'table' => [
+                    'name' => 'Name',
+                    'email' => 'Email',
+                    'role' => 'Role',
+                    'created_at' => 'Created',
+                ],
+                'empty' => 'No users found.',
+            ],
+            'create' => [
+                'title' => 'Create User',
+                'description' => 'Register a new user for the administrative console.',
+            ],
+            'fields' => [
+                'name' => 'Name',
+                'email' => 'Email',
+                'password' => 'Password',
+                'password_confirmation' => 'Confirm Password',
+                'role' => 'Role',
+                'role_placeholder' => 'Select a role',
+            ],
+            'buttons' => [
+                'cancel' => 'Cancel',
+                'save' => 'Save',
+            ],
+            'messages' => [
+                'created' => 'User has been created successfully.',
+            ],
+            'roles' => [
+                'admin' => 'Administrator',
+                'manager' => 'Manager',
+                'staff' => 'Staff',
+            ],
+        ],
+    ],
     'auth' => [
         'login_title' => 'Login',
         'login_heading' => 'Sign in to Mobile Order',
