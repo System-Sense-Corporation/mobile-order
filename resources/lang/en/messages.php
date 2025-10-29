@@ -142,6 +142,41 @@ return [
             'slack' => 'https://hooks.slack.com/services/...',
         ],
     ],
+    'admin' => [
+        'users' => [
+            'title' => 'Admin Users',
+            'page_title' => 'User Management',
+            'navigation' => 'Admin Users',
+            'search_label' => 'Search users',
+            'search_placeholder' => 'Search by name or email',
+            'filters' => [
+                'all' => 'All roles',
+                'admin' => 'Administrators',
+                'manager' => 'Managers',
+                'staff' => 'Staff',
+            ],
+            'table' => [
+                'name' => 'Name',
+                'email' => 'Email',
+                'role' => 'Role',
+                'status' => 'Status',
+                'last_active' => 'Last Active',
+            ],
+            'roles' => [
+                'admin' => 'Administrator',
+                'manager' => 'Manager',
+                'staff' => 'Staff',
+            ],
+            'statuses' => [
+                'active' => 'Active',
+                'invited' => 'Invitation Sent',
+                'suspended' => 'Suspended',
+            ],
+            'buttons' => [
+                'create' => 'Create New',
+            ],
+        ],
+    ],
     'auth' => [
         'login_title' => 'Login',
         'login_heading' => 'Sign in to Mobile Order',

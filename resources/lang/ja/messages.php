@@ -142,6 +142,41 @@ return [
             'slack' => 'https://hooks.slack.com/services/...',
         ],
     ],
+    'admin' => [
+        'users' => [
+            'title' => '管理ユーザー',
+            'page_title' => 'ユーザー管理',
+            'navigation' => '管理ユーザー',
+            'search_label' => 'ユーザーを検索',
+            'search_placeholder' => '氏名またはメールアドレスで検索',
+            'filters' => [
+                'all' => 'すべての権限',
+                'admin' => '管理者',
+                'manager' => 'マネージャー',
+                'staff' => 'スタッフ',
+            ],
+            'table' => [
+                'name' => '氏名',
+                'email' => 'メールアドレス',
+                'role' => '権限',
+                'status' => 'ステータス',
+                'last_active' => '最終アクティブ',
+            ],
+            'roles' => [
+                'admin' => '管理者',
+                'manager' => 'マネージャー',
+                'staff' => 'スタッフ',
+            ],
+            'statuses' => [
+                'active' => '有効',
+                'invited' => '招待済み',
+                'suspended' => '利用停止',
+            ],
+            'buttons' => [
+                'create' => '新規作成',
+            ],
+        ],
+    ],
     'auth' => [
         'login_title' => 'ログイン',
         'login_heading' => 'Mobile Order にサインイン',
