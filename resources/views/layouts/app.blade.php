@@ -16,6 +16,7 @@
                 ['route' => 'products',      'label' => __('messages.navigation.products')],
                 ['route' => 'customers',     'label' => __('messages.navigation.customers')],
                 ['route' => 'settings',      'label' => __('messages.navigation.settings')],
+                ['route' => 'admin.users.index', 'label' => __('messages.navigation.admin_users')],
             ];
             $availableLocales = config('app.available_locales', []);
             $currentLocale    = app()->getLocale();
