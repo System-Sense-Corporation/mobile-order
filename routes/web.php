@@ -20,6 +20,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/orders', fn () => view('orders'))->name('orders');
     Route::get('/products', fn () => view('products'))->name('products');
     Route::get('/customers', fn () => view('customers'))->name('customers');
+    Route::get('/admin/users', fn () => view('admin.users'))->name('admin.users');
     Route::get('/settings', fn () => view('settings'))->name('settings');
 
     // ✅ Profile (แก้ไข + บันทึก)

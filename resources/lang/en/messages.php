@@ -19,6 +19,7 @@ return [
         'orders' => "Today's Orders",
         'products' => 'Product Master',
         'customers' => 'Customer Master',
+        'admin-users' => 'User Management',
         'settings' => 'Settings',
         'profile' => 'Profile',
     ],
@@ -117,6 +118,40 @@ return [
             'shiosai' => 'Prefers premium white fish',
             'blue_sands' => 'Places bulk orders regularly',
             'koharu' => 'Occasionally closed on Saturdays',
+        ],
+    ],
+    'admin_users' => [
+        'title' => 'User Management',
+        'description' => 'Manage staff accounts and their permissions.',
+        'actions' => [
+            'create' => 'Create New',
+        ],
+        'filters' => [
+            'permission' => 'Filter by Authority',
+        ],
+        'placeholders' => [
+            'search' => 'Search by name, email, or department',
+        ],
+        'table' => [
+            'no' => 'No.',
+            'user_id' => 'User ID',
+            'name' => 'Name',
+            'department' => 'Department',
+            'authority' => 'Authority',
+            'email' => 'Email',
+            'phone' => 'Mobile Phone',
+            'status' => 'Status',
+            'last_login' => 'Last Login',
+        ],
+        'authorities' => [
+            'admin' => 'Administrator',
+            'editor' => 'Editor',
+            'viewer' => 'Viewer',
+        ],
+        'statuses' => [
+            'active' => 'Active',
+            'inactive' => 'Inactive',
+            'suspended' => 'Suspended',
         ],
     ],
     'settings' => [
