@@ -63,5 +63,5 @@ Thumbs.db
 /coverage
 /.env.testing
 /.phpunit.cache
-database/database.sqlite
-database/database.sqlite
+database/*.sqlite
+
