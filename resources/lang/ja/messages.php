@@ -19,6 +19,7 @@ return [
         'orders' => '当日受注一覧',
         'products' => '商品マスタ',
         'customers' => '顧客マスタ',
+        'admin-users' => 'ユーザー管理',
         'settings' => '設定',
     ],
     'index' => [
@@ -116,6 +117,40 @@ return [
             'shiosai' => '高級白身魚を希望',
             'blue_sands' => '大量注文あり',
             'koharu' => '土曜は臨時休業あり',
+        ],
+    ],
+    'admin_users' => [
+        'title' => 'ユーザー管理',
+        'description' => 'スタッフアカウントと権限を管理します。',
+        'actions' => [
+            'create' => '新規作成',
+        ],
+        'filters' => [
+            'permission' => '権限で絞り込む',
+        ],
+        'placeholders' => [
+            'search' => '氏名・メール・部署で検索',
+        ],
+        'table' => [
+            'no' => 'No.',
+            'user_id' => 'ユーザーID',
+            'name' => '氏名',
+            'department' => '部署',
+            'authority' => '権限',
+            'email' => 'メールアドレス',
+            'phone' => '携帯電話',
+            'status' => 'ステータス',
+            'last_login' => '最終ログイン',
+        ],
+        'authorities' => [
+            'admin' => '管理者',
+            'editor' => '編集者',
+            'viewer' => '閲覧者',
+        ],
+        'statuses' => [
+            'active' => '有効',
+            'inactive' => '無効',
+            'suspended' => '利用停止',
         ],
     ],
     'settings' => [
