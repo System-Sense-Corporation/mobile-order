@@ -13,6 +13,12 @@ return [
         ],
         'footer' => '© :year Mobile Order Mock',
     ],
+    'common' => [
+        'name' => 'ชื่อบัญชี',
+        'email' => 'อีเมล์',
+        'telephone' => 'เบอร์โทร',
+        'save' => 'บันทึก',
+    ],
     'navigation' => [
         'home' => 'เมนูหลัก',
         'mobile-order' => 'ลงทะเบียนคำสั่งซื้อ',
@@ -153,5 +159,10 @@ return [
         'logout_button' => 'ออกจากระบบ',
         'failed' => 'ไม่พบข้อมูลสำหรับอีเมลหรือรหัสผ่านนี้',
         'logged_in_as' => 'เข้าสู่ระบบเป็น :name',
+    ],
+    'profile' => [
+        'sections' => [
+            'account_information' => 'ข้อมูลบัญชี',
+        ],
     ],
 ];

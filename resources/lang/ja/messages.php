@@ -13,6 +13,12 @@ return [
         ],
         'footer' => '© :year Mobile Order Mock',
     ],
+    'common' => [
+        'name' => 'アカウント名',
+        'email' => 'メールアドレス',
+        'telephone' => '電話番号',
+        'save' => '保存',
+    ],
     'navigation' => [
         'home' => 'トップメニュー',
         'mobile-order' => '受注登録',
@@ -153,5 +159,10 @@ return [
         'logout_button' => 'ログアウト',
         'failed' => '入力された認証情報が正しくありません。',
         'logged_in_as' => ':name としてログイン中',
+    ],
+    'profile' => [
+        'sections' => [
+            'account_information' => 'アカウント情報',
+        ],
     ],
 ];
