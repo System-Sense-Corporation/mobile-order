@@ -142,6 +142,41 @@ return [
             'slack' => 'https://hooks.slack.com/services/...',
         ],
     ],
+    'admin' => [
+        'users' => [
+            'title' => 'ผู้ใช้ผู้ดูแล',
+            'page_title' => 'จัดการผู้ใช้',
+            'navigation' => 'ผู้ใช้ผู้ดูแล',
+            'search_label' => 'ค้นหาผู้ใช้',
+            'search_placeholder' => 'ค้นหาด้วยชื่อหรืออีเมล',
+            'filters' => [
+                'all' => 'ทุกสิทธิ์',
+                'admin' => 'ผู้ดูแลระบบ',
+                'manager' => 'ผู้จัดการ',
+                'staff' => 'พนักงาน',
+            ],
+            'table' => [
+                'name' => 'ชื่อ-นามสกุล',
+                'email' => 'อีเมล',
+                'role' => 'สิทธิ์',
+                'status' => 'สถานะ',
+                'last_active' => 'เข้าใช้งานล่าสุด',
+            ],
+            'roles' => [
+                'admin' => 'ผู้ดูแลระบบ',
+                'manager' => 'ผู้จัดการ',
+                'staff' => 'พนักงาน',
+            ],
+            'statuses' => [
+                'active' => 'ใช้งานอยู่',
+                'invited' => 'ส่งคำเชิญแล้ว',
+                'suspended' => 'ระงับการใช้งาน',
+            ],
+            'buttons' => [
+                'create' => 'สร้างใหม่',
+            ],
+        ],
+    ],
     'auth' => [
         'login_title' => 'เข้าสู่ระบบ',
         'login_heading' => 'ลงชื่อเข้าใช้ Mobile Order',
