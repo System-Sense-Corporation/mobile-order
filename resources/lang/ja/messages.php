@@ -19,7 +19,9 @@ return [
         'orders' => '当日受注一覧',
         'products' => '商品マスタ',
         'customers' => '顧客マスタ',
+        'admin-users' => 'ユーザー管理',
         'settings' => '設定',
+        'profile' => 'プロフィール',
     ],
     'index' => [
         'title' => 'トップメニュー',
@@ -118,6 +120,40 @@ return [
             'koharu' => '土曜は臨時休業あり',
         ],
     ],
+    'admin_users' => [
+        'title' => 'ユーザー管理',
+        'description' => 'スタッフアカウントと権限を管理します。',
+        'actions' => [
+            'create' => '新規作成',
+        ],
+        'filters' => [
+            'permission' => '権限で絞り込む',
+        ],
+        'placeholders' => [
+            'search' => '氏名・メール・部署で検索',
+        ],
+        'table' => [
+            'no' => 'No.',
+            'user_id' => 'ユーザーID',
+            'name' => '氏名',
+            'department' => '部署',
+            'authority' => '権限',
+            'email' => 'メールアドレス',
+            'phone' => '携帯電話',
+            'status' => 'ステータス',
+            'last_login' => '最終ログイン',
+        ],
+        'authorities' => [
+            'admin' => '管理者',
+            'editor' => '編集者',
+            'viewer' => '閲覧者',
+        ],
+        'statuses' => [
+            'active' => '有効',
+            'inactive' => '無効',
+            'suspended' => '利用停止',
+        ],
+    ],
     'settings' => [
         'title' => '設定',
         'notifications' => [
@@ -153,5 +189,29 @@ return [
         'logout_button' => 'ログアウト',
         'failed' => '入力された認証情報が正しくありません。',
         'logged_in_as' => ':name としてログイン中',
+    ],
+    'profile' => [
+        'title' => 'プロフィール',
+        'description' => 'サインイン方法とアカウントの扱いを管理します。',
+        'sections' => [
+            'password' => [
+                'title' => 'パスワードの更新',
+                'description' => '強固なパスワードでアカウントを保護しましょう。',
+                'fields' => [
+                    'current' => '現在のパスワード',
+                    'new' => '新しいパスワード',
+                    'confirmation' => '新しいパスワード（確認）',
+                ],
+                'helper' => '英数字や記号を組み合わせて12文字以上で設定してください。',
+                'button' => '新しいパスワードを保存',
+            ],
+            'account' => [
+                'title' => 'アカウント管理',
+                'description' => '利用しなくなった際のアカウントの扱いを設定できます。',
+                'delete_warning' => 'アカウントを削除すると関連する情報がすべて失われます。この操作は元に戻せません。',
+                'support' => '迷った場合は、実行する前にサポートへご相談ください。',
+                'button' => 'アカウントを削除',
+            ],
+        ],
     ],
 ];
