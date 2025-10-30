@@ -105,19 +105,19 @@
             <div>
                 <span class="text-sm font-medium text-black/80">{{ __('messages.admin.users.form.authority.label') }} <span class="text-red-500">*</span></span>
                 <div class="mt-3 grid gap-3 md:grid-cols-3">
-                    @foreach (trans('messages.admin.users.roles') as $value => $label)
+                    @foreach ($roles as $role)
                         <label class="flex items-start gap-2 rounded border border-black/10 p-3 text-sm text-black/80">
                             <input
                                 type="radio"
                                 name="authority"
-                                value="{{ $value }}"
-                                @checked(old('authority', 'manager') === $value)
+                                value="{{ $role->key }}"
+                                @checked(old('authority', 'manager') === $role->key)
                                 required
                                 class="mt-1 h-4 w-4 border-black/30 text-accent focus:ring-accent"
                             >
                             <span>
-                                <span class="font-medium text-black/90">{{ $label }}</span>
-                                <span class="block text-xs text-black/60">{{ __('messages.admin.users.role_descriptions.' . $value) }}</span>
+                                <span class="font-medium text-black/90">{{ $role->label }}</span>
+                                <span class="block text-xs text-black/60">{{ $role->description }}</span>
                             </span>
                         </label>
                     @endforeach

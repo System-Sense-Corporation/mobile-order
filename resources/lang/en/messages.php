@@ -120,6 +120,111 @@ return [
             'koharu' => 'Occasionally closed on Saturdays',
         ],
     ],
+    'admin' => [
+        'users' => [
+            'title' => 'User Management',
+            'description' => 'Manage staff accounts and their permissions.',
+            'create_button' => 'Create New',
+            'create_title' => 'Create user',
+            'create_description' => 'Register a new staff account and assign the appropriate role.',
+            'validation_error_heading' => 'Please fix the highlighted fields.',
+            'flash' => [
+                'created' => 'User created successfully.',
+                'permissions_updated' => 'Permissions updated successfully.',
+            ],
+            'roles' => [
+                'admin' => 'Administrator',
+                'manager' => 'Manager',
+                'staff' => 'Staff',
+            ],
+            'role_descriptions' => [
+                'admin' => 'Full access to every management screen.',
+                'manager' => 'Can manage orders, products, and customers.',
+                'staff' => 'Limited access for daily operations.',
+            ],
+            'form' => [
+                'name' => [
+                    'label' => 'Name',
+                ],
+                'email' => [
+                    'label' => 'Email address',
+                ],
+                'phone' => [
+                    'label' => 'Mobile phone',
+                    'placeholder' => '080-1234-5678',
+                ],
+                'department' => [
+                    'label' => 'Department',
+                    'placeholder' => 'Select department',
+                    'options' => [
+                        'sales' => 'Sales',
+                        'support' => 'Support',
+                        'logistics' => 'Logistics',
+                    ],
+                ],
+                'authority' => [
+                    'label' => 'Role',
+                ],
+                'notify_new_orders' => [
+                    'label' => 'Send new order notifications',
+                    'help' => 'Receive an email when a new order is created.',
+                ],
+                'require_password_change' => [
+                    'label' => 'Require password change on first login',
+                    'help' => 'Force the user to change their password after signing in.',
+                ],
+                'password' => [
+                    'label' => 'Password',
+                    'placeholder' => 'At least 8 characters',
+                ],
+                'password_confirmation' => [
+                    'label' => 'Confirm password',
+                    'placeholder' => 'Re-enter password',
+                ],
+                'cancel_button' => 'Cancel',
+                'submit_button' => 'Save user',
+            ],
+            'permissions_matrix' => [
+                'title' => 'Permission matrix',
+                'description' => 'Toggle the checkboxes to control which screens each role can access.',
+                'table' => [
+                    'permission' => 'Screen',
+                    'description' => 'Description',
+                ],
+                'groups' => [
+                    'general' => 'General navigation',
+                    'orders' => 'Order operations',
+                    'catalog' => 'Product management',
+                    'customers' => 'Customer management',
+                    'settings' => 'Configuration',
+                ],
+                'permissions' => [
+                    'dashboard_view' => 'Dashboard',
+                    'mobile_orders_view' => 'Order entry',
+                    'orders_view' => 'Orders',
+                    'products_view' => 'Product master',
+                    'customers_view' => 'Customer master',
+                    'settings_manage' => 'System settings',
+                    'admin_users_manage' => 'User management',
+                ],
+                'descriptions' => [
+                    'dashboard_view' => 'Access the top menu.',
+                    'mobile_orders_view' => 'Create or edit mobile orders.',
+                    'orders_view' => 'Review and track order progress.',
+                    'products_view' => 'Browse the product catalog.',
+                    'customers_view' => 'View customer information.',
+                    'settings_manage' => 'Update notification and system settings.',
+                    'admin_users_manage' => 'Manage user accounts and permissions.',
+                ],
+                'checkbox_label' => ':role can access :permission',
+                'save_button' => 'Save changes',
+            ],
+            'errors' => [
+                'invalid_role' => 'The selected role ":role" is invalid.',
+                'invalid_permission' => 'The selected permission ":permission" is invalid.',
+            ],
+        ],
+    ],
     'admin_users' => [
         'title' => 'User Management',
         'description' => 'Manage staff accounts and their permissions.',

@@ -120,6 +120,111 @@ return [
             'koharu' => '土曜は臨時休業あり',
         ],
     ],
+    'admin' => [
+        'users' => [
+            'title' => 'ユーザー管理',
+            'description' => 'スタッフアカウントと権限を管理します。',
+            'create_button' => '新規作成',
+            'create_title' => 'ユーザーを登録',
+            'create_description' => 'モバイルオーダーで利用するスタッフアカウントを登録します。',
+            'validation_error_heading' => '入力内容を確認してください。',
+            'flash' => [
+                'created' => 'ユーザーを作成しました。',
+                'permissions_updated' => '権限を更新しました。',
+            ],
+            'roles' => [
+                'admin' => '管理者',
+                'manager' => 'マネージャー',
+                'staff' => 'スタッフ',
+            ],
+            'role_descriptions' => [
+                'admin' => 'すべての管理画面にアクセスできます。',
+                'manager' => '受注・商品・顧客を管理できます。',
+                'staff' => '日常業務に必要な画面のみアクセスできます。',
+            ],
+            'form' => [
+                'name' => [
+                    'label' => '氏名',
+                ],
+                'email' => [
+                    'label' => 'メールアドレス',
+                ],
+                'phone' => [
+                    'label' => '携帯電話',
+                    'placeholder' => '080-1234-5678',
+                ],
+                'department' => [
+                    'label' => '部署',
+                    'placeholder' => '部署を選択',
+                    'options' => [
+                        'sales' => '営業部',
+                        'support' => 'サポート部',
+                        'logistics' => '物流部',
+                    ],
+                ],
+                'authority' => [
+                    'label' => '権限',
+                ],
+                'notify_new_orders' => [
+                    'label' => '新着注文をメール通知する',
+                    'help' => '新しい注文が登録されたらメールで知らせます。',
+                ],
+                'require_password_change' => [
+                    'label' => '初回ログイン時にパスワード変更を必須にする',
+                    'help' => '初回サインイン後にパスワード変更を求めます。',
+                ],
+                'password' => [
+                    'label' => 'パスワード',
+                    'placeholder' => '8文字以上で入力',
+                ],
+                'password_confirmation' => [
+                    'label' => 'パスワード（確認）',
+                    'placeholder' => 'もう一度入力してください',
+                ],
+                'cancel_button' => 'キャンセル',
+                'submit_button' => 'ユーザーを保存',
+            ],
+            'permissions_matrix' => [
+                'title' => '権限マトリクス',
+                'description' => '役割ごとにアクセスできる画面をチェックで切り替えます。',
+                'table' => [
+                    'permission' => '画面',
+                    'description' => '説明',
+                ],
+                'groups' => [
+                    'general' => '基本メニュー',
+                    'orders' => '受注業務',
+                    'catalog' => '商品管理',
+                    'customers' => '顧客管理',
+                    'settings' => '設定',
+                ],
+                'permissions' => [
+                    'dashboard_view' => 'トップメニュー',
+                    'mobile_orders_view' => 'モバイル受注',
+                    'orders_view' => '注文一覧',
+                    'products_view' => '商品マスター',
+                    'customers_view' => '顧客マスター',
+                    'settings_manage' => 'システム設定',
+                    'admin_users_manage' => 'ユーザー管理',
+                ],
+                'descriptions' => [
+                    'dashboard_view' => 'ダッシュボードを閲覧できます。',
+                    'mobile_orders_view' => '現場からの受注登録を行えます。',
+                    'orders_view' => '注文の進捗を確認できます。',
+                    'products_view' => '取り扱い商品の情報を参照できます。',
+                    'customers_view' => '顧客情報を参照できます。',
+                    'settings_manage' => '通知先やシステム設定を変更できます。',
+                    'admin_users_manage' => 'ユーザーと権限を管理できます。',
+                ],
+                'checkbox_label' => ':role が :permission にアクセスできる',
+                'save_button' => '変更を保存',
+            ],
+            'errors' => [
+                'invalid_role' => '選択した役割「:role」は無効です。',
+                'invalid_permission' => '選択した権限「:permission」は無効です。',
+            ],
+        ],
+    ],
     'admin_users' => [
         'title' => 'ユーザー管理',
         'description' => 'スタッフアカウントと権限を管理します。',
