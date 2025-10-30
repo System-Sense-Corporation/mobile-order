@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\UserController as AdminUserController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Http\Request;
@@ -20,15 +21,18 @@ Route::middleware('auth')->group(function () {
     Route::get('/orders', fn () => view('orders'))->name('orders');
     Route::get('/products', fn () => view('products'))->name('products');
     Route::get('/customers', fn () => view('customers'))->name('customers');
-    Route::get('/admin/users', fn () => view('admin.users'))->name('admin.users');
     Route::get('/settings', fn () => view('settings'))->name('settings');
 
-    // ✅ Profile (แก้ไข + บันทึก)
-Route::get('/profile', [\App\Http\Controllers\ProfileController::class, 'edit'])
-        ->name('profile');
+    Route::prefix('admin')->name('admin.')->group(function () {
+        Route::get('/users', [AdminUserController::class, 'index'])->name('users.index');
+        Route::get('/users/create', [AdminUserController::class, 'create'])->name('users.create');
+        Route::post('/users', [AdminUserController::class, 'store'])->name('users.store');
+        Route::post('/users/permissions', [AdminUserController::class, 'updatePermissions'])->name('users.updatePermissions');
+    });
 
-    Route::post('/profile', [\App\Http\Controllers\ProfileController::class, 'update'])
-        ->name('profile.update');});
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile');
+    Route::post('/profile', [ProfileController::class, 'update'])->name('profile.update');
+});
 
 Route::post('/locale', function (Request $request) {
     $availableLocales = config('app.available_locales', []);
