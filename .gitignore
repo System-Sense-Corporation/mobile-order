@@ -67,8 +67,11 @@ database/*.sqlite
 
 .env
 
+# --- TEMP for Laravel Cloud build ---
 !public/build/
 !public/build/manifest.json
 !public/build/assets/
 !public/build/assets/*.css
 !public/build/assets/*.js
+# --- END TEMP ---
+
