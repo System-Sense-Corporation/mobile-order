@@ -120,6 +120,14 @@ return [
             'shiosai' => 'Prefers premium white fish',
             'blue_sands' => 'Places bulk orders regularly',
         ],
+        'flash' => [
+            'created' => 'Customer saved successfully.',
+            'create_failed' => 'We could not save the customer. Please try again.',
+            'updated' => 'Customer updated successfully.',
+            'update_failed' => 'We could not update the customer. Please try again.',
+            'deleted' => 'Customer removed successfully.',
+            'delete_failed' => 'We could not remove the customer. Please try again.',
+        ],
     ],
     'admin_users' => [
         'title' => 'User Management',
