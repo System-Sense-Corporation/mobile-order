@@ -8,8 +8,8 @@
     $customers = [
         ['name' => '鮮魚酒場 波しぶき', 'contact' => '03-1234-5678', 'person' => '山田様', 'note' => 'wave'],
         ['name' => 'レストラン 潮彩', 'contact' => '045-432-1111', 'person' => '佐藤シェフ', 'note' => 'shiosai'],
-        ['name' => 'ホテル ブルーサンズ', 'contact' => '0467-222-0099', 'person' => '購買部 三浦様', 'note' => 'blue_sands'],
-        ['name' => '旬彩料理 こはる', 'contact' => '03-9988-7766', 'person' => '小春店主', 'note' => 'koharu'],
+        ['name' => 'ホテル ブルーシンズ', 'contact' => '0467-222-0099', 'person' => '購買部 三浦様', 'note' => 'blue_scenes'],
+        ['name' => 'ホテル グリーンズ', 'contact' => '03-9988-7766', 'person' => '宿泊部 田中様', 'note' => 'green_hotel'],
     ];
 @endphp
 

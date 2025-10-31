@@ -65,14 +65,7 @@ return [
         ],
         'buttons' => [
             'reset' => 'Clear',
-<<<<<<< HEAD
-            'submit' => 'Save',
-        ],
-        'flash' => [
-            'success' => 'Order saved successfully.',
-=======
             'submit' => 'Save Order',
->>>>>>> origin/codex/implement-orders-index-action-and-view-update-tyzbpj
         ],
         'empty' => [
             'customers' => 'No customers available',
@@ -81,6 +74,7 @@ return [
         'flash' => [
             'saved' => 'The order was registered successfully.',
         ],
+        'demo_notice' => 'Sample customer and product data are shown for preview only.',
     ],
     'orders' => [
         'title' => "Today's Orders",
@@ -124,8 +118,8 @@ return [
         'notes' => [
             'wave' => 'Deliver every morning at 8:00',
             'shiosai' => 'Prefers premium white fish',
-            'blue_sands' => 'Places bulk orders regularly',
-            'koharu' => 'Occasionally closed on Saturdays',
+            'blue_scenes' => 'Places bulk orders regularly',
+            'green_hotel' => 'Requests weekend deliveries before 10:00',
         ],
     ],
     'admin_users' => [

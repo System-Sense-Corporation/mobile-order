@@ -65,14 +65,7 @@ return [
         ],
         'buttons' => [
             'reset' => 'クリア',
-<<<<<<< HEAD
-            'submit' => '保存',
-        ],
-        'flash' => [
-            'success' => '受注を登録しました。',
-=======
             'submit' => '登録する',
->>>>>>> origin/codex/implement-orders-index-action-and-view-update-tyzbpj
         ],
         'empty' => [
             'customers' => '登録済みの顧客がありません',
@@ -81,6 +74,7 @@ return [
         'flash' => [
             'saved' => '受注を登録しました。',
         ],
+        'demo_notice' => 'サンプルの取引先・商品データを表示しています。',
     ],
     'orders' => [
         'title' => '当日受注一覧',
@@ -102,7 +96,7 @@ return [
         'empty' => 'まだ受注はありません。',
         'samples' => [
             'tuna' => '本マグロ 柵 500g × 2',
-            'salmon' => 'サーモン フィレ 1kg × 5',
+            'salmon' => 'サーモンフィレ 1kg × 5',
             'shrimp' => 'ボタンエビ 20尾 × 3',
             'seabream' => '真鯛 1尾 × 4',
         ],
@@ -124,8 +118,8 @@ return [
         'notes' => [
             'wave' => '毎朝8時納品',
             'shiosai' => '高級白身魚を希望',
-            'blue_sands' => '大量注文あり',
-            'koharu' => '土曜は臨時休業あり',
+            'blue_scenes' => '大量注文あり',
+            'green_hotel' => '週末は10時までに納品希望',
         ],
     ],
     'admin_users' => [
