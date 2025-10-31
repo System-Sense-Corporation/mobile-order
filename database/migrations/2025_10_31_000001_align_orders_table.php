@@ -50,6 +50,9 @@ return new class extends Migration
             || $missingDeliveryDate
             || $missingNotes
         ) {
+            $driver = Schema::getConnection()->getDriverName();
+            $supportsInlineForeignKeys = $driver !== 'sqlite';
+
             Schema::table('orders', function (Blueprint $table) use (
                 $missingCustomerId,
                 $missingProductId,
@@ -57,22 +60,33 @@ return new class extends Migration
                 $missingStatus,
                 $missingOrderDate,
                 $missingDeliveryDate,
-                $missingNotes
+                $missingNotes,
+                $supportsInlineForeignKeys
             ) {
                 if ($missingCustomerId) {
-                    $table->foreignId('customer_id')
+                    $table->unsignedBigInteger('customer_id')
                         ->nullable()
-                        ->after('id')
-                        ->constrained()
-                        ->cascadeOnDelete();
+                        ->after('id');
+
+                    if ($supportsInlineForeignKeys) {
+                        $table->foreign('customer_id')
+                            ->references('id')
+                            ->on('customers')
+                            ->cascadeOnDelete();
+                    }
                 }
 
                 if ($missingProductId) {
-                    $table->foreignId('product_id')
+                    $table->unsignedBigInteger('product_id')
                         ->nullable()
-                        ->after('customer_id')
-                        ->constrained()
-                        ->cascadeOnDelete();
+                        ->after('customer_id');
+
+                    if ($supportsInlineForeignKeys) {
+                        $table->foreign('product_id')
+                            ->references('id')
+                            ->on('products')
+                            ->cascadeOnDelete();
+                    }
                 }
 
                 if ($missingQuantity) {
@@ -151,6 +165,9 @@ return new class extends Migration
             return;
         }
 
+        $driver = Schema::getConnection()->getDriverName();
+        $usesSimpleForeignColumns = $driver === 'sqlite';
+
         $needsCustomerColumn = ! Schema::hasColumn('orders', 'customer');
         $needsProductColumn = ! Schema::hasColumn('orders', 'product');
         $hasCustomerId = Schema::hasColumn('orders', 'customer_id');
@@ -205,11 +222,19 @@ return new class extends Migration
                 $hasNotes
             ) {
                 if ($hasCustomerId) {
-                    $table->dropConstrainedForeignId('customer_id');
+                    if ($usesSimpleForeignColumns) {
+                        $table->dropColumn('customer_id');
+                    } else {
+                        $table->dropConstrainedForeignId('customer_id');
+                    }
                 }
 
                 if ($hasProductId) {
-                    $table->dropConstrainedForeignId('product_id');
+                    if ($usesSimpleForeignColumns) {
+                        $table->dropColumn('product_id');
+                    } else {
+                        $table->dropConstrainedForeignId('product_id');
+                    }
                 }
 
                 if ($hasQuantity) {
