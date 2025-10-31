@@ -63,7 +63,7 @@ return [
         ],
         'buttons' => [
             'reset' => 'Clear',
-            'submit' => 'Save Draft',
+            'submit' => 'Save',
         ],
         'options' => [
             'customers' => [

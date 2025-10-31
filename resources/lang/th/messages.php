@@ -63,7 +63,7 @@ return [
         ],
         'buttons' => [
             'reset' => 'ล้างข้อมูล',
-            'submit' => 'บันทึกชั่วคราว',
+            'submit' => 'บันทึก',
         ],
         'options' => [
             'customers' => [
