@@ -112,6 +112,7 @@ return [
     ],
     'customers' => [
         'title' => '顧客マスタ',
+        'description' => '取引先の連絡先情報と社内メモを管理します。',
         'contact_label' => '連絡先',
         'contact_person' => '担当',
         'notes_label' => 'メモ',
@@ -119,6 +120,50 @@ return [
             'wave' => '毎朝8時納品',
             'shiosai' => '高級白身魚を希望',
             'blue_sands' => '大量注文あり',
+        ],
+        'demo_notice' => 'プレビュー用にサンプルの顧客データを表示しています。',
+        'actions' => [
+            'create' => '顧客を追加',
+        ],
+        'empty' => [
+            'title' => '登録されている顧客がありません',
+            'description' => '右上のボタンから顧客を登録してください。',
+        ],
+        'flash' => [
+            'saved' => '顧客「:name」を保存しました。',
+        ],
+        'form' => [
+            'title' => '顧客情報の編集',
+            'description' => 'この顧客の登録内容を確認し、必要に応じて更新します。',
+            'status' => [
+                'editing' => '編集中',
+                'creating' => '新規登録',
+            ],
+            'fields' => [
+                'name' => '顧客名',
+                'contact' => '連絡先',
+                'person' => '担当者名',
+                'note' => '社内メモ',
+            ],
+            'placeholders' => [
+                'name' => '顧客名を入力してください',
+                'contact' => '電話番号やメールアドレスを入力してください',
+                'person' => '担当者名を入力してください',
+                'note' => '配送時間や注意事項などを記入してください',
+            ],
+            'buttons' => [
+                'cancel' => 'キャンセル',
+                'save' => '顧客情報を保存',
+            ],
+            'sidebar' => [
+                'title' => '登録サマリー',
+                'labels' => [
+                    'customer_code' => '顧客コード',
+                    'created_at' => '登録日',
+                    'last_updated' => '最終更新',
+                ],
+                'note' => '顧客一覧と同じ内容になるよう、このフォームで連絡先情報を整備してください。',
+            ],
         ],
     ],
     'admin_users' => [

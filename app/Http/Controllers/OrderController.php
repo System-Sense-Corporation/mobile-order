@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Customer;
 use App\Models\Order;
 use App\Models\Product;
+use App\Support\DemoCustomerData;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -39,14 +40,11 @@ class OrderController extends Controller
     public function create(): View
     {
         if (Schema::hasTable('customers')) {
-            $this->ensureDemoCustomersInDatabase();
+            DemoCustomerData::ensureInDatabase();
             $customers = Customer::query()->orderBy('name')->get();
-            $customersAreDemo = $this->listMatchesDemo(
-                $customers->pluck('name'),
-                collect($this->demoCustomerDefinitions())->pluck('name')->all()
-            );
+            $customersAreDemo = DemoCustomerData::namesMatch($customers->pluck('name'));
         } else {
-            $customers = $this->sampleCustomers();
+            $customers = DemoCustomerData::sample();
             $customersAreDemo = true;
         }
 
@@ -75,7 +73,7 @@ class OrderController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
-        $this->ensureDemoCustomersInDatabase();
+        DemoCustomerData::ensureInDatabase();
         $this->ensureDemoProductsInDatabase();
 
         $data = $request->validate([
@@ -102,18 +100,6 @@ class OrderController extends Controller
             ->with('status', __('messages.mobile_order.flash.saved'));
     }
 
-    private function sampleCustomers(): Collection
-    {
-        return collect($this->demoCustomerDefinitions())
-            ->values()
-            ->map(static function (array $customer, int $index): object {
-                return (object) [
-                    'id' => $index + 1,
-                    'name' => $customer['name'],
-                ];
-            });
-    }
-
     private function sampleProducts(): Collection
     {
         return collect($this->demoProductDefinitions())
@@ -124,33 +110,6 @@ class OrderController extends Controller
                     'name' => $product['name'],
                 ];
             });
-    }
-
-    /**
-     * @return array<int, array<string, string|int|null>>
-     */
-    private function demoCustomerDefinitions(): array
-    {
-        return [
-            [
-                'name' => '鮮魚酒場 波しぶき',
-                'contact' => '03-1234-5678',
-                'contact_person' => '山田様',
-                'notes' => 'Deliver every morning at 8:00',
-            ],
-            [
-                'name' => 'レストラン 潮彩',
-                'contact' => '045-432-1111',
-                'contact_person' => '佐藤シェフ',
-                'notes' => 'Prefers premium white fish',
-            ],
-            [
-                'name' => 'ホテル ブルーサンズ',
-                'contact' => '0467-222-0099',
-                'contact_person' => '購買部 三浦様',
-                'notes' => 'Places bulk orders regularly',
-            ],
-        ];
     }
 
     /**
@@ -180,22 +139,6 @@ class OrderController extends Controller
                 'price' => 3200,
             ],
         ];
-    }
-
-    private function ensureDemoCustomersInDatabase(): void
-    {
-        if (! Schema::hasTable('customers') || Customer::query()->exists()) {
-            return;
-        }
-
-        foreach ($this->demoCustomerDefinitions() as $customer) {
-            Customer::create([
-                'name' => $customer['name'],
-                'contact' => $customer['contact'] ?? null,
-                'contact_person' => $customer['contact_person'] ?? null,
-                'notes' => $customer['notes'] ?? null,
-            ]);
-        }
     }
 
     private function ensureDemoProductsInDatabase(): void

@@ -112,6 +112,7 @@ return [
     ],
     'customers' => [
         'title' => 'Customer Master',
+        'description' => 'Manage client contact information and internal notes.',
         'contact_label' => 'Contact',
         'contact_person' => 'Contact person',
         'notes_label' => 'Notes',
@@ -119,6 +120,50 @@ return [
             'wave' => 'Deliver every morning at 8:00',
             'shiosai' => 'Prefers premium white fish',
             'blue_sands' => 'Places bulk orders regularly',
+        ],
+        'demo_notice' => 'Sample customer data is shown for preview only.',
+        'actions' => [
+            'create' => 'Add customer',
+        ],
+        'empty' => [
+            'title' => 'No customers registered yet',
+            'description' => 'Start by adding a customer using the button above.',
+        ],
+        'flash' => [
+            'saved' => 'Customer ":name" was saved successfully.',
+        ],
+        'form' => [
+            'title' => 'Customer details',
+            'description' => 'Review and update registration details for this customer.',
+            'status' => [
+                'editing' => 'Editing draft',
+                'creating' => 'New customer',
+            ],
+            'fields' => [
+                'name' => 'Customer name',
+                'contact' => 'Contact information',
+                'person' => 'Primary contact person',
+                'note' => 'Internal note',
+            ],
+            'placeholders' => [
+                'name' => 'Enter customer name',
+                'contact' => 'Enter phone number or email',
+                'person' => 'Enter contact person',
+                'note' => 'Add reminders for deliveries, preferences, etc.',
+            ],
+            'buttons' => [
+                'cancel' => 'Cancel',
+                'save' => 'Save customer',
+            ],
+            'sidebar' => [
+                'title' => 'Registration summary',
+                'labels' => [
+                    'customer_code' => 'Customer code',
+                    'created_at' => 'Created on',
+                    'last_updated' => 'Last updated',
+                ],
+                'note' => 'Use this form to keep customer contact details consistent with the master list.',
+            ],
         ],
     ],
     'admin_users' => [
