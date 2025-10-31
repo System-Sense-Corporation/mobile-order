@@ -59,27 +59,27 @@ return [
             'notes' => '備考',
         ],
         'placeholders' => [
+            'customer' => '顧客を選択してください',
+            'product' => '商品を選択してください',
             'notes' => '特記事項があれば入力してください',
         ],
         'buttons' => [
             'reset' => 'クリア',
+<<<<<<< HEAD
             'submit' => '保存',
         ],
         'flash' => [
             'success' => '受注を登録しました。',
+=======
+            'submit' => '登録する',
+>>>>>>> origin/codex/implement-orders-index-action-and-view-update-tyzbpj
         ],
-        'options' => [
-            'customers' => [
-                '鮮魚酒場 波しぶき',
-                'レストラン 潮彩',
-                'ホテル ブルーサンズ',
-            ],
-            'products' => [
-                '本マグロ 柵 500g',
-                'サーモン フィレ 1kg',
-                'ボタンエビ 20尾',
-                '真鯛 1尾',
-            ],
+        'empty' => [
+            'customers' => '登録済みの顧客がありません',
+            'products' => '登録済みの商品がありません',
+        ],
+        'flash' => [
+            'saved' => '受注を登録しました。',
         ],
     ],
     'orders' => [
@@ -89,6 +89,10 @@ return [
             'customer' => '顧客',
             'items' => '注文内容',
             'status' => 'ステータス',
+        ],
+        'labels' => [
+            'delivery' => '納品',
+            'notes' => 'メモ',
         ],
         'statuses' => [
             'pending' => '確認中',

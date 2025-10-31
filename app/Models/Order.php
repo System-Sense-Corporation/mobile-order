@@ -18,6 +18,20 @@ class Order extends Model
         'product_id',
         'quantity',
         'status',
+<<<<<<< HEAD
+=======
+        'order_date',
+        'delivery_date',
+        'notes',
+    ];
+
+    /**
+     * @var array<string, string>
+     */
+    protected $casts = [
+        'order_date' => 'date',
+        'delivery_date' => 'date',
+>>>>>>> origin/codex/implement-orders-index-action-and-view-update-tyzbpj
     ];
 
     /**

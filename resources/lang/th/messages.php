@@ -59,27 +59,26 @@ return [
             'notes' => 'หมายเหตุ',
         ],
         'placeholders' => [
+            'customer' => 'เลือกชื่อลูกค้า',
+            'product' => 'เลือกสินค้า',
             'notes' => 'กรุณากรอกข้อมูลเพิ่มเติมหากมี',
         ],
         'buttons' => [
             'reset' => 'ล้างข้อมูล',
             'submit' => 'บันทึก',
+<<<<<<< HEAD
         ],
         'flash' => [
             'success' => 'บันทึกคำสั่งซื้อเรียบร้อยแล้ว',
+=======
+>>>>>>> origin/codex/implement-orders-index-action-and-view-update-tyzbpj
         ],
-        'options' => [
-            'customers' => [
-                '鮮魚酒場 波しぶき',
-                'レストラン 潮彩',
-                'ホテル ブルーサンズ',
-            ],
-            'products' => [
-                '本マグロ 柵 500g',
-                'サーモン フィレ 1kg',
-                'ボタンエビ 20尾',
-                '真鯛 1尾',
-            ],
+        'empty' => [
+            'customers' => 'ยังไม่มีข้อมูลลูกค้า',
+            'products' => 'ยังไม่มีข้อมูลสินค้า',
+        ],
+        'flash' => [
+            'saved' => 'บันทึกคำสั่งซื้อเรียบร้อยแล้ว',
         ],
     ],
     'orders' => [
@@ -89,6 +88,10 @@ return [
             'customer' => 'ลูกค้า',
             'items' => 'รายละเอียดสินค้า',
             'status' => 'สถานะ',
+        ],
+        'labels' => [
+            'delivery' => 'กำหนดส่ง',
+            'notes' => 'หมายเหตุ',
         ],
         'statuses' => [
             'pending' => 'รอตรวจสอบ',
