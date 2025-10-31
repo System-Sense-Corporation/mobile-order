@@ -30,17 +30,30 @@ return new class extends Migration
 
         $missingCustomerId = ! Schema::hasColumn('orders', 'customer_id');
         $missingProductId = ! Schema::hasColumn('orders', 'product_id');
+        $missingQuantity = ! Schema::hasColumn('orders', 'quantity');
         $missingStatus = ! Schema::hasColumn('orders', 'status');
         $missingOrderDate = ! Schema::hasColumn('orders', 'order_date');
         $missingDeliveryDate = ! Schema::hasColumn('orders', 'delivery_date');
         $missingNotes = ! Schema::hasColumn('orders', 'notes');
         $hasCustomerName = Schema::hasColumn('orders', 'customer');
         $hasProductName = Schema::hasColumn('orders', 'product');
+        $hasLegacyCustomerName = Schema::hasColumn('orders', 'customer_name');
+        $hasLegacyItems = Schema::hasColumn('orders', 'items');
+        $hasLegacyReceivedAt = Schema::hasColumn('orders', 'received_at');
 
-        if ($missingCustomerId || $missingProductId || $missingStatus || $missingOrderDate || $missingDeliveryDate || $missingNotes) {
+        if (
+            $missingCustomerId
+            || $missingProductId
+            || $missingQuantity
+            || $missingStatus
+            || $missingOrderDate
+            || $missingDeliveryDate
+            || $missingNotes
+        ) {
             Schema::table('orders', function (Blueprint $table) use (
                 $missingCustomerId,
                 $missingProductId,
+                $missingQuantity,
                 $missingStatus,
                 $missingOrderDate,
                 $missingDeliveryDate,
@@ -60,6 +73,12 @@ return new class extends Migration
                         ->after('customer_id')
                         ->constrained()
                         ->cascadeOnDelete();
+                }
+
+                if ($missingQuantity) {
+                    $table->unsignedInteger('quantity')
+                        ->default(1)
+                        ->after('product_id');
                 }
 
                 if ($missingStatus) {
@@ -88,14 +107,32 @@ return new class extends Migration
             });
         }
 
-        if ($hasCustomerName || $hasProductName) {
-            Schema::table('orders', function (Blueprint $table) use ($hasCustomerName, $hasProductName) {
+        if ($hasCustomerName || $hasProductName || $hasLegacyCustomerName || $hasLegacyItems || $hasLegacyReceivedAt) {
+            Schema::table('orders', function (Blueprint $table) use (
+                $hasCustomerName,
+                $hasProductName,
+                $hasLegacyCustomerName,
+                $hasLegacyItems,
+                $hasLegacyReceivedAt
+            ) {
                 if ($hasCustomerName) {
                     $table->dropColumn('customer');
                 }
 
                 if ($hasProductName) {
                     $table->dropColumn('product');
+                }
+
+                if ($hasLegacyCustomerName) {
+                    $table->dropColumn('customer_name');
+                }
+
+                if ($hasLegacyItems) {
+                    $table->dropColumn('items');
+                }
+
+                if ($hasLegacyReceivedAt) {
+                    $table->dropColumn('received_at');
                 }
             });
         }
@@ -118,13 +155,23 @@ return new class extends Migration
         $needsProductColumn = ! Schema::hasColumn('orders', 'product');
         $hasCustomerId = Schema::hasColumn('orders', 'customer_id');
         $hasProductId = Schema::hasColumn('orders', 'product_id');
+        $hasQuantity = Schema::hasColumn('orders', 'quantity');
         $hasStatus = Schema::hasColumn('orders', 'status');
         $hasOrderDate = Schema::hasColumn('orders', 'order_date');
         $hasDeliveryDate = Schema::hasColumn('orders', 'delivery_date');
         $hasNotes = Schema::hasColumn('orders', 'notes');
+        $needsLegacyReceivedAt = ! Schema::hasColumn('orders', 'received_at');
+        $needsLegacyCustomerName = ! Schema::hasColumn('orders', 'customer_name');
+        $needsLegacyItems = ! Schema::hasColumn('orders', 'items');
 
-        if ($needsCustomerColumn || $needsProductColumn) {
-            Schema::table('orders', function (Blueprint $table) use ($needsCustomerColumn, $needsProductColumn) {
+        if ($needsCustomerColumn || $needsProductColumn || $needsLegacyCustomerName || $needsLegacyItems || $needsLegacyReceivedAt) {
+            Schema::table('orders', function (Blueprint $table) use (
+                $needsCustomerColumn,
+                $needsProductColumn,
+                $needsLegacyCustomerName,
+                $needsLegacyItems,
+                $needsLegacyReceivedAt
+            ) {
                 if ($needsCustomerColumn) {
                     $table->string('customer')->nullable();
                 }
@@ -132,13 +179,26 @@ return new class extends Migration
                 if ($needsProductColumn) {
                     $table->string('product')->nullable();
                 }
+
+                if ($needsLegacyCustomerName) {
+                    $table->string('customer_name')->nullable();
+                }
+
+                if ($needsLegacyItems) {
+                    $table->string('items')->nullable();
+                }
+
+                if ($needsLegacyReceivedAt) {
+                    $table->timestamp('received_at')->nullable();
+                }
             });
         }
 
-        if ($hasCustomerId || $hasProductId || $hasStatus || $hasOrderDate || $hasDeliveryDate || $hasNotes) {
+        if ($hasCustomerId || $hasProductId || $hasQuantity || $hasStatus || $hasOrderDate || $hasDeliveryDate || $hasNotes) {
             Schema::table('orders', function (Blueprint $table) use (
                 $hasCustomerId,
                 $hasProductId,
+                $hasQuantity,
                 $hasStatus,
                 $hasOrderDate,
                 $hasDeliveryDate,
@@ -150,6 +210,10 @@ return new class extends Migration
 
                 if ($hasProductId) {
                     $table->dropConstrainedForeignId('product_id');
+                }
+
+                if ($hasQuantity) {
+                    $table->dropColumn('quantity');
                 }
 
                 if ($hasStatus) {
