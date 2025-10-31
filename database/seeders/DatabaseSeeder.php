@@ -37,12 +37,6 @@ class DatabaseSeeder extends Seeder
                 'contact_person' => '購買部 三浦様',
                 'notes' => 'Places bulk orders regularly',
             ],
-            [
-                'name' => 'ホテル グリーンズ',
-                'contact' => '03-9988-7766',
-                'contact_person' => '宿泊部 田中様',
-                'notes' => 'Requests weekend deliveries before 10:00',
-            ],
         ])->mapWithKeys(function (array $customer) {
             $model = Customer::create($customer);
 
@@ -105,15 +99,6 @@ class DatabaseSeeder extends Seeder
                 'order_date' => $today->copy()->subDays(3)->toDateString(),
                 'delivery_date' => $today->copy()->addDay()->toDateString(),
                 'notes' => 'Pack with extra ice packs.',
-            ],
-            [
-                'customer' => 'ホテル グリーンズ',
-                'product' => '真鯛 1尾',
-                'quantity' => 4,
-                'status' => 'pending',
-                'order_date' => $today->toDateString(),
-                'delivery_date' => $today->copy()->addDays(3)->toDateString(),
-                'notes' => 'Whole fish, scales removed and packed separately.',
             ],
         ];
 
