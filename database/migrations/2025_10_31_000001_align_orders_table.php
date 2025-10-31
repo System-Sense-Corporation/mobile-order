@@ -219,7 +219,8 @@ return new class extends Migration
                 $hasStatus,
                 $hasOrderDate,
                 $hasDeliveryDate,
-                $hasNotes
+                $hasNotes,
+                $usesSimpleForeignColumns
             ) {
                 if ($hasCustomerId) {
                     if ($usesSimpleForeignColumns) {
