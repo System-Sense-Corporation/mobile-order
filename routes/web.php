@@ -18,6 +18,7 @@ Route::middleware('auth')->group(function () {
     // pages
     Route::get('/', fn () => view('index'))->name('home');
     Route::get('/orders/create', [OrderController::class, 'create'])->name('orders.create');
+    Route::redirect('/mobile-order', '/orders/create')->name('mobile-order.legacy');
     Route::post('/orders', [OrderController::class, 'store'])->name('orders.store');
     Route::get('/orders', [OrderController::class, 'index'])->name('orders');
     Route::get('/products', fn () => view('products'))->name('products');
