@@ -24,11 +24,12 @@ Route::middleware('auth')->group(function () {
     Route::get('/settings', fn () => view('settings'))->name('settings');
 
     // ✅ Profile (แก้ไข + บันทึก)
-Route::get('/profile', [\App\Http\Controllers\ProfileController::class, 'edit'])
+    Route::get('/profile', [ProfileController::class, 'edit'])
         ->name('profile');
 
-    Route::post('/profile', [\App\Http\Controllers\ProfileController::class, 'update'])
-        ->name('profile.update');});
+    Route::post('/profile', [ProfileController::class, 'update'])
+        ->name('profile.update');
+});
 
 Route::post('/locale', function (Request $request) {
     $availableLocales = config('app.available_locales', []);
