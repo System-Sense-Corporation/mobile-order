@@ -22,6 +22,10 @@
         </div>
     @endif
 
+    @php
+        $canManageCustomers = empty($customersAreDemo) || ! $customersAreDemo;
+    @endphp
+
     <div class="space-y-4">
         @forelse ($customers as $customer)
             <div class="rounded-lg bg-white p-5 shadow-sm ring-1 ring-black/5">
@@ -41,6 +45,41 @@
                 </div>
                 @if (! empty($customer->notes))
                     <p class="mt-3 text-sm text-black/70">{{ $customer->notes }}</p>
+                @endif
+                @if ($canManageCustomers)
+                    @php
+                        $shouldOpenEditor = old('customer_id') === (string) $customer->getKey() && $errors->any();
+                    @endphp
+                    <div class="mt-4 space-y-3 border-t border-black/5 pt-4">
+                        <details class="group space-y-3" @if($shouldOpenEditor) open @endif>
+                            <summary class="cursor-pointer text-sm font-semibold text-accent outline-none transition hover:text-accent/80 focus-visible:ring-2 focus-visible:ring-accent/60">
+                                {{ __('messages.customers.actions.edit') }}
+                            </summary>
+                            <form method="POST" action="{{ route('customers.update', $customer) }}" class="space-y-4">
+                                @csrf
+                                @method('PUT')
+                                <input type="hidden" name="customer_id" value="{{ $customer->id }}">
+                                @include('customers.partials.form-fields', ['customer' => $customer])
+                                <div class="flex flex-wrap items-center justify-end gap-3">
+                                    <button type="submit" class="btn-primary">
+                                        {{ __('messages.customers.actions.update') }}
+                                    </button>
+                                </div>
+                            </form>
+                        </details>
+                        <form
+                            method="POST"
+                            action="{{ route('customers.destroy', $customer) }}"
+                            class="flex justify-end"
+                            onsubmit="return confirm('{{ __('messages.customers.actions.confirm_delete', ['name' => $customer->name]) }}');"
+                        >
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="btn-danger">
+                                {{ __('messages.customers.actions.delete') }}
+                            </button>
+                        </form>
+                    </div>
                 @endif
             </div>
         @empty

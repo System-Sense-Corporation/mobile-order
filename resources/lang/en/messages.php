@@ -124,6 +124,10 @@ return [
         'demo_notice' => 'Sample customer data is shown for preview only.',
         'actions' => [
             'create' => 'Add customer',
+            'edit' => 'Edit',
+            'delete' => 'Delete',
+            'update' => 'Save changes',
+            'confirm_delete' => 'Are you sure you want to delete ":name"? This action cannot be undone.',
         ],
         'empty' => [
             'title' => 'No customers registered yet',
@@ -131,6 +135,8 @@ return [
         ],
         'flash' => [
             'saved' => 'Customer ":name" was saved successfully.',
+            'updated' => 'Customer ":name" was updated successfully.',
+            'deleted' => 'Customer ":name" was deleted successfully.',
         ],
         'form' => [
             'title' => 'Customer details',
@@ -154,6 +160,7 @@ return [
             'buttons' => [
                 'cancel' => 'Cancel',
                 'save' => 'Save customer',
+                'update' => 'Update customer',
             ],
             'sidebar' => [
                 'title' => 'Registration summary',
@@ -163,6 +170,25 @@ return [
                     'last_updated' => 'Last updated',
                 ],
                 'note' => 'Use this form to keep customer contact details consistent with the master list.',
+            ],
+        ],
+        'validation' => [
+            'name' => [
+                'required' => 'Please enter a customer name.',
+                'string' => 'Customer name must be text.',
+                'max' => 'Customer name may not be greater than :max characters.',
+            ],
+            'contact' => [
+                'string' => 'Contact information must be text.',
+                'max' => 'Contact information may not be greater than :max characters.',
+            ],
+            'contact_person' => [
+                'string' => 'Contact person must be text.',
+                'max' => 'Contact person may not be greater than :max characters.',
+            ],
+            'notes' => [
+                'string' => 'Notes must be text.',
+                'max' => 'Notes may not be greater than :max characters.',
             ],
         ],
     ],

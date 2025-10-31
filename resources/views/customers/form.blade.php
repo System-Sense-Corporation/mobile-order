@@ -16,6 +16,7 @@
         $updatedAt = $isEditing && $customer->updated_at
             ? $customer->updated_at->format('Y-m-d H:i')
             : '—';
+        $formAction = $formAction ?? ($isEditing ? route('customers.update', $customer) : route('customers.store'));
     @endphp
     <div class="grid gap-6 lg:grid-cols-[2fr,1fr]">
         <div class="space-y-6">
@@ -29,69 +30,17 @@
                         </div>
                     </div>
 
-                    <form class="space-y-6" method="POST" action="{{ route('customers.store') }}">
+                    <form class="space-y-6" method="POST" action="{{ $formAction }}">
                         @csrf
-                        <div class="grid gap-6 md:grid-cols-2">
-                            <label class="form-field md:col-span-2">
-                                <span class="form-label">{{ __('messages.customers.form.fields.name') }}</span>
-                                <input
-                                    type="text"
-                                    name="name"
-                                    class="form-input"
-                                    placeholder="{{ __('messages.customers.form.placeholders.name') }}"
-                                    value="{{ old('name', $customer->name) }}"
-                                    required
-                                >
-                                @error('name')
-                                    <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
-                                @enderror
-                            </label>
-
-                            <label class="form-field">
-                                <span class="form-label">{{ __('messages.customers.form.fields.contact') }}</span>
-                                <input
-                                    type="tel"
-                                    name="contact"
-                                    class="form-input"
-                                    placeholder="{{ __('messages.customers.form.placeholders.contact') }}"
-                                    value="{{ old('contact', $customer->contact) }}"
-                                >
-                                @error('contact')
-                                    <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
-                                @enderror
-                            </label>
-
-                            <label class="form-field">
-                                <span class="form-label">{{ __('messages.customers.form.fields.person') }}</span>
-                                <input
-                                    type="text"
-                                    name="contact_person"
-                                    class="form-input"
-                                    placeholder="{{ __('messages.customers.form.placeholders.person') }}"
-                                    value="{{ old('contact_person', $customer->contact_person) }}"
-                                >
-                                @error('contact_person')
-                                    <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
-                                @enderror
-                            </label>
-                        </div>
-
-                        <label class="form-field">
-                            <span class="form-label">{{ __('messages.customers.form.fields.note') }}</span>
-                            <textarea
-                                name="notes"
-                                rows="4"
-                                class="form-input"
-                                placeholder="{{ __('messages.customers.form.placeholders.note') }}"
-                            >{{ old('notes', $customer->notes) }}</textarea>
-                            @error('notes')
-                                <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
-                            @enderror
-                        </label>
-
+                        @if ($isEditing)
+                            @method('PUT')
+                        @endif
+                        @include('customers.partials.form-fields', ['customer' => $customer])
                         <div class="flex flex-wrap items-center justify-end gap-3">
                             <a href="{{ route('customers') }}" class="btn-secondary">{{ __('messages.customers.form.buttons.cancel') }}</a>
-                            <button type="submit" class="btn-primary">{{ __('messages.customers.form.buttons.save') }}</button>
+                            <button type="submit" class="btn-primary">
+                                {{ $isEditing ? __('messages.customers.form.buttons.update') : __('messages.customers.form.buttons.save') }}
+                            </button>
                         </div>
                     </form>
                 </div>
