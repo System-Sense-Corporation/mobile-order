@@ -63,7 +63,7 @@ return [
         ],
         'buttons' => [
             'reset' => 'クリア',
-            'submit' => '仮登録',
+            'submit' => '保存',
         ],
         'options' => [
             'customers' => [
