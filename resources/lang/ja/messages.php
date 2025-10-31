@@ -65,6 +65,9 @@ return [
             'reset' => 'クリア',
             'submit' => '仮登録',
         ],
+        'notifications' => [
+            'submitted' => '注文を保存しました。',
+        ],
         'options' => [
             'customers' => [
                 '鮮魚酒場 波しぶき',
