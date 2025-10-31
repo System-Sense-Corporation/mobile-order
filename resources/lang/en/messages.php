@@ -112,6 +112,7 @@ return [
     ],
     'customers' => [
         'title' => 'Customer Master',
+        'description' => 'Manage client contact information and internal notes.',
         'contact_label' => 'Contact',
         'contact_person' => 'Contact person',
         'notes_label' => 'Notes',
@@ -119,6 +120,41 @@ return [
             'wave' => 'Deliver every morning at 8:00',
             'shiosai' => 'Prefers premium white fish',
             'blue_sands' => 'Places bulk orders regularly',
+        ],
+        'actions' => [
+            'create' => 'Add customer',
+        ],
+        'form' => [
+            'title' => 'Customer details',
+            'description' => 'Review and update registration details for this customer.',
+            'status' => [
+                'editing' => 'Editing draft',
+            ],
+            'fields' => [
+                'name' => 'Customer name',
+                'contact' => 'Contact information',
+                'person' => 'Primary contact person',
+                'note' => 'Internal note',
+            ],
+            'placeholders' => [
+                'name' => 'Enter customer name',
+                'contact' => 'Enter phone number or email',
+                'person' => 'Enter contact person',
+                'note' => 'Add reminders for deliveries, preferences, etc.',
+            ],
+            'buttons' => [
+                'cancel' => 'Cancel',
+                'save' => 'Save customer',
+            ],
+            'sidebar' => [
+                'title' => 'Registration summary',
+                'labels' => [
+                    'customer_code' => 'Customer code',
+                    'created_at' => 'Created on',
+                    'last_updated' => 'Last updated',
+                ],
+                'note' => 'Use this form to keep customer contact details consistent with the master list.',
+            ],
         ],
     ],
     'admin_users' => [

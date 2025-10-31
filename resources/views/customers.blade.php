@@ -13,6 +13,11 @@
 @endphp
 
 @section('content')
+    <div class="mb-6 flex flex-wrap items-center justify-between gap-3">
+        <p class="text-sm text-black/60">{{ __('messages.customers.description') }}</p>
+        <a href="{{ route('customers.form') }}" class="btn-primary">{{ __('messages.customers.actions.create') }}</a>
+    </div>
+
     <div class="space-y-4">
         @foreach ($customers as $customer)
             <div class="rounded-lg bg-white p-5 shadow-sm ring-1 ring-black/5">
