@@ -4,34 +4,35 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Order extends Model
 {
     use HasFactory;
 
-<<<<<<< HEAD
     /**
-     * The attributes that are mass assignable.
-     *
      * @var array<int, string>
      */
     protected $fillable = [
-        'order_date',
-        'delivery_date',
-        'customer',
-        'product',
+        'customer_id',
+        'product_id',
         'quantity',
-        'notes',
-=======
-    protected $fillable = [
-        'customer_name',
-        'items',
         'status',
-        'received_at',
     ];
 
-    protected $casts = [
-        'received_at' => 'datetime',
->>>>>>> origin/codex/replace-closure-route-with-controller-action
-    ];
+    /**
+     * @return BelongsTo<Customer, Order>
+     */
+    public function customer(): BelongsTo
+    {
+        return $this->belongsTo(Customer::class);
+    }
+
+    /**
+     * @return BelongsTo<Product, Order>
+     */
+    public function product(): BelongsTo
+    {
+        return $this->belongsTo(Product::class);
+    }
 }

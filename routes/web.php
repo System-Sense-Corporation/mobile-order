@@ -17,36 +17,19 @@ Route::middleware('auth')->group(function () {
 
     // pages
     Route::get('/', fn () => view('index'))->name('home');
-<<<<<<< HEAD
-<<<<<<< HEAD
-    Route::get('/orders/create', fn () => view('mobile-order'))->name('mobile-order');
-=======
-    Route::get('/orders/create', fn () => view('mobile-order'))->name('mobile-order');
-    Route::redirect('/mobile-order', '/orders/create')->permanent();
->>>>>>> origin/codex/update-order-entry-route-and-add-redirect
-    Route::get('/orders', fn () => view('orders'))->name('orders');
-=======
     Route::get('/mobile-order', fn () => view('mobile-order'))->name('mobile-order');
     Route::get('/orders', [OrderController::class, 'index'])->name('orders');
->>>>>>> origin/codex/replace-closure-route-with-controller-action
     Route::get('/products', fn () => view('products'))->name('products');
     Route::get('/customers', fn () => view('customers'))->name('customers');
     Route::get('/admin/users', fn () => view('admin.users'))->name('admin.users');
     Route::get('/settings', fn () => view('settings'))->name('settings');
 
-<<<<<<< HEAD
-    Route::post('/mobile-order', [OrderController::class, 'store'])->name('mobile-order.store');
-
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile');
-    Route::post('/profile', [ProfileController::class, 'update'])->name('profile.update');
-=======
     // ✅ Profile (แก้ไข + บันทึก)
     Route::get('/profile', [ProfileController::class, 'edit'])
         ->name('profile');
 
     Route::post('/profile', [ProfileController::class, 'update'])
         ->name('profile.update');
->>>>>>> origin/codex/fix-syntax-error-in-routes
 });
 
 Route::post('/locale', function (Request $request) {
