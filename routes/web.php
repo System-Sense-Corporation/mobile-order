@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -17,7 +18,7 @@ Route::middleware('auth')->group(function () {
     // pages
     Route::get('/', fn () => view('index'))->name('home');
     Route::get('/mobile-order', fn () => view('mobile-order'))->name('mobile-order');
-    Route::get('/orders', fn () => view('orders'))->name('orders');
+    Route::get('/orders', [OrderController::class, 'index'])->name('orders');
     Route::get('/products', fn () => view('products'))->name('products');
     Route::get('/customers', fn () => view('customers'))->name('customers');
     Route::get('/admin/users', fn () => view('admin.users'))->name('admin.users');
