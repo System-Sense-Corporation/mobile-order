@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -16,19 +17,21 @@ Route::middleware('auth')->group(function () {
 
     // pages
     Route::get('/', fn () => view('index'))->name('home');
-    Route::get('/mobile-order', fn () => view('mobile-order'))->name('mobile-order');
-    Route::get('/orders', fn () => view('orders'))->name('orders');
+    Route::get('/mobile-order', [OrderController::class, 'create'])->name('mobile-order');
+    Route::post('/mobile-order', [OrderController::class, 'store'])->name('mobile-order.store');
+    Route::get('/orders', [OrderController::class, 'index'])->name('orders');
     Route::get('/products', fn () => view('products'))->name('products');
     Route::get('/customers', fn () => view('customers'))->name('customers');
     Route::get('/admin/users', fn () => view('admin.users'))->name('admin.users');
     Route::get('/settings', fn () => view('settings'))->name('settings');
 
     // ✅ Profile (แก้ไข + บันทึก)
-Route::get('/profile', [\App\Http\Controllers\ProfileController::class, 'edit'])
+    Route::get('/profile', [ProfileController::class, 'edit'])
         ->name('profile');
 
-    Route::post('/profile', [\App\Http\Controllers\ProfileController::class, 'update'])
-        ->name('profile.update');});
+    Route::post('/profile', [ProfileController::class, 'update'])
+        ->name('profile.update');
+});
 
 Route::post('/locale', function (Request $request) {
     $availableLocales = config('app.available_locales', []);
