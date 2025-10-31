@@ -65,6 +65,9 @@ return [
             'reset' => 'ล้างข้อมูล',
             'submit' => 'บันทึกชั่วคราว',
         ],
+        'notifications' => [
+            'submitted' => 'บันทึกคำสั่งซื้อเรียบร้อยแล้ว',
+        ],
         'options' => [
             'customers' => [
                 '鮮魚酒場 波しぶき',

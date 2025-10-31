@@ -65,6 +65,9 @@ return [
             'reset' => 'Clear',
             'submit' => 'Save Draft',
         ],
+        'notifications' => [
+            'submitted' => 'Order saved successfully.',
+        ],
         'options' => [
             'customers' => [
                 '鮮魚酒場 波しぶき',
