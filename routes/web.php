@@ -24,6 +24,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/orders', [OrderController::class, 'index'])->name('orders');
     Route::get('/products', fn () => view('products'))->name('products');
     Route::get('/customers', fn () => view('customers'))->name('customers');
+    Route::get('/customers/form', fn () => view('customers.form'))->name('customers.form');
     Route::get('/admin/users', fn () => view('admin.users'))->name('admin.users');
     Route::get('/settings', fn () => view('settings'))->name('settings');
 
