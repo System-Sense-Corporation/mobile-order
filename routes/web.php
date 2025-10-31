@@ -17,13 +17,10 @@ Route::middleware('auth')->group(function () {
 
     // pages
     Route::get('/', fn () => view('index'))->name('home');
-<<<<<<< HEAD
-    Route::get('/mobile-order', fn () => view('mobile-order'))->name('mobile-order');
-=======
-    Route::get('/orders/create', [OrderController::class, 'create'])->name('orders.create');
-    Route::redirect('/mobile-order', '/orders/create')->name('mobile-order.legacy');
+    Route::get('/orders/form', [OrderController::class, 'create'])->name('orders.create');
+    Route::redirect('/mobile-order', '/orders/form')->name('mobile-order.legacy');
+    Route::redirect('/orders/create', '/orders/form');
     Route::post('/orders', [OrderController::class, 'store'])->name('orders.store');
->>>>>>> origin/codex/implement-orders-index-action-and-view-update-tyzbpj
     Route::get('/orders', [OrderController::class, 'index'])->name('orders');
     Route::get('/products', fn () => view('products'))->name('products');
     Route::get('/customers', fn () => view('customers'))->name('customers');

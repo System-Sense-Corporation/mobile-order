@@ -37,12 +37,6 @@ class DatabaseSeeder extends Seeder
                 'contact_person' => '購買部 三浦様',
                 'notes' => 'Places bulk orders regularly',
             ],
-            [
-                'name' => '旬彩料理 こはる',
-                'contact' => '03-9988-7766',
-                'contact_person' => '小春店主',
-                'notes' => 'Occasionally closed on Saturdays',
-            ],
         ])->mapWithKeys(function (array $customer) {
             $model = Customer::create($customer);
 
@@ -56,7 +50,7 @@ class DatabaseSeeder extends Seeder
                 'price' => 7800,
             ],
             [
-                'name' => 'サーモン フィレ 1kg',
+                'name' => 'サーモンフィレ 1kg',
                 'unit' => 'fillet',
                 'price' => 4200,
             ],
@@ -76,13 +70,6 @@ class DatabaseSeeder extends Seeder
             return [$model->name => $model];
         });
 
-<<<<<<< HEAD
-        $orders = [
-            ['customer' => '鮮魚酒場 波しぶき', 'product' => '本マグロ 柵 500g', 'quantity' => 2, 'status' => 'pending'],
-            ['customer' => 'レストラン 潮彩', 'product' => 'サーモン フィレ 1kg', 'quantity' => 5, 'status' => 'preparing'],
-            ['customer' => 'ホテル ブルーサンズ', 'product' => 'ボタンエビ 20尾', 'quantity' => 3, 'status' => 'shipped'],
-            ['customer' => '旬彩料理 こはる', 'product' => '真鯛 1尾', 'quantity' => 4, 'status' => 'pending'],
-=======
         $today = now();
 
         $orders = [
@@ -97,7 +84,7 @@ class DatabaseSeeder extends Seeder
             ],
             [
                 'customer' => 'レストラン 潮彩',
-                'product' => 'サーモン フィレ 1kg',
+                'product' => 'サーモンフィレ 1kg',
                 'quantity' => 5,
                 'status' => 'preparing',
                 'order_date' => $today->copy()->subDays(2)->toDateString(),
@@ -113,16 +100,6 @@ class DatabaseSeeder extends Seeder
                 'delivery_date' => $today->copy()->addDay()->toDateString(),
                 'notes' => 'Pack with extra ice packs.',
             ],
-            [
-                'customer' => '旬彩料理 こはる',
-                'product' => '真鯛 1尾',
-                'quantity' => 4,
-                'status' => 'pending',
-                'order_date' => $today->toDateString(),
-                'delivery_date' => $today->copy()->addDays(3)->toDateString(),
-                'notes' => 'Whole fish, scales removed.',
-            ],
->>>>>>> origin/codex/implement-orders-index-action-and-view-update-tyzbpj
         ];
 
         foreach ($orders as $order) {
@@ -138,12 +115,9 @@ class DatabaseSeeder extends Seeder
                 'product_id' => $product->id,
                 'quantity' => $order['quantity'],
                 'status' => $order['status'],
-<<<<<<< HEAD
-=======
                 'order_date' => $order['order_date'],
                 'delivery_date' => $order['delivery_date'],
                 'notes' => $order['notes'],
->>>>>>> origin/codex/implement-orders-index-action-and-view-update-tyzbpj
             ]);
         }
 
