@@ -2,18 +2,14 @@
 
 namespace App\Http\Controllers;
 
-<<<<<<< HEAD
-use App\Models\Order;
-use Illuminate\Contracts\View\View;
-=======
 use App\Models\Customer;
 use App\Models\Order;
 use App\Models\Product;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Schema;
->>>>>>> origin/codex/implement-orders-index-action-and-view-update-tyzbpj
 
 class OrderController extends Controller
 {
@@ -22,12 +18,6 @@ class OrderController extends Controller
      */
     public function index(): View
     {
-<<<<<<< HEAD
-        $orders = Order::query()
-            ->with(['customer', 'product'])
-            ->latest()
-            ->get();
-=======
         $orders = collect();
 
         if (Schema::hasTable('orders')) {
@@ -37,34 +27,32 @@ class OrderController extends Controller
                 ->orderByDesc('created_at')
                 ->get();
         }
->>>>>>> origin/codex/implement-orders-index-action-and-view-update-tyzbpj
 
         return view('orders', [
             'orders' => $orders,
         ]);
     }
-<<<<<<< HEAD
-=======
 
     /**
      * Show the form for creating a new resource.
      */
     public function create(): View
     {
-        $customers = collect();
-        $products = collect();
+        $hasCustomerData = Schema::hasTable('customers') && Customer::query()->exists();
+        $customers = $hasCustomerData
+            ? Customer::query()->orderBy('name')->get()
+            : $this->sampleCustomers();
 
-        if (Schema::hasTable('customers')) {
-            $customers = Customer::query()->orderBy('name')->get();
-        }
-
-        if (Schema::hasTable('products')) {
-            $products = Product::query()->orderBy('name')->get();
-        }
+        $hasProductData = Schema::hasTable('products') && Product::query()->exists();
+        $products = $hasProductData
+            ? Product::query()->orderBy('name')->get()
+            : $this->sampleProducts();
 
         return view('mobile-order', [
             'customers' => $customers,
             'products' => $products,
+            'customersAreDemo' => ! $hasCustomerData,
+            'productsAreDemo' => ! $hasProductData,
         ]);
     }
 
@@ -96,5 +84,24 @@ class OrderController extends Controller
             ->route('orders')
             ->with('status', __('messages.mobile_order.flash.saved'));
     }
->>>>>>> origin/codex/implement-orders-index-action-and-view-update-tyzbpj
+
+    private function sampleCustomers(): Collection
+    {
+        return collect([
+            ['id' => 1, 'name' => '鮮魚酒場 波しぶき'],
+            ['id' => 2, 'name' => 'レストラン 潮彩'],
+            ['id' => 3, 'name' => 'ホテル ブルーサンズ'],
+            ['id' => 4, 'name' => '旬彩料理 こはる'],
+        ])->map(static fn (array $customer): object => (object) $customer);
+    }
+
+    private function sampleProducts(): Collection
+    {
+        return collect([
+            ['id' => 1, 'name' => '本マグロ 柵 500g'],
+            ['id' => 2, 'name' => 'サーモン フィレ 1kg'],
+            ['id' => 3, 'name' => 'ボタンエビ 20尾'],
+            ['id' => 4, 'name' => '真鯛 1尾'],
+        ])->map(static fn (array $product): object => (object) $product);
+    }
 }

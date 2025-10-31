@@ -65,13 +65,7 @@ return [
         ],
         'buttons' => [
             'reset' => 'ล้างข้อมูล',
-            'submit' => 'บันทึก',
-<<<<<<< HEAD
-        ],
-        'flash' => [
-            'success' => 'บันทึกคำสั่งซื้อเรียบร้อยแล้ว',
-=======
->>>>>>> origin/codex/implement-orders-index-action-and-view-update-tyzbpj
+            'submit' => 'บันทึกคำสั่งซื้อ',
         ],
         'empty' => [
             'customers' => 'ยังไม่มีข้อมูลลูกค้า',
@@ -80,6 +74,7 @@ return [
         'flash' => [
             'saved' => 'บันทึกคำสั่งซื้อเรียบร้อยแล้ว',
         ],
+        'demo_notice' => 'ข้อมูลตัวอย่างของลูกค้าและสินค้าแสดงเพื่อใช้ดูตัวอย่างเท่านั้น',
     ],
     'orders' => [
         'title' => 'รายการสั่งซื้อวันนี้',
@@ -221,23 +216,4 @@ return [
             ],
         ],
     ],
-
-    // เพิ่มชุดนี้เข้าไปใน return [...]
-'common' => [
-    'name'      => 'ชื่อ',
-    'email'     => 'อีเมล',
-    'telephone' => 'เบอร์โทรศัพท์',
-    'save'      => 'บันทึก',
-],
-
-'profile' => array_merge($GLOBALS['profile'] ?? [], [ // ถ้าไม่ใช้ $GLOBALS ให้รวมมือแทนได้
-    'sections' => [
-        // เพิ่ม block นี้
-        'account_information' => [
-            'title' => 'ข้อมูลบัญชีผู้ใช้',
-            'description' => 'อัปเดตชื่อ อีเมล และเบอร์โทรของคุณได้ที่นี่',
-        ],
-    ],
-]),
-
 ];

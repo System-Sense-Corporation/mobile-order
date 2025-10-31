@@ -65,14 +65,7 @@ return [
         ],
         'buttons' => [
             'reset' => 'クリア',
-<<<<<<< HEAD
-            'submit' => '保存',
-        ],
-        'flash' => [
-            'success' => '受注を登録しました。',
-=======
             'submit' => '登録する',
->>>>>>> origin/codex/implement-orders-index-action-and-view-update-tyzbpj
         ],
         'empty' => [
             'customers' => '登録済みの顧客がありません',
@@ -81,6 +74,7 @@ return [
         'flash' => [
             'saved' => '受注を登録しました。',
         ],
+        'demo_notice' => 'サンプルの取引先・商品データを表示しています。',
     ],
     'orders' => [
         'title' => '当日受注一覧',
