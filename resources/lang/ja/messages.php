@@ -92,6 +92,7 @@ return [
             'preparing' => '出荷準備中',
             'shipped' => '出荷済',
         ],
+        'empty' => 'まだ受注はありません。',
         'samples' => [
             'tuna' => '本マグロ 柵 500g × 2',
             'salmon' => 'サーモン フィレ 1kg × 5',
