@@ -6,7 +6,7 @@
 
 @section('content')
     <div class="rounded-lg bg-white p-6 shadow-sm ring-1 ring-black/5">
-        <form class="space-y-6" method="POST" action="{{ route('mobile-order.store') }}">
+        <form class="space-y-6" method="POST" action="{{ route('orders.store') }}">
             @csrf
             <div class="grid gap-4 sm:grid-cols-2">
                 <label class="form-field">

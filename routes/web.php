@@ -17,8 +17,8 @@ Route::middleware('auth')->group(function () {
 
     // pages
     Route::get('/', fn () => view('index'))->name('home');
-    Route::get('/mobile-order', [OrderController::class, 'create'])->name('mobile-order');
-    Route::post('/mobile-order', [OrderController::class, 'store'])->name('mobile-order.store');
+    Route::get('/orders/create', [OrderController::class, 'create'])->name('orders.create');
+    Route::post('/orders', [OrderController::class, 'store'])->name('orders.store');
     Route::get('/orders', [OrderController::class, 'index'])->name('orders');
     Route::get('/products', fn () => view('products'))->name('products');
     Route::get('/customers', fn () => view('customers'))->name('customers');

@@ -11,7 +11,7 @@
     <header class="bg-accent text-white">
         @php
             $navigationLinks = [
-                ['route' => 'mobile-order', 'label' => __('messages.navigation.mobile-order')],
+                ['route' => 'orders.create', 'label' => __('messages.navigation.mobile-order')],
                 ['route' => 'orders',        'label' => __('messages.navigation.orders')],
                 ['route' => 'products',      'label' => __('messages.navigation.products')],
                 ['route' => 'customers',     'label' => __('messages.navigation.customers')],

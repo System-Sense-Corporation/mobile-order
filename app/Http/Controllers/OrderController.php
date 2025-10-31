@@ -8,6 +8,7 @@ use App\Models\Product;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Schema;
 
 class OrderController extends Controller
 {
@@ -16,11 +17,15 @@ class OrderController extends Controller
      */
     public function index(): View
     {
-        $orders = Order::query()
-            ->with(['customer', 'product'])
-            ->orderByDesc('order_date')
-            ->orderByDesc('created_at')
-            ->get();
+        $orders = collect();
+
+        if (Schema::hasTable('orders')) {
+            $orders = Order::query()
+                ->with(['customer', 'product'])
+                ->orderByDesc('order_date')
+                ->orderByDesc('created_at')
+                ->get();
+        }
 
         return view('orders', [
             'orders' => $orders,
@@ -32,9 +37,20 @@ class OrderController extends Controller
      */
     public function create(): View
     {
+        $customers = collect();
+        $products = collect();
+
+        if (Schema::hasTable('customers')) {
+            $customers = Customer::query()->orderBy('name')->get();
+        }
+
+        if (Schema::hasTable('products')) {
+            $products = Product::query()->orderBy('name')->get();
+        }
+
         return view('mobile-order', [
-            'customers' => Customer::query()->orderBy('name')->get(),
-            'products' => Product::query()->orderBy('name')->get(),
+            'customers' => $customers,
+            'products' => $products,
         ]);
     }
 
