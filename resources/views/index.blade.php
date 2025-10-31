@@ -9,7 +9,7 @@
         $menuItems = [
             [
                 'icon' => '📱',
-                'route' => 'mobile-order',
+                'route' => 'orders.create',
                 'title' => __('messages.index.cards.mobile-order.title'),
                 'description' => __('messages.index.cards.mobile-order.description'),
             ],

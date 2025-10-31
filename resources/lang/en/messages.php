@@ -59,24 +59,20 @@ return [
             'notes' => 'Notes',
         ],
         'placeholders' => [
+            'customer' => 'Select a customer',
+            'product' => 'Select a product',
             'notes' => 'Enter additional notes if necessary',
         ],
         'buttons' => [
             'reset' => 'Clear',
-            'submit' => 'Save Draft',
+            'submit' => 'Save Order',
         ],
-        'options' => [
-            'customers' => [
-                '鮮魚酒場 波しぶき',
-                'レストラン 潮彩',
-                'ホテル ブルーサンズ',
-            ],
-            'products' => [
-                '本マグロ 柵 500g',
-                'サーモン フィレ 1kg',
-                'ボタンエビ 20尾',
-                '真鯛 1尾',
-            ],
+        'empty' => [
+            'customers' => 'No customers available',
+            'products' => 'No products available',
+        ],
+        'flash' => [
+            'saved' => 'The order was registered successfully.',
         ],
     ],
     'orders' => [
@@ -86,6 +82,10 @@ return [
             'customer' => 'Customer',
             'items' => 'Order Details',
             'status' => 'Status',
+        ],
+        'labels' => [
+            'delivery' => 'Delivery',
+            'notes' => 'Notes',
         ],
         'statuses' => [
             'pending' => 'Pending Review',
