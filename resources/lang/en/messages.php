@@ -112,9 +112,37 @@ return [
     ],
     'customers' => [
         'title' => 'Customer Master',
+        'description' => 'Manage customer contact information for the ordering team.',
         'contact_label' => 'Contact',
         'contact_person' => 'Contact person',
         'notes_label' => 'Notes',
+        'not_provided' => 'Not provided',
+        'empty' => 'No customers registered yet.',
+        'demo_notice' => 'Sample customers are shown until you create your own records.',
+        'demo_actions_disabled' => 'Create and edit actions are unavailable while using sample data.',
+        'buttons' => [
+            'create' => 'Add customer',
+            'edit' => 'Edit',
+            'delete' => 'Delete',
+            'save' => 'Save customer',
+            'update' => 'Update customer',
+            'cancel' => 'Cancel',
+            'back' => 'Back to customer list',
+        ],
+        'confirm_delete' => 'Are you sure you want to delete this customer?',
+        'form' => [
+            'create_title' => 'Add customer',
+            'edit_title' => 'Edit customer',
+            'fields' => [
+                'name' => 'Customer name',
+                'contact' => 'Phone number',
+                'contact_person' => 'Contact person',
+                'notes' => 'Notes',
+            ],
+            'placeholders' => [
+                'notes' => 'Special requests, delivery preferences, etc.',
+            ],
+        ],
         'notes' => [
             'wave' => 'Deliver every morning at 8:00',
             'shiosai' => 'Prefers premium white fish',

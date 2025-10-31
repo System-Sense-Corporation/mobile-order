@@ -112,9 +112,37 @@ return [
     ],
     'customers' => [
         'title' => '顧客マスタ',
+        'description' => '取引先の連絡先や担当者情報を管理します。',
         'contact_label' => '連絡先',
         'contact_person' => '担当',
         'notes_label' => 'メモ',
+        'not_provided' => '未設定',
+        'empty' => '登録された顧客はありません。',
+        'demo_notice' => 'サンプルの顧客が表示されています。実際のデータを登録すると置き換わります。',
+        'demo_actions_disabled' => 'サンプルデータのため追加・編集は利用できません。',
+        'buttons' => [
+            'create' => '顧客を追加',
+            'edit' => '編集',
+            'delete' => '削除',
+            'save' => '登録する',
+            'update' => '更新する',
+            'cancel' => 'キャンセル',
+            'back' => '一覧に戻る',
+        ],
+        'confirm_delete' => 'この顧客を削除してもよろしいですか？',
+        'form' => [
+            'create_title' => '顧客を追加',
+            'edit_title' => '顧客を編集',
+            'fields' => [
+                'name' => '顧客名',
+                'contact' => '電話番号',
+                'contact_person' => '担当者',
+                'notes' => 'メモ',
+            ],
+            'placeholders' => [
+                'notes' => '納品希望や注意事項など',
+            ],
+        ],
         'notes' => [
             'wave' => '毎朝8時納品',
             'shiosai' => '高級白身魚を希望',
