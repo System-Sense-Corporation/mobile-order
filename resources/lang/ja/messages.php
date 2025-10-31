@@ -63,7 +63,7 @@ return [
         ],
         'buttons' => [
             'reset' => 'クリア',
-            'submit' => '仮登録',
+            'submit' => '保存',
         ],
         'flash' => [
             'success' => '受注を登録しました。',
