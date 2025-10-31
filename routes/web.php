@@ -17,8 +17,13 @@ Route::middleware('auth')->group(function () {
 
     // pages
     Route::get('/', fn () => view('index'))->name('home');
+<<<<<<< HEAD
     Route::get('/orders/create', fn () => view('mobile-order'))->name('mobile-order');
     Route::get('/orders', fn () => view('orders'))->name('orders');
+=======
+    Route::get('/mobile-order', fn () => view('mobile-order'))->name('mobile-order');
+    Route::get('/orders', [OrderController::class, 'index'])->name('orders');
+>>>>>>> origin/codex/replace-closure-route-with-controller-action
     Route::get('/products', fn () => view('products'))->name('products');
     Route::get('/customers', fn () => view('customers'))->name('customers');
     Route::get('/admin/users', fn () => view('admin.users'))->name('admin.users');

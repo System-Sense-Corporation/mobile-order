@@ -9,6 +9,7 @@ class Order extends Model
 {
     use HasFactory;
 
+<<<<<<< HEAD
     /**
      * The attributes that are mass assignable.
      *
@@ -21,5 +22,16 @@ class Order extends Model
         'product',
         'quantity',
         'notes',
+=======
+    protected $fillable = [
+        'customer_name',
+        'items',
+        'status',
+        'received_at',
+    ];
+
+    protected $casts = [
+        'received_at' => 'datetime',
+>>>>>>> origin/codex/replace-closure-route-with-controller-action
     ];
 }

@@ -95,6 +95,7 @@ return [
             'preparing' => 'Preparing Shipment',
             'shipped' => 'Shipped',
         ],
+        'empty' => 'No orders have been submitted yet.',
         'samples' => [
             'tuna' => 'Bluefin tuna block 500g × 2',
             'salmon' => 'Salmon fillet 1kg × 5',
