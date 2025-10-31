@@ -18,7 +18,12 @@ Route::middleware('auth')->group(function () {
     // pages
     Route::get('/', fn () => view('index'))->name('home');
 <<<<<<< HEAD
+<<<<<<< HEAD
     Route::get('/orders/create', fn () => view('mobile-order'))->name('mobile-order');
+=======
+    Route::get('/orders/create', fn () => view('mobile-order'))->name('mobile-order');
+    Route::redirect('/mobile-order', '/orders/create')->permanent();
+>>>>>>> origin/codex/update-order-entry-route-and-add-redirect
     Route::get('/orders', fn () => view('orders'))->name('orders');
 =======
     Route::get('/mobile-order', fn () => view('mobile-order'))->name('mobile-order');
