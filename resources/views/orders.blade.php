@@ -25,12 +25,9 @@
                     @php
                         $receivedAt = optional($order->created_at)?->timezone(config('app.timezone'));
                         $updatedAt = optional($order->updated_at)?->timezone(config('app.timezone'));
-<<<<<<< HEAD
-=======
                         $orderDate = $order->order_date;
                         $deliveryDate = $order->delivery_date;
                         $notes = trim((string) $order->notes);
->>>>>>> origin/codex/implement-orders-index-action-and-view-update-tyzbpj
                         $statusKey = 'messages.orders.statuses.' . $order->status;
                         $statusLabel = __($statusKey);
 
@@ -40,9 +37,6 @@
                     @endphp
                     <tr class="hover:bg-black/5">
                         <td class="px-4 py-3 font-medium">
-<<<<<<< HEAD
-                            {{ $receivedAt?->format('H:i') ?? '—' }}
-=======
                             <div>{{ $orderDate?->format('Y-m-d') ?? '—' }}</div>
                             @if ($deliveryDate)
                                 <div class="text-xs text-black/60">
@@ -52,7 +46,6 @@
                             @if ($receivedAt)
                                 <div class="text-xs text-black/40">{{ $receivedAt->format('H:i') }}</div>
                             @endif
->>>>>>> origin/codex/implement-orders-index-action-and-view-update-tyzbpj
                         </td>
                         <td class="px-4 py-3">
                             {{ $order->customer?->name ?? '—' }}
@@ -62,14 +55,11 @@
                             <div class="text-xs text-black/60">
                                 × {{ number_format($order->quantity ?? 0) }}
                             </div>
-<<<<<<< HEAD
-=======
                             @if ($notes !== '')
                                 <div class="mt-2 text-xs text-black/60">
                                     {{ __('messages.orders.labels.notes') }}: {{ $notes }}
                                 </div>
                             @endif
->>>>>>> origin/codex/implement-orders-index-action-and-view-update-tyzbpj
                         </td>
                         <td class="px-4 py-3 text-right">
                             <span class="inline-flex items-center rounded-full bg-accent/10 px-3 py-1 text-xs font-semibold text-accent">

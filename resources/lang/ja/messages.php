@@ -65,14 +65,7 @@ return [
         ],
         'buttons' => [
             'reset' => 'クリア',
-<<<<<<< HEAD
-            'submit' => '保存',
-        ],
-        'flash' => [
-            'success' => '受注を登録しました。',
-=======
             'submit' => '登録する',
->>>>>>> origin/codex/implement-orders-index-action-and-view-update-tyzbpj
         ],
         'empty' => [
             'customers' => '登録済みの顧客がありません',
