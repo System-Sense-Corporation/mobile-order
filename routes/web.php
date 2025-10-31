@@ -29,10 +29,19 @@ Route::middleware('auth')->group(function () {
     Route::get('/admin/users', fn () => view('admin.users'))->name('admin.users');
     Route::get('/settings', fn () => view('settings'))->name('settings');
 
+<<<<<<< HEAD
     Route::post('/mobile-order', [OrderController::class, 'store'])->name('mobile-order.store');
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile');
     Route::post('/profile', [ProfileController::class, 'update'])->name('profile.update');
+=======
+    // ✅ Profile (แก้ไข + บันทึก)
+    Route::get('/profile', [ProfileController::class, 'edit'])
+        ->name('profile');
+
+    Route::post('/profile', [ProfileController::class, 'update'])
+        ->name('profile.update');
+>>>>>>> origin/codex/fix-syntax-error-in-routes
 });
 
 Route::post('/locale', function (Request $request) {
