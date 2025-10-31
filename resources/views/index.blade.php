@@ -27,7 +27,7 @@
             ],
             [
                 'icon' => '🍽',
-                'route' => 'customers',
+                'route' => 'customers.index',
                 'title' => __('messages.index.cards.customers.title'),
                 'description' => __('messages.index.cards.customers.description'),
             ],
