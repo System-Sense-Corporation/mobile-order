@@ -76,13 +76,6 @@ class DatabaseSeeder extends Seeder
             return [$model->name => $model];
         });
 
-<<<<<<< HEAD
-        $orders = [
-            ['customer' => '鮮魚酒場 波しぶき', 'product' => '本マグロ 柵 500g', 'quantity' => 2, 'status' => 'pending'],
-            ['customer' => 'レストラン 潮彩', 'product' => 'サーモン フィレ 1kg', 'quantity' => 5, 'status' => 'preparing'],
-            ['customer' => 'ホテル ブルーサンズ', 'product' => 'ボタンエビ 20尾', 'quantity' => 3, 'status' => 'shipped'],
-            ['customer' => '旬彩料理 こはる', 'product' => '真鯛 1尾', 'quantity' => 4, 'status' => 'pending'],
-=======
         $today = now();
 
         $orders = [
@@ -122,7 +115,6 @@ class DatabaseSeeder extends Seeder
                 'delivery_date' => $today->copy()->addDays(3)->toDateString(),
                 'notes' => 'Whole fish, scales removed.',
             ],
->>>>>>> origin/codex/implement-orders-index-action-and-view-update-tyzbpj
         ];
 
         foreach ($orders as $order) {
@@ -138,12 +130,9 @@ class DatabaseSeeder extends Seeder
                 'product_id' => $product->id,
                 'quantity' => $order['quantity'],
                 'status' => $order['status'],
-<<<<<<< HEAD
-=======
                 'order_date' => $order['order_date'],
                 'delivery_date' => $order['delivery_date'],
                 'notes' => $order['notes'],
->>>>>>> origin/codex/implement-orders-index-action-and-view-update-tyzbpj
             ]);
         }
 
