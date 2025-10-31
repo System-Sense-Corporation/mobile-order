@@ -2,10 +2,6 @@
 
 namespace App\Http\Controllers;
 
-<<<<<<< HEAD
-use App\Models\Order;
-use Illuminate\Contracts\View\View;
-=======
 use App\Models\Customer;
 use App\Models\Order;
 use App\Models\Product;
@@ -13,7 +9,6 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Schema;
->>>>>>> origin/codex/implement-orders-index-action-and-view-update-tyzbpj
 
 class OrderController extends Controller
 {
@@ -22,12 +17,6 @@ class OrderController extends Controller
      */
     public function index(): View
     {
-<<<<<<< HEAD
-        $orders = Order::query()
-            ->with(['customer', 'product'])
-            ->latest()
-            ->get();
-=======
         $orders = collect();
 
         if (Schema::hasTable('orders')) {
@@ -37,14 +26,11 @@ class OrderController extends Controller
                 ->orderByDesc('created_at')
                 ->get();
         }
->>>>>>> origin/codex/implement-orders-index-action-and-view-update-tyzbpj
 
         return view('orders', [
             'orders' => $orders,
         ]);
     }
-<<<<<<< HEAD
-=======
 
     /**
      * Show the form for creating a new resource.
@@ -96,5 +82,4 @@ class OrderController extends Controller
             ->route('orders')
             ->with('status', __('messages.mobile_order.flash.saved'));
     }
->>>>>>> origin/codex/implement-orders-index-action-and-view-update-tyzbpj
 }

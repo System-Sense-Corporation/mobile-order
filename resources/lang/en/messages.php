@@ -65,14 +65,7 @@ return [
         ],
         'buttons' => [
             'reset' => 'Clear',
-<<<<<<< HEAD
-            'submit' => 'Save',
-        ],
-        'flash' => [
-            'success' => 'Order saved successfully.',
-=======
             'submit' => 'Save Order',
->>>>>>> origin/codex/implement-orders-index-action-and-view-update-tyzbpj
         ],
         'empty' => [
             'customers' => 'No customers available',
