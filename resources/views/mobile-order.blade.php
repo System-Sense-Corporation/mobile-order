@@ -42,7 +42,7 @@
             </div>
             <label class="form-field">
                 <span class="form-label">{{ __('messages.mobile_order.fields.customer') }}</span>
-                <select name="customer_id" class="form-input" @disabled($customersAreDemo) required>
+                <select name="customer_id" class="form-input" required>
                     <option value="" disabled {{ old('customer_id') ? '' : 'selected' }}>
                         {{ __('messages.mobile_order.placeholders.customer') }}
                     </option>
@@ -61,7 +61,7 @@
             <div class="grid gap-4 sm:grid-cols-3">
                 <label class="form-field sm:col-span-2">
                     <span class="form-label">{{ __('messages.mobile_order.fields.product') }}</span>
-                    <select name="product_id" class="form-input" @disabled($productsAreDemo) required>
+                    <select name="product_id" class="form-input" required>
                         <option value="" disabled {{ old('product_id') ? '' : 'selected' }}>
                             {{ __('messages.mobile_order.placeholders.product') }}
                         </option>

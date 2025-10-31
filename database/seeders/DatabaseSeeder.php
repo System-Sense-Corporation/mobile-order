@@ -32,7 +32,7 @@ class DatabaseSeeder extends Seeder
                 'notes' => 'Prefers premium white fish',
             ],
             [
-                'name' => 'ホテル ブルーシンズ',
+                'name' => 'ホテル ブルーサンズ',
                 'contact' => '0467-222-0099',
                 'contact_person' => '購買部 三浦様',
                 'notes' => 'Places bulk orders regularly',
@@ -98,7 +98,7 @@ class DatabaseSeeder extends Seeder
                 'notes' => 'Slice into 200g portions before delivery.',
             ],
             [
-                'customer' => 'ホテル ブルーシンズ',
+                'customer' => 'ホテル ブルーサンズ',
                 'product' => 'ボタンエビ 20尾',
                 'quantity' => 3,
                 'status' => 'shipped',

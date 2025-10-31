@@ -118,7 +118,7 @@ return [
         'notes' => [
             'wave' => 'Deliver every morning at 8:00',
             'shiosai' => 'Prefers premium white fish',
-            'blue_scenes' => 'Places bulk orders regularly',
+            'blue_sands' => 'Places bulk orders regularly',
             'green_hotel' => 'Requests weekend deliveries before 10:00',
         ],
     ],

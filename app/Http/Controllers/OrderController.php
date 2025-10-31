@@ -90,7 +90,7 @@ class OrderController extends Controller
         return collect([
             ['id' => 1, 'name' => '鮮魚酒場 波しぶき'],
             ['id' => 2, 'name' => 'レストラン 潮彩'],
-            ['id' => 3, 'name' => 'ホテル ブルーシンズ'],
+            ['id' => 3, 'name' => 'ホテル ブルーサンズ'],
             ['id' => 4, 'name' => 'ホテル グリーンズ'],
         ])->map(static fn (array $customer): object => (object) $customer);
     }

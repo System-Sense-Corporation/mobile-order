@@ -118,7 +118,7 @@ return [
         'notes' => [
             'wave' => '毎朝8時納品',
             'shiosai' => '高級白身魚を希望',
-            'blue_scenes' => '大量注文あり',
+            'blue_sands' => '大量注文あり',
             'green_hotel' => '週末は10時までに納品希望',
         ],
     ],
