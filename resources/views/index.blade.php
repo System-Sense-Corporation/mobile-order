@@ -14,8 +14,8 @@
                 'description' => __('messages.index.cards.mobile-order.description'),
             ],
             [
-                'icon' => '📄',
-                'route' => 'orders',
+                'icon' => '🧾',
+                'route' => 'orders.index',
                 'title' => __('messages.index.cards.orders.title'),
                 'description' => __('messages.index.cards.orders.description'),
             ],
