@@ -1,17 +1,19 @@
 @extends('layouts.app')
 
-@section('title', __('messages.app.name') . ' - ' . __('messages.products.form.title'))
+@section('title', __('messages.app.name') . ' - ' . ($product->exists ? __('messages.products.form.edit_title') : __('messages.products.form.title')))
 
-@section('page-title', __('messages.products.form.title'))
+@section('page-title', $product->exists ? __('messages.products.form.edit_title') : __('messages.products.form.title'))
 
 @section('content')
     @php
         /** @var \App\Models\Product $product */
         $product = $product ?? new \App\Models\Product();
+        $isEdit = $product->exists;
         $codeValue = old('code', $product->code);
         $nameValue = old('name', $product->name);
         $unitValue = old('unit', $product->unit);
         $priceValue = old('price', $product->price);
+        $formAction = $isEdit ? route('products.update', $product) : route('products.store');
     @endphp
 
     <div class="space-y-8">
@@ -24,12 +26,17 @@
         <div class="grid gap-8 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
             <div class="overflow-hidden rounded-xl bg-white shadow-sm ring-1 ring-black/5">
                 <div class="border-b border-black/5 bg-black/5 px-6 py-4">
-                    <h2 class="text-lg font-semibold text-slate-900">{{ __('messages.products.form.title') }}</h2>
+                    <h2 class="text-lg font-semibold text-slate-900">
+                        {{ $isEdit ? __('messages.products.form.edit_title') : __('messages.products.form.title') }}
+                    </h2>
                     <p class="mt-1 text-sm text-slate-600">{{ __('messages.products.form.description') }}</p>
                 </div>
 
-                <form class="space-y-6 px-6 py-6" method="POST" action="{{ route('products.store') }}">
+                <form class="space-y-6 px-6 py-6" method="POST" action="{{ $formAction }}">
                     @csrf
+                    @if ($isEdit)
+                        @method('PUT')
+                    @endif
                     <div class="grid gap-6 md:grid-cols-2">
                         <label class="form-field">
                             <span class="form-label">{{ __('messages.products.form.fields.code') }}</span>
@@ -98,7 +105,9 @@
 
                     <div class="flex flex-wrap items-center justify-end gap-3">
                         <a href="{{ route('products') }}" class="btn-secondary">{{ __('messages.products.form.buttons.cancel') }}</a>
-                        <button type="submit" class="btn-primary">{{ __('messages.products.form.buttons.save') }}</button>
+                        <button type="submit" class="btn-primary">
+                            {{ $isEdit ? __('messages.products.form.buttons.update') : __('messages.products.form.buttons.save') }}
+                        </button>
                     </div>
                 </form>
             </div>

@@ -119,6 +119,9 @@ return [
         'description' => 'Reference standard units and pricing for handled seafood items.',
         'actions' => [
             'create' => 'Add product',
+            'edit' => 'Edit',
+            'delete' => 'Delete',
+            'confirm_delete' => 'Delete ":name" (:code)? This action cannot be undone.',
         ],
         'empty' => [
             'title' => 'No products registered yet',
@@ -126,14 +129,18 @@ return [
         ],
         'flash' => [
             'saved' => 'Product ":code" was saved successfully.',
+            'updated' => 'Product ":code" was updated successfully.',
+            'deleted' => 'Product ":code" was deleted.',
         ],
         'table' => [
             'code' => 'Product Code',
             'name' => 'Product Name',
             'unit' => 'Unit',
             'price' => 'Unit Price (JPY)',
+            'actions' => 'Actions',
         ],
         'form' => [
+            'edit_title' => 'Edit product',
             'title' => 'Product details',
             'description' => 'Register or edit product information to keep the master list up to date.',
             'validation_error' => 'Please check the highlighted fields and try again.',
@@ -152,6 +159,7 @@ return [
             'buttons' => [
                 'cancel' => 'Back to list',
                 'save' => 'Save product',
+                'update' => 'Update product',
             ],
             'sidebar' => [
                 'title' => 'Product preview',

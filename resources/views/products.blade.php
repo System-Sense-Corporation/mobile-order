@@ -42,6 +42,7 @@
                                 <th class="px-4 py-3">{{ __('messages.products.table.name') }}</th>
                                 <th class="px-4 py-3">{{ __('messages.products.table.unit') }}</th>
                                 <th class="px-4 py-3 text-right">{{ __('messages.products.table.price') }}</th>
+                                <th class="px-4 py-3 text-right">{{ __('messages.products.table.actions') }}</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-black/5 text-sm">
@@ -51,6 +52,27 @@
                                     <td class="px-4 py-3 text-slate-800">{{ $product->name }}</td>
                                     <td class="px-4 py-3 text-slate-700">{{ $product->unit ?? '—' }}</td>
                                     <td class="px-4 py-3 text-right text-slate-900">¥{{ number_format($product->price ?? 0) }}</td>
+                                    <td class="px-4 py-3">
+                                        <div class="flex justify-end gap-2">
+                                            <a
+                                                href="{{ route('products.form', ['product' => $product->getKey()]) }}"
+                                                class="btn-secondary px-3 py-1 text-xs"
+                                            >
+                                                {{ __('messages.products.actions.edit') }}
+                                            </a>
+                                            <form
+                                                method="POST"
+                                                action="{{ route('products.destroy', $product) }}"
+                                                onsubmit="return confirm('{{ __('messages.products.actions.confirm_delete', ['code' => $product->code ?? '—', 'name' => $product->name]) }}');"
+                                            >
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="btn-danger px-3 py-1 text-xs">
+                                                    {{ __('messages.products.actions.delete') }}
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
                                 </tr>
                             @endforeach
                         </tbody>

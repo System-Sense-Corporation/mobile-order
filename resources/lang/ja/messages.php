@@ -119,6 +119,9 @@ return [
         'description' => '取り扱い海産物の標準単位や単価を確認できます。',
         'actions' => [
             'create' => '商品を追加',
+            'edit' => '編集',
+            'delete' => '削除',
+            'confirm_delete' => '商品「:name」（:code）を削除しますか？この操作は元に戻せません。',
         ],
         'empty' => [
             'title' => '登録されている商品がありません',
@@ -126,14 +129,18 @@ return [
         ],
         'flash' => [
             'saved' => '商品「:code」を保存しました。',
+            'updated' => '商品「:code」を更新しました。',
+            'deleted' => '商品「:code」を削除しました。',
         ],
         'table' => [
             'code' => '商品コード',
             'name' => '商品名',
             'unit' => '単位',
             'price' => '単価 (円)',
+            'actions' => '操作',
         ],
         'form' => [
+            'edit_title' => '商品を編集',
             'title' => '商品情報',
             'description' => '商品マスタを最新の状態に保つための登録・編集内容を入力します。',
             'validation_error' => '入力内容をご確認のうえ、再度お試しください。',
@@ -152,6 +159,7 @@ return [
             'buttons' => [
                 'cancel' => '一覧に戻る',
                 'save' => '商品を保存',
+                'update' => '商品を更新',
             ],
             'sidebar' => [
                 'title' => '入力内容のプレビュー',
