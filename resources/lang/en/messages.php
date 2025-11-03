@@ -116,11 +116,41 @@ return [
     ],
     'products' => [
         'title' => 'Product Master',
+        'description' => 'Reference standard units and pricing for handled seafood items.',
+        'demo_notice' => 'Sample product data is shown for preview only.',
+        'actions' => [
+            'create' => 'Add product',
+        ],
         'table' => [
             'code' => 'Product Code',
             'name' => 'Product Name',
             'unit' => 'Unit',
             'price' => 'Unit Price (JPY)',
+        ],
+        'form' => [
+            'title' => 'Product details',
+            'description' => 'Register or edit product information to keep the master list up to date.',
+            'fields' => [
+                'code' => 'Product code',
+                'name' => 'Product name',
+                'unit' => 'Unit',
+                'price' => 'Unit price (JPY)',
+            ],
+            'placeholders' => [
+                'code' => 'e.g. P-1001',
+                'name' => 'Enter product name',
+                'unit' => 'Enter unit (pack, case, etc.)',
+                'price' => 'Enter price per unit',
+            ],
+            'buttons' => [
+                'cancel' => 'Back to list',
+                'save' => 'Save product',
+            ],
+            'sidebar' => [
+                'title' => 'Sample master data',
+                'description' => 'Use the form to keep product codes, units, and prices aligned with the reference list.',
+                'note' => 'These demo values mirror what is displayed on the product master table.',
+            ],
         ],
     ],
     'customers' => [

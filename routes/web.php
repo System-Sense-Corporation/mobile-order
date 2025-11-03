@@ -27,6 +27,7 @@ Route::middleware('auth')->group(function () {
     Route::patch('/orders/{order}/status', [OrderController::class, 'updateStatus'])->name('orders.status');
     Route::delete('/orders/{order}', [OrderController::class, 'destroy'])->name('orders.destroy');
     Route::get('/products', fn () => view('products'))->name('products');
+    Route::get('/products/form', fn () => view('products.form'))->name('products.form');
     Route::get('/customers', [CustomerController::class, 'index'])->name('customers');
     Route::get('/customers/form', [CustomerController::class, 'create'])->name('customers.form');
     Route::post('/customers', [CustomerController::class, 'store'])->name('customers.store');
