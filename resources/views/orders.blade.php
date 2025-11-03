@@ -41,7 +41,7 @@
                         ->mapWithKeys(fn ($label, $status) => [$status => $statusClasses[$status] ?? $statusClasses['default']])
                         ->toArray();
                 @endphp
-                <div class="hidden overflow-x-auto md:block">
+                <div class="orders-table overflow-x-auto">
                     <table class="min-w-full divide-y divide-slate-200">
                         <thead class="bg-white">
                             <tr>
@@ -144,7 +144,7 @@
                     </table>
                 </div>
 
-                <div class="space-y-4 md:hidden">
+                <div class="orders-mobile space-y-4">
                     @foreach ($orders as $order)
                         @php
                             $timestamp = $order->created_at ?? ($order->received_at ? \Illuminate\Support\Carbon::parse($order->received_at) : null);
@@ -237,6 +237,24 @@
         </div>
     </div>
 @endsection
+
+@push('styles')
+    <style>
+        .orders-mobile {
+            display: none;
+        }
+
+        @media (max-width: 767.98px) {
+            .orders-table {
+                display: none;
+            }
+
+            .orders-mobile {
+                display: block;
+            }
+        }
+    </style>
+@endpush
 
 @push('scripts')
     <script>
