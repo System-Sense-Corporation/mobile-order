@@ -59,25 +59,24 @@ return [
             'notes' => 'Notes',
         ],
         'placeholders' => [
+            'customer' => 'Select a customer',
+            'product' => 'Select a product',
             'notes' => 'Enter additional notes if necessary',
         ],
         'buttons' => [
             'reset' => 'Clear',
-            'submit' => 'Save Draft',
+            'submit' => 'Save Order',
+            'update' => 'Update Order',
         ],
-        'options' => [
-            'customers' => [
-                '鮮魚酒場 波しぶき',
-                'レストラン 潮彩',
-                'ホテル ブルーサンズ',
-            ],
-            'products' => [
-                '本マグロ 柵 500g',
-                'サーモン フィレ 1kg',
-                'ボタンエビ 20尾',
-                '真鯛 1尾',
-            ],
+        'empty' => [
+            'customers' => 'No customers available',
+            'products' => 'No products available',
         ],
+        'flash' => [
+            'saved' => 'The order was registered successfully.',
+            'updated' => 'The order was updated successfully.',
+        ],
+        'demo_notice' => 'Sample customer and product data are shown for preview only.',
     ],
     'orders' => [
         'title' => "Today's Orders",
@@ -86,12 +85,25 @@ return [
             'customer' => 'Customer',
             'items' => 'Order Details',
             'status' => 'Status',
+            'actions' => 'Actions',
+        ],
+        'labels' => [
+            'delivery' => 'Delivery',
+            'notes' => 'Notes',
         ],
         'statuses' => [
             'pending' => 'Pending Review',
             'preparing' => 'Preparing Shipment',
             'shipped' => 'Shipped',
         ],
+        'flash' => [
+            'status_updated' => 'Order status updated.',
+            'updated' => 'Order details updated.',
+        ],
+        'actions' => [
+            'edit' => 'Edit',
+        ],
+        'empty' => 'No orders have been submitted yet.',
         'samples' => [
             'tuna' => 'Bluefin tuna block 500g × 2',
             'salmon' => 'Salmon fillet 1kg × 5',
@@ -110,6 +122,7 @@ return [
     ],
     'customers' => [
         'title' => 'Customer Master',
+        'description' => 'Manage client contact information and internal notes.',
         'contact_label' => 'Contact',
         'contact_person' => 'Contact person',
         'notes_label' => 'Notes',
@@ -117,7 +130,76 @@ return [
             'wave' => 'Deliver every morning at 8:00',
             'shiosai' => 'Prefers premium white fish',
             'blue_sands' => 'Places bulk orders regularly',
-            'koharu' => 'Occasionally closed on Saturdays',
+        ],
+        'demo_notice' => 'Sample customer data is shown for preview only.',
+        'actions' => [
+            'create' => 'Add customer',
+            'edit' => 'Edit',
+            'delete' => 'Delete',
+            'update' => 'Save changes',
+            'confirm_delete' => 'Are you sure you want to delete ":name"? This action cannot be undone.',
+        ],
+        'empty' => [
+            'title' => 'No customers registered yet',
+            'description' => 'Start by adding a customer using the button above.',
+        ],
+        'flash' => [
+            'saved' => 'Customer ":name" was saved successfully.',
+            'updated' => 'Customer ":name" was updated successfully.',
+            'deleted' => 'Customer ":name" was deleted successfully.',
+        ],
+        'form' => [
+            'title' => 'Customer details',
+            'description' => 'Review and update registration details for this customer.',
+            'status' => [
+                'editing' => 'Editing draft',
+                'creating' => 'New customer',
+            ],
+            'fields' => [
+                'name' => 'Customer name',
+                'contact' => 'Contact information',
+                'person' => 'Primary contact person',
+                'note' => 'Internal note',
+            ],
+            'placeholders' => [
+                'name' => 'Enter customer name',
+                'contact' => 'Enter phone number or email',
+                'person' => 'Enter contact person',
+                'note' => 'Add reminders for deliveries, preferences, etc.',
+            ],
+            'buttons' => [
+                'cancel' => 'Cancel',
+                'save' => 'Save customer',
+                'update' => 'Update customer',
+            ],
+            'sidebar' => [
+                'title' => 'Registration summary',
+                'labels' => [
+                    'customer_code' => 'Customer code',
+                    'created_at' => 'Created on',
+                    'last_updated' => 'Last updated',
+                ],
+                'note' => 'Use this form to keep customer contact details consistent with the master list.',
+            ],
+        ],
+        'validation' => [
+            'name' => [
+                'required' => 'Please enter a customer name.',
+                'string' => 'Customer name must be text.',
+                'max' => 'Customer name may not be greater than :max characters.',
+            ],
+            'contact' => [
+                'string' => 'Contact information must be text.',
+                'max' => 'Contact information may not be greater than :max characters.',
+            ],
+            'contact_person' => [
+                'string' => 'Contact person must be text.',
+                'max' => 'Contact person may not be greater than :max characters.',
+            ],
+            'notes' => [
+                'string' => 'Notes must be text.',
+                'max' => 'Notes may not be greater than :max characters.',
+            ],
         ],
     ],
     'admin_users' => [

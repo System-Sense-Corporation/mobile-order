@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -16,19 +18,30 @@ Route::middleware('auth')->group(function () {
 
     // pages
     Route::get('/', fn () => view('index'))->name('home');
-    Route::get('/mobile-order', fn () => view('mobile-order'))->name('mobile-order');
-    Route::get('/orders', fn () => view('orders'))->name('orders');
+    Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
+    Route::get('/orders/form', [OrderController::class, 'create'])->name('orders.create');
+    Route::redirect('/mobile-order', '/orders/form')->name('mobile-order.legacy');
+    Route::redirect('/orders/create', '/orders/form');
+    Route::post('/orders', [OrderController::class, 'store'])->name('orders.store');
+    Route::put('/orders/{order}', [OrderController::class, 'update'])->name('orders.update');
+    Route::patch('/orders/{order}/status', [OrderController::class, 'updateStatus'])->name('orders.status');
     Route::get('/products', fn () => view('products'))->name('products');
-    Route::get('/customers', fn () => view('customers'))->name('customers');
+    Route::get('/customers', [CustomerController::class, 'index'])->name('customers');
+    Route::get('/customers/form', [CustomerController::class, 'create'])->name('customers.form');
+    Route::post('/customers', [CustomerController::class, 'store'])->name('customers.store');
+    Route::get('/customers/{customer}/edit', [CustomerController::class, 'edit'])->name('customers.edit');
+    Route::put('/customers/{customer}', [CustomerController::class, 'update'])->name('customers.update');
+    Route::delete('/customers/{customer}', [CustomerController::class, 'destroy'])->name('customers.destroy');
     Route::get('/admin/users', fn () => view('admin.users'))->name('admin.users');
     Route::get('/settings', fn () => view('settings'))->name('settings');
 
     // ✅ Profile (แก้ไข + บันทึก)
-Route::get('/profile', [\App\Http\Controllers\ProfileController::class, 'edit'])
+    Route::get('/profile', [ProfileController::class, 'edit'])
         ->name('profile');
 
-    Route::post('/profile', [\App\Http\Controllers\ProfileController::class, 'update'])
-        ->name('profile.update');});
+    Route::post('/profile', [ProfileController::class, 'update'])
+        ->name('profile.update');
+});
 
 Route::post('/locale', function (Request $request) {
     $availableLocales = config('app.available_locales', []);

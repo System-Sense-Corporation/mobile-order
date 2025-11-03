@@ -2,6 +2,9 @@
 
 namespace Database\Seeders;
 
+use App\Models\Customer;
+use App\Models\Order;
+use App\Models\Product;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -15,7 +18,108 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
+        $customers = collect([
+            [
+                'name' => '鮮魚酒場 波しぶき',
+                'contact' => '03-1234-5678',
+                'contact_person' => '山田様',
+                'notes' => 'Deliver every morning at 8:00',
+            ],
+            [
+                'name' => 'レストラン 潮彩',
+                'contact' => '045-432-1111',
+                'contact_person' => '佐藤シェフ',
+                'notes' => 'Prefers premium white fish',
+            ],
+            [
+                'name' => 'ホテル ブルーサンズ',
+                'contact' => '0467-222-0099',
+                'contact_person' => '購買部 三浦様',
+                'notes' => 'Places bulk orders regularly',
+            ],
+        ])->mapWithKeys(function (array $customer) {
+            $model = Customer::create($customer);
+
+            return [$model->name => $model];
+        });
+
+        $products = collect([
+            [
+                'name' => '本マグロ 柵 500g',
+                'unit' => 'block',
+                'price' => 7800,
+            ],
+            [
+                'name' => 'サーモンフィレ 1kg',
+                'unit' => 'fillet',
+                'price' => 4200,
+            ],
+            [
+                'name' => 'ボタンエビ 20尾',
+                'unit' => 'pack',
+                'price' => 5600,
+            ],
+            [
+                'name' => '真鯛 1尾',
+                'unit' => 'whole fish',
+                'price' => 3200,
+            ],
+        ])->mapWithKeys(function (array $product) {
+            $model = Product::create($product);
+
+            return [$model->name => $model];
+        });
+
+        $today = now();
+
+        $orders = [
+            [
+                'customer' => '鮮魚酒場 波しぶき',
+                'product' => '本マグロ 柵 500g',
+                'quantity' => 2,
+                'status' => 'pending',
+                'order_date' => $today->copy()->subDay()->toDateString(),
+                'delivery_date' => $today->copy()->addDay()->toDateString(),
+                'notes' => 'Deliver before noon – sashimi grade required.',
+            ],
+            [
+                'customer' => 'レストラン 潮彩',
+                'product' => 'サーモンフィレ 1kg',
+                'quantity' => 5,
+                'status' => 'preparing',
+                'order_date' => $today->copy()->subDays(2)->toDateString(),
+                'delivery_date' => $today->copy()->addDays(2)->toDateString(),
+                'notes' => 'Slice into 200g portions before delivery.',
+            ],
+            [
+                'customer' => 'ホテル ブルーサンズ',
+                'product' => 'ボタンエビ 20尾',
+                'quantity' => 3,
+                'status' => 'shipped',
+                'order_date' => $today->copy()->subDays(3)->toDateString(),
+                'delivery_date' => $today->copy()->addDay()->toDateString(),
+                'notes' => 'Pack with extra ice packs.',
+            ],
+        ];
+
+        foreach ($orders as $order) {
+            $customer = $customers[$order['customer']] ?? null;
+            $product = $products[$order['product']] ?? null;
+
+            if (! $customer || ! $product) {
+                continue;
+            }
+
+            Order::create([
+                'customer_id' => $customer->id,
+                'product_id' => $product->id,
+                'quantity' => $order['quantity'],
+                'status' => $order['status'],
+                'order_date' => $order['order_date'],
+                'delivery_date' => $order['delivery_date'],
+                'notes' => $order['notes'],
+            ]);
+        }
 
         User::factory()->create([
             'name' => 'Test User',
