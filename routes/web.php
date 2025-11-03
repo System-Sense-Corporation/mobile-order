@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\OrderController;
+use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -19,13 +20,19 @@ Route::middleware('auth')->group(function () {
     // pages
     Route::get('/', fn () => view('index'))->name('home');
     Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
+    Route::get('/orders/export', [OrderController::class, 'export'])->name('orders.export');
     Route::get('/orders/form', [OrderController::class, 'create'])->name('orders.create');
     Route::redirect('/mobile-order', '/orders/form')->name('mobile-order.legacy');
     Route::redirect('/orders/create', '/orders/form');
     Route::post('/orders', [OrderController::class, 'store'])->name('orders.store');
     Route::put('/orders/{order}', [OrderController::class, 'update'])->name('orders.update');
     Route::patch('/orders/{order}/status', [OrderController::class, 'updateStatus'])->name('orders.status');
-    Route::get('/products', fn () => view('products'))->name('products');
+    Route::delete('/orders/{order}', [OrderController::class, 'destroy'])->name('orders.destroy');
+    Route::get('/products', [ProductController::class, 'index'])->name('products');
+    Route::get('/products/form', [ProductController::class, 'create'])->name('products.form');
+    Route::post('/products', [ProductController::class, 'store'])->name('products.store');
+    Route::put('/products/{product}', [ProductController::class, 'update'])->name('products.update');
+    Route::delete('/products/{product}', [ProductController::class, 'destroy'])->name('products.destroy');
     Route::get('/customers', [CustomerController::class, 'index'])->name('customers');
     Route::get('/customers/form', [CustomerController::class, 'create'])->name('customers.form');
     Route::post('/customers', [CustomerController::class, 'store'])->name('customers.store');

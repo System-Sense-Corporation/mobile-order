@@ -99,9 +99,13 @@ return [
         'flash' => [
             'status_updated' => 'ステータスを更新しました。',
             'updated' => '受注内容を更新しました。',
+            'deleted' => '受注を削除しました。',
         ],
         'actions' => [
             'edit' => '編集',
+            'delete' => '削除',
+            'download' => 'Excelをダウンロード',
+            'confirm_delete' => 'この受注を削除しますか？元に戻せません。',
         ],
         'empty' => 'まだ受注はありません。',
         'samples' => [
@@ -113,11 +117,70 @@ return [
     ],
     'products' => [
         'title' => '商品マスタ',
+        'description' => '取り扱い海産物の標準単位や単価を確認できます。',
+        'actions' => [
+            'create' => '商品を追加',
+            'edit' => '編集',
+            'delete' => '削除',
+            'confirm_delete' => '商品「:name」（:code）を削除しますか？この操作は元に戻せません。',
+        ],
+        'empty' => [
+            'title' => '登録されている商品がありません',
+            'description' => '右上のボタンから商品を追加してください。',
+        ],
+        'flash' => [
+            'saved' => '商品「:code」を保存しました。',
+            'updated' => '商品「:code」を更新しました。',
+            'deleted' => '商品「:code」を削除しました。',
+        ],
         'table' => [
             'code' => '商品コード',
             'name' => '商品名',
             'unit' => '単位',
             'price' => '単価 (円)',
+            'actions' => '操作',
+        ],
+        'form' => [
+            'edit_title' => '商品を編集',
+            'title' => '商品情報',
+            'description' => '商品マスタを最新の状態に保つための登録・編集内容を入力します。',
+            'validation_error' => '入力内容をご確認のうえ、再度お試しください。',
+            'fields' => [
+                'code' => '商品コード',
+                'name' => '商品名',
+                'unit' => '単位',
+                'price' => '単価 (円)',
+            ],
+            'placeholders' => [
+                'code' => '例: P-1001',
+                'name' => '商品名を入力してください',
+                'unit' => '単位を入力してください（パックなど）',
+                'price' => '単価を入力してください',
+            ],
+            'buttons' => [
+                'cancel' => '一覧に戻る',
+                'save' => '商品を保存',
+                'update' => '商品を更新',
+            ],
+            'sidebar' => [
+                'title' => '入力内容のプレビュー',
+                'description' => '保存前に入力した商品コード・単位・単価を確認できます。',
+                'note' => '上部のフォーム入力に合わせてプレビューが更新されます。',
+            ],
+        ],
+        'validation' => [
+            'code' => [
+                'required' => '商品コードを入力してください。',
+                'unique' => 'この商品コードは既に使用されています。',
+            ],
+            'name' => [
+                'required' => '商品名を入力してください。',
+            ],
+            'price' => [
+                'required' => '単価を入力してください。',
+                'integer' => '単価は整数で入力してください。',
+                'min' => '単価は0以上で入力してください。',
+            ],
         ],
     ],
     'customers' => [
