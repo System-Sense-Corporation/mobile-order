@@ -9,6 +9,11 @@
         $customersAreDemo = $customersAreDemo ?? false;
         $productsAreDemo = $productsAreDemo ?? false;
     @endphp
+    @if (session('status'))
+        <div class="mb-6 rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700">
+            {{ session('status') }}
+        </div>
+    @endif
     <div class="rounded-lg bg-white p-6 shadow-sm ring-1 ring-black/5">
         <form class="space-y-6" method="POST" action="{{ route('orders.store') }}">
             @csrf

@@ -15,26 +15,6 @@ use Illuminate\Support\Facades\Schema;
 class OrderController extends Controller
 {
     /**
-     * Display a listing of the resource.
-     */
-    public function index(): View
-    {
-        $orders = collect();
-
-        if (Schema::hasTable('orders')) {
-            $orders = Order::query()
-                ->with(['customer', 'product'])
-                ->orderByDesc('order_date')
-                ->orderByDesc('created_at')
-                ->get();
-        }
-
-        return view('orders', [
-            'orders' => $orders,
-        ]);
-    }
-
-    /**
      * Show the form for creating a new resource.
      */
     public function create(): View
@@ -96,7 +76,7 @@ class OrderController extends Controller
         ]);
 
         return redirect()
-            ->route('orders')
+            ->route('orders.create')
             ->with('status', __('messages.mobile_order.flash.saved'));
     }
 

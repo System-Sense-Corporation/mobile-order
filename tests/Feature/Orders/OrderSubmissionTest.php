@@ -3,7 +3,6 @@
 namespace Tests\Feature\Orders;
 
 use App\Models\Customer;
-use App\Models\Order;
 use App\Models\Product;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -32,7 +31,8 @@ class OrderSubmissionTest extends TestCase
 
         $response = $this->post(route('orders.store'), $payload);
 
-        $response->assertRedirect(route('orders'));
+        $response->assertRedirect(route('orders.create'));
+        $response->assertSessionHas('status', __('messages.mobile_order.flash.saved'));
 
         $this->assertDatabaseHas('orders', [
             'customer_id' => $customer->id,
@@ -42,27 +42,4 @@ class OrderSubmissionTest extends TestCase
         ]);
     }
 
-    public function test_submitted_order_is_visible_on_orders_page(): void
-    {
-        $user = User::factory()->create();
-
-        $order = Order::factory()
-            ->for(Customer::factory()->state(['name' => 'Test Bistro']))
-            ->for(Product::factory()->state(['name' => 'Premium Salmon']))
-            ->create([
-                'quantity' => 3,
-                'order_date' => now()->toDateString(),
-                'delivery_date' => now()->addDays(2)->toDateString(),
-                'notes' => 'Deliver before noon',
-            ]);
-
-        $response = $this->actingAs($user)->get(route('orders'));
-
-        $response->assertOk();
-        $response->assertSee('Test Bistro');
-        $response->assertSee('Premium Salmon');
-        $response->assertSee($order->order_date->format('Y-m-d'));
-        $response->assertSee('× ' . number_format($order->quantity));
-        $response->assertSee('Deliver before noon');
-    }
 }
