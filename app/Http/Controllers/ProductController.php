@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Product;
+use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\View\View;
 
 class ProductController extends Controller
@@ -14,9 +16,17 @@ class ProductController extends Controller
      */
     public function index(): View
     {
-        $products = Product::query()
-            ->orderBy('code')
-            ->get();
+        $this->ensureCodeColumnExists();
+
+        $query = Product::query();
+
+        if (Schema::hasColumn($query->getModel()->getTable(), 'code')) {
+            $query->orderBy('code');
+        } else {
+            $query->orderBy('name');
+        }
+
+        $products = $query->get();
 
         return view('products', [
             'products' => $products,
@@ -38,6 +48,8 @@ class ProductController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
+        $this->ensureCodeColumnExists();
+
         $validated = $request->validate(
             [
                 'code' => ['required', 'string', 'max:50', 'unique:products,code'],
@@ -63,5 +75,19 @@ class ProductController extends Controller
                 'code' => $product->code,
                 'name' => $product->name,
             ]));
+    }
+
+    /**
+     * Ensure the products table contains the code column for legacy databases.
+     */
+    protected function ensureCodeColumnExists(): void
+    {
+        if (! Schema::hasTable('products') || Schema::hasColumn('products', 'code')) {
+            return;
+        }
+
+        Schema::table('products', function (Blueprint $table) {
+            $table->string('code')->nullable()->after('id');
+        });
     }
 }
