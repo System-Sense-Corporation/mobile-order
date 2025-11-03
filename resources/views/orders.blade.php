@@ -49,7 +49,8 @@
                         <tbody class="divide-y divide-slate-100 bg-white text-sm text-slate-700">
                             @foreach ($orders as $order)
                                 @php
-                                    $createdAt = optional($order->created_at)?->timezone(config('app.timezone'))->format('H:i');
+                                    $timestamp = $order->created_at ?? ($order->received_at ? \Illuminate\Support\Carbon::parse($order->received_at) : null);
+                                    $createdAt = optional($timestamp)?->timezone(config('app.timezone'))->format('H:i');
                                     $statusLabels = __('messages.orders.statuses');
                                     $statusLabel = $statusLabels[$order->status] ?? ucfirst($order->status);
                                     $statusStyles = [
@@ -64,17 +65,25 @@
                                         {{ $createdAt }}
                                     </td>
                                     <td class="max-w-xs px-6 py-4 text-sm font-medium text-slate-900">
-                                        {{ $order->customer?->name ?? '—' }}
+                                        {{ $order->customer?->name ?? $order->customer_name ?? '—' }}
                                     </td>
                                     <td class="px-6 py-4 text-sm">
-                                        <div class="font-medium text-slate-900">
-                                            {{ $order->product?->name ?? '—' }} × {{ number_format($order->quantity) }}
-                                        </div>
+                                        @if ($order->product)
+                                            <div class="font-medium text-slate-900">
+                                                {{ $order->product->name }} × {{ number_format($order->quantity ?? 1) }}
+                                            </div>
+                                        @elseif (! empty($order->items))
+                                            <div class="font-medium text-slate-900">
+                                                {{ $order->items }}
+                                            </div>
+                                        @else
+                                            <div class="font-medium text-slate-900">—</div>
+                                        @endif
                                         <div class="mt-1 text-xs text-slate-500">
                                             {{ __('messages.orders.labels.delivery') }}:
                                             {{ optional($order->delivery_date)?->format('Y/m/d') ?? '—' }}
                                         </div>
-                                        @if ($order->notes)
+                                        @if (! empty($order->notes))
                                             <div class="mt-1 text-xs text-slate-500">
                                                 {{ __('messages.orders.labels.notes') }}: {{ $order->notes }}
                                             </div>

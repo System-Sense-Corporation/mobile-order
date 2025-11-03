@@ -6,6 +6,7 @@ use App\Models\Customer;
 use App\Models\Order;
 use App\Models\Product;
 use App\Support\DemoCustomerData;
+use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -19,6 +20,8 @@ class OrderController extends Controller
      */
     public function index(): View
     {
+        $this->ensureOrdersTableSupportsForm();
+
         if (! Schema::hasTable('orders')) {
             $orders = collect();
         } else {
@@ -72,6 +75,8 @@ class OrderController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
+        $this->ensureOrdersTableSupportsForm();
+
         DemoCustomerData::ensureInDatabase();
         $this->ensureDemoProductsInDatabase();
 
@@ -97,6 +102,57 @@ class OrderController extends Controller
         return redirect()
             ->route('orders.index')
             ->with('status', __('messages.mobile_order.flash.saved'));
+    }
+
+    private function ensureOrdersTableSupportsForm(): void
+    {
+        if (! Schema::hasTable('orders')) {
+            return;
+        }
+
+        $missing = [
+            'customer_id' => ! Schema::hasColumn('orders', 'customer_id'),
+            'product_id' => ! Schema::hasColumn('orders', 'product_id'),
+            'quantity' => ! Schema::hasColumn('orders', 'quantity'),
+            'status' => ! Schema::hasColumn('orders', 'status'),
+            'order_date' => ! Schema::hasColumn('orders', 'order_date'),
+            'delivery_date' => ! Schema::hasColumn('orders', 'delivery_date'),
+            'notes' => ! Schema::hasColumn('orders', 'notes'),
+        ];
+
+        if (! in_array(true, $missing, true)) {
+            return;
+        }
+
+        Schema::table('orders', function (Blueprint $table) use ($missing): void {
+            if ($missing['customer_id']) {
+                $table->unsignedBigInteger('customer_id')->nullable();
+            }
+
+            if ($missing['product_id']) {
+                $table->unsignedBigInteger('product_id')->nullable();
+            }
+
+            if ($missing['quantity']) {
+                $table->unsignedInteger('quantity')->default(1);
+            }
+
+            if ($missing['status']) {
+                $table->string('status')->default('pending');
+            }
+
+            if ($missing['order_date']) {
+                $table->date('order_date')->nullable();
+            }
+
+            if ($missing['delivery_date']) {
+                $table->date('delivery_date')->nullable();
+            }
+
+            if ($missing['notes']) {
+                $table->text('notes')->nullable();
+            }
+        });
     }
 
     private function sampleProducts(): Collection
