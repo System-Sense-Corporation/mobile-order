@@ -31,7 +31,7 @@ class OrderSubmissionTest extends TestCase
 
         $response = $this->post(route('orders.store'), $payload);
 
-        $response->assertRedirect(route('orders.create'));
+        $response->assertRedirect(route('orders.index'));
         $response->assertSessionHas('status', __('messages.mobile_order.flash.saved'));
 
         $this->assertDatabaseHas('orders', [
