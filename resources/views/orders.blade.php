@@ -75,7 +75,7 @@
                 @empty
                     <tr>
                         <td colspan="4" class="px-4 py-6 text-center text-sm text-black/50">
-                            {{ __('No orders found.') }}
+                            {{ __('messages.orders.empty') }}
                         </td>
                     </tr>
                 @endforelse
