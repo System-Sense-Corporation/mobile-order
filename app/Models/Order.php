@@ -10,6 +10,19 @@ class Order extends Model
 {
     use HasFactory;
 
+    public const STATUS_PENDING = 'pending';
+    public const STATUS_PREPARING = 'preparing';
+    public const STATUS_SHIPPED = 'shipped';
+
+    /**
+     * @var array<int, string>
+     */
+    public const STATUSES = [
+        self::STATUS_PENDING,
+        self::STATUS_PREPARING,
+        self::STATUS_SHIPPED,
+    ];
+
     /**
      * @var array<int, string>
      */
@@ -45,5 +58,13 @@ class Order extends Model
     public function product(): BelongsTo
     {
         return $this->belongsTo(Product::class);
+    }
+
+    /**
+     * @return array<int, string>
+     */
+    public static function allowedStatuses(): array
+    {
+        return self::STATUSES;
     }
 }

@@ -93,6 +93,9 @@ return [
             'preparing' => '出荷準備中',
             'shipped' => '出荷済',
         ],
+        'flash' => [
+            'status_updated' => 'ステータスを更新しました。',
+        ],
         'empty' => 'まだ受注はありません。',
         'samples' => [
             'tuna' => '本マグロ 柵 500g × 2',

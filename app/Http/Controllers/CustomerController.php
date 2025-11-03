@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Customer;
 use App\Support\DemoCustomerData;
 use Illuminate\Contracts\View\View;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
@@ -13,7 +14,7 @@ use Illuminate\Support\Facades\Schema;
 
 class CustomerController extends Controller
 {
-    public function index(): View
+    public function index(Request $request): View|JsonResponse
     {
         if (Schema::hasTable('customers')) {
             DemoCustomerData::ensureInDatabase();
@@ -22,6 +23,18 @@ class CustomerController extends Controller
         } else {
             $customers = DemoCustomerData::sample();
             $customersAreDemo = true;
+        }
+
+        if ($request->wantsJson()) {
+            return response()->json([
+                'data' => $customers->map(static function ($customer): array {
+                    return [
+                        'id' => (string) $customer->id,
+                        'name' => $customer->name,
+                    ];
+                })->values(),
+                'demo' => $customersAreDemo,
+            ]);
         }
 
         return view('customers', [

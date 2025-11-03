@@ -9,7 +9,17 @@
         $customersAreDemo = $customersAreDemo ?? false;
         $productsAreDemo = $productsAreDemo ?? false;
     @endphp
-    <div class="rounded-lg bg-white p-6 shadow-sm ring-1 ring-black/5">
+    @if (session('status'))
+        <div class="mb-6 rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700">
+            {{ session('status') }}
+        </div>
+    @endif
+    <div
+        class="rounded-lg bg-white p-6 shadow-sm ring-1 ring-black/5"
+        data-mobile-order-card
+        data-customers-demo="{{ $customersAreDemo ? 'true' : 'false' }}"
+        data-products-demo="{{ $productsAreDemo ? 'true' : 'false' }}"
+    >
         <form class="space-y-6" method="POST" action="{{ route('orders.store') }}">
             @csrf
             <div class="grid gap-4 sm:grid-cols-2">
@@ -42,7 +52,14 @@
             </div>
             <label class="form-field">
                 <span class="form-label">{{ __('messages.mobile_order.fields.customer') }}</span>
-                <select name="customer_id" class="form-input" required>
+                <select
+                    name="customer_id"
+                    class="form-input"
+                    required
+                    data-customer-select
+                    data-source="{{ route('customers') }}"
+                    data-empty-text="{{ __('messages.mobile_order.empty.customers') }}"
+                >
                     <option value="" disabled {{ old('customer_id') ? '' : 'selected' }}>
                         {{ __('messages.mobile_order.placeholders.customer') }}
                     </option>
@@ -105,9 +122,153 @@
             </div>
         </form>
         @if ($customersAreDemo || $productsAreDemo)
-            <p class="mt-4 text-xs text-black/50">
+            <p class="mt-4 text-xs text-black/50" data-demo-notice>
                 {{ __('messages.mobile_order.demo_notice') }}
             </p>
         @endif
     </div>
 @endsection
+
+@push('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const container = document.querySelector('[data-mobile-order-card]');
+
+            if (!container) {
+                return;
+            }
+
+            const select = container.querySelector('[data-customer-select]');
+
+            if (!select) {
+                return;
+            }
+
+            const source = select.dataset.source;
+            const emptyText = select.dataset.emptyText || '';
+            const demoNotice = container.querySelector('[data-demo-notice]');
+            const productsDemo = container.dataset.productsDemo === 'true';
+            const placeholderOption = select.querySelector('option[value=""]');
+            const placeholderTemplate = placeholderOption ? placeholderOption.cloneNode(true) : null;
+
+            const updateNotice = (customersDemo) => {
+                container.dataset.customersDemo = customersDemo ? 'true' : 'false';
+
+                if (!demoNotice) {
+                    return;
+                }
+
+                const shouldShow = customersDemo || productsDemo;
+                demoNotice.classList.toggle('hidden', !shouldShow);
+            };
+
+            updateNotice(container.dataset.customersDemo === 'true');
+
+            if (!source) {
+                return;
+            }
+
+            const renderOptions = (customers) => {
+                const previousValue = select.value;
+                const normalizedCustomers = Array.isArray(customers) ? customers : [];
+                const previousExists = normalizedCustomers.some((customer) => String(customer.id) === String(previousValue));
+
+                select.innerHTML = '';
+
+                if (normalizedCustomers.length === 0) {
+                    if (placeholderTemplate) {
+                        const emptyPlaceholder = placeholderTemplate.cloneNode(true);
+                        emptyPlaceholder.textContent = emptyText;
+                        emptyPlaceholder.disabled = true;
+                        emptyPlaceholder.selected = true;
+                        select.appendChild(emptyPlaceholder);
+                    } else {
+                        const emptyOption = document.createElement('option');
+                        emptyOption.value = '';
+                        emptyOption.disabled = true;
+                        emptyOption.selected = true;
+                        emptyOption.textContent = emptyText;
+                        select.appendChild(emptyOption);
+                    }
+
+                    select.disabled = true;
+
+                    return;
+                }
+
+                if (placeholderTemplate) {
+                    const placeholderClone = placeholderTemplate.cloneNode(true);
+                    placeholderClone.selected = !previousValue || !previousExists;
+                    select.appendChild(placeholderClone);
+                }
+
+                normalizedCustomers.forEach((customer) => {
+                    const option = document.createElement('option');
+                    option.value = String(customer.id);
+                    option.textContent = customer.name;
+
+                    if (previousExists && String(customer.id) === String(previousValue)) {
+                        option.selected = true;
+                    }
+
+                    select.appendChild(option);
+                });
+
+                if (!previousExists && previousValue && !placeholderTemplate && select.options.length > 0) {
+                    select.options[0].selected = true;
+                }
+
+                select.disabled = false;
+            };
+
+            let isFetching = false;
+
+            const refreshCustomers = () => {
+                if (!source || isFetching) {
+                    return;
+                }
+
+                isFetching = true;
+
+                fetch(source, {
+                    method: 'GET',
+                    headers: {
+                        Accept: 'application/json',
+                    },
+                    credentials: 'same-origin',
+                })
+                    .then((response) => {
+                        if (!response.ok) {
+                            throw new Error('Request failed');
+                        }
+
+                        return response.json();
+                    })
+                    .then((payload) => {
+                        renderOptions(payload.data || []);
+                        updateNotice(Boolean(payload.demo));
+                    })
+                    .catch(() => {
+                        // silently ignore refresh errors to avoid interrupting the form
+                    })
+                    .finally(() => {
+                        isFetching = false;
+                    });
+            };
+
+            refreshCustomers();
+
+            const intervalId = window.setInterval(refreshCustomers, 30000);
+
+            document.addEventListener('visibilitychange', () => {
+                if (!document.hidden) {
+                    refreshCustomers();
+                }
+            });
+
+            window.addEventListener('beforeunload', () => {
+                window.clearInterval(intervalId);
+            });
+        });
+    </script>
+@endpush

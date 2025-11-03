@@ -93,6 +93,9 @@ return [
             'preparing' => 'Preparing Shipment',
             'shipped' => 'Shipped',
         ],
+        'flash' => [
+            'status_updated' => 'Order status updated.',
+        ],
         'empty' => 'No orders have been submitted yet.',
         'samples' => [
             'tuna' => 'Bluefin tuna block 500g × 2',
