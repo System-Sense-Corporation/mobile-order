@@ -11,6 +11,7 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 class OrderController extends Controller
@@ -107,6 +108,14 @@ class OrderController extends Controller
     private function ensureOrdersTableSupportsForm(): void
     {
         if (! Schema::hasTable('orders')) {
+            $this->createOrdersTable();
+
+            return;
+        }
+
+        if (Schema::hasColumn('orders', 'customer_name') || Schema::hasColumn('orders', 'items')) {
+            $this->rebuildLegacyOrdersTable();
+
             return;
         }
 
@@ -126,11 +135,11 @@ class OrderController extends Controller
 
         Schema::table('orders', function (Blueprint $table) use ($missing): void {
             if ($missing['customer_id']) {
-                $table->unsignedBigInteger('customer_id')->nullable();
+                $table->unsignedBigInteger('customer_id')->nullable()->index();
             }
 
             if ($missing['product_id']) {
-                $table->unsignedBigInteger('product_id')->nullable();
+                $table->unsignedBigInteger('product_id')->nullable()->index();
             }
 
             if ($missing['quantity']) {
@@ -153,6 +162,125 @@ class OrderController extends Controller
                 $table->text('notes')->nullable();
             }
         });
+    }
+
+    private function createOrdersTable(): void
+    {
+        Schema::create('orders', function (Blueprint $table): void {
+            $table->id();
+            $table->unsignedBigInteger('customer_id')->nullable()->index();
+            $table->unsignedBigInteger('product_id')->nullable()->index();
+            $table->unsignedInteger('quantity');
+            $table->string('status')->default('pending');
+            $table->date('order_date')->nullable();
+            $table->date('delivery_date')->nullable();
+            $table->text('notes')->nullable();
+            $table->timestamps();
+        });
+    }
+
+    private function rebuildLegacyOrdersTable(): void
+    {
+        $backupTable = 'orders_legacy_runtime';
+
+        if (Schema::hasTable($backupTable)) {
+            Schema::drop($backupTable);
+        }
+
+        Schema::rename('orders', $backupTable);
+
+        $this->createOrdersTable();
+
+        $legacyOrders = DB::table($backupTable)->get();
+
+        foreach ($legacyOrders as $legacyOrder) {
+            $customerId = property_exists($legacyOrder, 'customer_id') ? $legacyOrder->customer_id : null;
+
+            if ($customerId === null) {
+                $customerId = $this->matchCustomerId($legacyOrder->customer_name ?? null);
+            }
+
+            $productId = property_exists($legacyOrder, 'product_id') ? $legacyOrder->product_id : null;
+            $quantity = property_exists($legacyOrder, 'quantity') ? $legacyOrder->quantity : null;
+
+            if ($productId === null && property_exists($legacyOrder, 'items')) {
+                [$matchedProductId, $matchedQuantity] = $this->matchProduct($legacyOrder->items ?? null);
+                $productId = $productId ?? $matchedProductId;
+
+                if ($quantity === null && $matchedQuantity !== null) {
+                    $quantity = $matchedQuantity;
+                }
+            }
+
+            DB::table('orders')->insert([
+                'customer_id' => $customerId,
+                'product_id' => $productId,
+                'quantity' => (int) ($quantity ?? 1),
+                'status' => $legacyOrder->status ?? 'pending',
+                'order_date' => $this->normalizeDate($legacyOrder->order_date ?? $legacyOrder->received_at ?? $legacyOrder->created_at ?? null),
+                'delivery_date' => $this->normalizeDate($legacyOrder->delivery_date ?? null),
+                'notes' => property_exists($legacyOrder, 'notes') ? $legacyOrder->notes : null,
+                'created_at' => $legacyOrder->created_at ?? now(),
+                'updated_at' => $legacyOrder->updated_at ?? ($legacyOrder->created_at ?? now()),
+            ]);
+        }
+
+        Schema::drop($backupTable);
+    }
+
+    private function matchCustomerId(?string $customerName): ?int
+    {
+        if ($customerName === null || $customerName === '' || ! Schema::hasTable('customers')) {
+            return null;
+        }
+
+        return DB::table('customers')->where('name', $customerName)->value('id');
+    }
+
+    /**
+     * @return array{0: int|null, 1: int|null}
+     */
+    private function matchProduct(?string $items): array
+    {
+        if ($items === null || $items === '' || ! Schema::hasTable('products')) {
+            return [null, null];
+        }
+
+        $productName = $items;
+        $quantity = null;
+        $trimmedItems = trim($items);
+
+        if ($trimmedItems !== '' && preg_match('/^(.+?)[\s\x{00D7}xX]+(\d+)$/u', $trimmedItems, $matches) === 1) {
+            $productName = trim($matches[1]);
+            $quantity = (int) $matches[2];
+        }
+
+        $productId = DB::table('products')->where('name', $productName)->value('id');
+
+        return [$productId ?: null, $quantity];
+    }
+
+    private function normalizeDate(mixed $value): ?string
+    {
+        if ($value instanceof \DateTimeInterface) {
+            return $value->format('Y-m-d');
+        }
+
+        if ($value === null || $value === '') {
+            return null;
+        }
+
+        if (is_numeric($value)) {
+            $timestamp = (int) $value;
+        } else {
+            $timestamp = strtotime((string) $value);
+        }
+
+        if ($timestamp === false) {
+            return null;
+        }
+
+        return date('Y-m-d', $timestamp);
     }
 
     private function sampleProducts(): Collection
