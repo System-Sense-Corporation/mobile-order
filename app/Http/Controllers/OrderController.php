@@ -15,6 +15,7 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Validation\Rule;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class OrderController extends Controller
 {
@@ -176,6 +177,103 @@ class OrderController extends Controller
         return redirect()
             ->route('orders.index')
             ->with('status', __('messages.orders.flash.status_updated'));
+    }
+
+    public function destroy(Order $order): RedirectResponse
+    {
+        $this->ensureOrdersTableSupportsForm();
+
+        $order->delete();
+
+        return redirect()
+            ->route('orders.index')
+            ->with('status', __('messages.orders.flash.deleted'));
+    }
+
+    public function export(): StreamedResponse
+    {
+        $this->ensureOrdersTableSupportsForm();
+
+        if (! Schema::hasTable('orders')) {
+            $orders = collect();
+        } else {
+            $orders = Order::query()
+                ->with(['customer', 'product'])
+                ->orderBy('created_at')
+                ->get();
+        }
+
+        $statusLabels = [
+            Order::STATUS_PENDING => __('messages.orders.statuses.pending'),
+            Order::STATUS_PREPARING => __('messages.orders.statuses.preparing'),
+            Order::STATUS_SHIPPED => __('messages.orders.statuses.shipped'),
+        ];
+
+        $filename = 'orders-' . now()->timezone(config('app.timezone'))->format('Ymd-His') . '.xls';
+
+        $headers = [
+            'Content-Type' => 'application/vnd.ms-excel; charset=UTF-8',
+        ];
+
+        return response()->streamDownload(function () use ($orders, $statusLabels) {
+            $columns = [
+                __('messages.orders.table.time'),
+                __('messages.orders.table.customer'),
+                __('messages.orders.table.items'),
+                __('messages.orders.table.status'),
+            ];
+
+            echo "\xEF\xBB\xBF";
+            echo '<table border="1">';
+            echo '<thead><tr>';
+
+            foreach ($columns as $column) {
+                echo '<th>' . htmlspecialchars($column, ENT_QUOTES, 'UTF-8') . '</th>';
+            }
+
+            echo '</tr></thead>';
+            echo '<tbody>';
+
+            if ($orders->isEmpty()) {
+                echo '<tr><td colspan="' . count($columns) . '">' . htmlspecialchars(__('messages.orders.empty'), ENT_QUOTES, 'UTF-8') . '</td></tr>';
+            } else {
+                foreach ($orders as $order) {
+                    $timestamp = $order->created_at ?? ($order->received_at ? \Illuminate\Support\Carbon::parse($order->received_at) : null);
+                    $receivedAt = optional($timestamp)?->timezone(config('app.timezone'))->format('H:i');
+                    $customer = $order->customer?->name ?? $order->customer_name ?? '—';
+                    $quantity = $order->quantity ?? 1;
+                    $product = $order->product?->name;
+                    $items = $product ? $product . ' × ' . number_format($quantity) : ($order->items ?: '—');
+                    $delivery = optional($order->delivery_date)?->format('Y/m/d');
+                    $notes = $order->notes;
+                    $statusKey = $order->status ?? Order::STATUS_PENDING;
+                    $status = $statusLabels[$statusKey] ?? ucfirst($statusKey);
+
+                    echo '<tr>';
+                    echo '<td>' . htmlspecialchars($receivedAt ?? '', ENT_QUOTES, 'UTF-8') . '</td>';
+                    echo '<td>' . htmlspecialchars($customer, ENT_QUOTES, 'UTF-8') . '</td>';
+
+                    $details = $items;
+
+                    if ($delivery) {
+                        $details .= "\n" . __('messages.orders.labels.delivery') . ': ' . $delivery;
+                    }
+
+                    if (! empty($notes)) {
+                        $details .= "\n" . __('messages.orders.labels.notes') . ': ' . $notes;
+                    }
+
+                    $details = nl2br(htmlspecialchars($details, ENT_QUOTES, 'UTF-8'));
+
+                    echo '<td>' . $details . '</td>';
+                    echo '<td>' . htmlspecialchars($status, ENT_QUOTES, 'UTF-8') . '</td>';
+                    echo '</tr>';
+                }
+            }
+
+            echo '</tbody>';
+            echo '</table>';
+        }, $filename, $headers);
     }
 
     private function ensureOrdersTableSupportsForm(): void

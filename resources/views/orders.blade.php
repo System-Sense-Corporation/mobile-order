@@ -17,10 +17,26 @@
 
         <div class="overflow-hidden rounded-xl bg-white shadow-sm ring-1 ring-black/5">
             <div class="border-b border-slate-200 bg-slate-50 px-6 py-4">
-                <h2 class="text-lg font-semibold text-slate-900">{{ __('messages.orders.title') }}</h2>
-                <p class="mt-1 text-sm text-slate-500">
-                    {{ __('messages.index.cards.orders.description') }}
-                </p>
+                <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+                    <div>
+                        <h2 class="text-lg font-semibold text-slate-900">{{ __('messages.orders.title') }}</h2>
+                        <p class="mt-1 text-sm text-slate-500">
+                            {{ __('messages.index.cards.orders.description') }}
+                        </p>
+                    </div>
+                    <div class="flex flex-wrap items-center gap-2">
+                        <a
+                            href="{{ route('orders.export') }}"
+                            class="inline-flex items-center gap-2 rounded-full bg-accent px-4 py-2 text-xs font-semibold text-white shadow-sm transition hover:bg-accent/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+                        >
+                            <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 13.5V16A1.5 1.5 0 005.25 17.5h9.5A1.5 1.5 0 0016.25 16v-2.5" />
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M10 3.25v9.5m0 0l3-3m-3 3l-3-3" />
+                            </svg>
+                            <span>{{ __('messages.orders.actions.download') }}</span>
+                        </a>
+                    </div>
+                </div>
             </div>
 
             @if ($orders->isEmpty())
@@ -42,7 +58,7 @@
                         ->toArray();
                 @endphp
                 <div class="overflow-x-auto">
-                    <table class="min-w-full divide-y divide-slate-200">
+                    <table class="orders-table min-w-full divide-y divide-slate-200">
                         <thead class="bg-white">
                             <tr>
                                 <th scope="col" class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
@@ -72,13 +88,19 @@
                                     $badgeClass = $statusClassMap[$statusKey] ?? $statusClassMap[\App\Models\Order::STATUS_PENDING];
                                 @endphp
                                 <tr class="hover:bg-slate-50">
-                                    <td class="whitespace-nowrap px-6 py-4 text-sm font-medium text-slate-900">
+                                    <td
+                                        data-label="{{ __('messages.orders.table.time') }}"
+                                        class="whitespace-nowrap px-6 py-4 text-sm font-medium text-slate-900"
+                                    >
                                         {{ $createdAt }}
                                     </td>
-                                    <td class="max-w-xs px-6 py-4 text-sm font-medium text-slate-900">
+                                    <td
+                                        data-label="{{ __('messages.orders.table.customer') }}"
+                                        class="max-w-xs px-6 py-4 text-sm font-medium text-slate-900"
+                                    >
                                         {{ $order->customer?->name ?? $order->customer_name ?? '—' }}
                                     </td>
-                                    <td class="px-6 py-4 text-sm">
+                                    <td data-label="{{ __('messages.orders.table.items') }}" class="px-6 py-4 text-sm">
                                         @if ($order->product)
                                             <div class="font-medium text-slate-900">
                                                 {{ $order->product->name }} × {{ number_format($order->quantity ?? 1) }}
@@ -100,7 +122,7 @@
                                             </div>
                                         @endif
                                     </td>
-                                    <td class="px-6 py-4 text-sm">
+                                    <td data-label="{{ __('messages.orders.table.status') }}" class="px-6 py-4 text-sm">
                                         <form method="POST" action="{{ route('orders.status', $order) }}" class="inline-flex items-center gap-2">
                                             @csrf
                                             @method('PATCH')
@@ -126,27 +148,123 @@
                                             </div>
                                         </form>
                                     </td>
-                                    <td class="px-6 py-4 text-right text-sm">
-                                        <a
-                                            href="{{ route('orders.create', ['order' => $order->id]) }}"
-                                            class="inline-flex items-center gap-2 rounded-full border border-slate-300 px-3 py-1.5 text-xs font-semibold text-slate-600 transition hover:bg-slate-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
-                                        >
-                                            <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                                                <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793z" />
-                                                <path d="M4 13.5V16h2.5l7.086-7.086-2.828-2.828L4 13.5z" />
-                                            </svg>
-                                            <span>{{ __('messages.orders.actions.edit') }}</span>
-                                        </a>
+                                    <td data-label="{{ __('messages.orders.table.actions') }}" class="actions-cell px-6 py-4 text-right text-sm">
+                                        <div class="actions-inline flex flex-wrap justify-end gap-2">
+                                            <a
+                                                href="{{ route('orders.create', ['order' => $order->id]) }}"
+                                                class="inline-flex items-center gap-2 rounded-full border border-slate-300 px-3 py-1.5 text-xs font-semibold text-slate-600 transition hover:bg-slate-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+                                            >
+                                                <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                                    <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793z" />
+                                                    <path d="M4 13.5V16h2.5l7.086-7.086-2.828-2.828L4 13.5z" />
+                                                </svg>
+                                                <span>{{ __('messages.orders.actions.edit') }}</span>
+                                            </a>
+
+                                            <form
+                                                method="POST"
+                                                action="{{ route('orders.destroy', $order) }}"
+                                                class="inline-flex"
+                                                onsubmit="return confirm('{{ __('messages.orders.actions.confirm_delete') }}');"
+                                            >
+                                                @csrf
+                                                @method('DELETE')
+                                                <button
+                                                    type="submit"
+                                                    class="inline-flex items-center gap-2 rounded-full border border-red-200 px-3 py-1.5 text-xs font-semibold text-red-600 transition hover:bg-red-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-500"
+                                                >
+                                                    <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                                        <path fill-rule="evenodd" d="M8.5 3a1.5 1.5 0 00-1.415 1.028L6.382 5H4.75a.75.75 0 000 1.5h.32l.55 8.25A2.25 2.25 0 007.863 17h4.274a2.25 2.25 0 002.243-2.25l.55-8.25h.32a.75.75 0 000-1.5H13.62l-.703-1.972A1.5 1.5 0 0011.5 3h-3zm2.651 2l.427 1.197a.75.75 0 00.707.503h1.687l-.52 7.8a.75.75 0 01-.748.7H7.53a.75.75 0 01-.748-.7l-.52-7.8h1.687a.75.75 0 00.707-.503L9.272 5h1.879z" clip-rule="evenodd" />
+                                                    </svg>
+                                                    <span>{{ __('messages.orders.actions.delete') }}</span>
+                                                </button>
+                                            </form>
+                                        </div>
                                     </td>
                                 </tr>
                             @endforeach
                         </tbody>
                     </table>
                 </div>
+
             @endif
         </div>
     </div>
 @endsection
+
+@push('styles')
+    <style>
+        .orders-table td {
+            vertical-align: top;
+        }
+
+        @media (max-width: 767.98px) {
+            .orders-table {
+                border-collapse: separate;
+                width: 100%;
+            }
+
+            .orders-table thead {
+                display: none;
+            }
+
+            .orders-table tbody {
+                display: block;
+            }
+
+            .orders-table tr {
+                display: block;
+                border-bottom: 1px solid #e2e8f0;
+            }
+
+            .orders-table tr:last-child {
+                border-bottom: none;
+            }
+
+            .orders-table td {
+                display: block;
+                padding: 0.75rem 1.5rem;
+            }
+
+            .orders-table td::before {
+                content: attr(data-label);
+                display: block;
+                margin-bottom: 0.35rem;
+                font-size: 0.75rem;
+                font-weight: 600;
+                text-transform: uppercase;
+                letter-spacing: 0.05em;
+                color: #64748b;
+            }
+
+            .orders-table td.actions-cell {
+                padding-bottom: 1.25rem;
+            }
+
+            .orders-table td.actions-cell .actions-inline {
+                display: flex;
+                flex-direction: column;
+                gap: 0.5rem;
+                align-items: stretch;
+            }
+
+            .orders-table td.actions-cell .actions-inline > a,
+            .orders-table td.actions-cell .actions-inline > form {
+                width: 100%;
+            }
+
+            .orders-table td.actions-cell .actions-inline > a {
+                display: flex;
+                justify-content: center;
+            }
+
+            .orders-table td.actions-cell .actions-inline > form > * {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+@endpush
 
 @push('scripts')
     <script>

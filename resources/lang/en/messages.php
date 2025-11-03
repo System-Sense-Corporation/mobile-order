@@ -99,9 +99,13 @@ return [
         'flash' => [
             'status_updated' => 'Order status updated.',
             'updated' => 'Order details updated.',
+            'deleted' => 'Order deleted.',
         ],
         'actions' => [
             'edit' => 'Edit',
+            'delete' => 'Delete',
+            'download' => 'Download Excel',
+            'confirm_delete' => 'Delete this order? This action cannot be undone.',
         ],
         'empty' => 'No orders have been submitted yet.',
         'samples' => [
@@ -113,11 +117,70 @@ return [
     ],
     'products' => [
         'title' => 'Product Master',
+        'description' => 'Reference standard units and pricing for handled seafood items.',
+        'actions' => [
+            'create' => 'Add product',
+            'edit' => 'Edit',
+            'delete' => 'Delete',
+            'confirm_delete' => 'Delete ":name" (:code)? This action cannot be undone.',
+        ],
+        'empty' => [
+            'title' => 'No products registered yet',
+            'description' => 'Start by adding a product using the button above.',
+        ],
+        'flash' => [
+            'saved' => 'Product ":code" was saved successfully.',
+            'updated' => 'Product ":code" was updated successfully.',
+            'deleted' => 'Product ":code" was deleted.',
+        ],
         'table' => [
             'code' => 'Product Code',
             'name' => 'Product Name',
             'unit' => 'Unit',
             'price' => 'Unit Price (JPY)',
+            'actions' => 'Actions',
+        ],
+        'form' => [
+            'edit_title' => 'Edit product',
+            'title' => 'Product details',
+            'description' => 'Register or edit product information to keep the master list up to date.',
+            'validation_error' => 'Please check the highlighted fields and try again.',
+            'fields' => [
+                'code' => 'Product code',
+                'name' => 'Product name',
+                'unit' => 'Unit',
+                'price' => 'Unit price (JPY)',
+            ],
+            'placeholders' => [
+                'code' => 'e.g. P-1001',
+                'name' => 'Enter product name',
+                'unit' => 'Enter unit (pack, case, etc.)',
+                'price' => 'Enter price per unit',
+            ],
+            'buttons' => [
+                'cancel' => 'Back to list',
+                'save' => 'Save product',
+                'update' => 'Update product',
+            ],
+            'sidebar' => [
+                'title' => 'Product preview',
+                'description' => 'Review the entered code, unit, and price before saving.',
+                'note' => 'These preview values update based on the form inputs above.',
+            ],
+        ],
+        'validation' => [
+            'code' => [
+                'required' => 'Please enter a product code.',
+                'unique' => 'This product code is already in use.',
+            ],
+            'name' => [
+                'required' => 'Please enter a product name.',
+            ],
+            'price' => [
+                'required' => 'Please enter a price.',
+                'integer' => 'Price must be a whole number.',
+                'min' => 'Price cannot be negative.',
+            ],
         ],
     ],
     'customers' => [
