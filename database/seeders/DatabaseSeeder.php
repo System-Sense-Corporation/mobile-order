@@ -45,21 +45,25 @@ class DatabaseSeeder extends Seeder
 
         $products = collect([
             [
+                'code' => 'P-1001',
                 'name' => '本マグロ 柵 500g',
                 'unit' => 'block',
                 'price' => 7800,
             ],
             [
+                'code' => 'P-1002',
                 'name' => 'サーモンフィレ 1kg',
                 'unit' => 'fillet',
                 'price' => 4200,
             ],
             [
+                'code' => 'P-1003',
                 'name' => 'ボタンエビ 20尾',
                 'unit' => 'pack',
                 'price' => 5600,
             ],
             [
+                'code' => 'P-1004',
                 'name' => '真鯛 1尾',
                 'unit' => 'whole fish',
                 'price' => 3200,

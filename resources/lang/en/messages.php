@@ -117,9 +117,15 @@ return [
     'products' => [
         'title' => 'Product Master',
         'description' => 'Reference standard units and pricing for handled seafood items.',
-        'demo_notice' => 'Sample product data is shown for preview only.',
         'actions' => [
             'create' => 'Add product',
+        ],
+        'empty' => [
+            'title' => 'No products registered yet',
+            'description' => 'Start by adding a product using the button above.',
+        ],
+        'flash' => [
+            'saved' => 'Product ":code" was saved successfully.',
         ],
         'table' => [
             'code' => 'Product Code',
@@ -130,6 +136,7 @@ return [
         'form' => [
             'title' => 'Product details',
             'description' => 'Register or edit product information to keep the master list up to date.',
+            'validation_error' => 'Please check the highlighted fields and try again.',
             'fields' => [
                 'code' => 'Product code',
                 'name' => 'Product name',
@@ -147,9 +154,23 @@ return [
                 'save' => 'Save product',
             ],
             'sidebar' => [
-                'title' => 'Sample master data',
-                'description' => 'Use the form to keep product codes, units, and prices aligned with the reference list.',
-                'note' => 'These demo values mirror what is displayed on the product master table.',
+                'title' => 'Product preview',
+                'description' => 'Review the entered code, unit, and price before saving.',
+                'note' => 'These preview values update based on the form inputs above.',
+            ],
+        ],
+        'validation' => [
+            'code' => [
+                'required' => 'Please enter a product code.',
+                'unique' => 'This product code is already in use.',
+            ],
+            'name' => [
+                'required' => 'Please enter a product name.',
+            ],
+            'price' => [
+                'required' => 'Please enter a price.',
+                'integer' => 'Price must be a whole number.',
+                'min' => 'Price cannot be negative.',
             ],
         ],
     ],
