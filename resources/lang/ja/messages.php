@@ -99,9 +99,12 @@ return [
         'flash' => [
             'status_updated' => 'ステータスを更新しました。',
             'updated' => '受注内容を更新しました。',
+            'deleted' => '受注を削除しました。',
         ],
         'actions' => [
             'edit' => '編集',
+            'delete' => '削除',
+            'confirm_delete' => 'この受注を削除しますか？元に戻せません。',
         ],
         'empty' => 'まだ受注はありません。',
         'samples' => [

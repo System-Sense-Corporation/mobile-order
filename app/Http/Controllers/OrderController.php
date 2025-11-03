@@ -178,6 +178,17 @@ class OrderController extends Controller
             ->with('status', __('messages.orders.flash.status_updated'));
     }
 
+    public function destroy(Order $order): RedirectResponse
+    {
+        $this->ensureOrdersTableSupportsForm();
+
+        $order->delete();
+
+        return redirect()
+            ->route('orders.index')
+            ->with('status', __('messages.orders.flash.deleted'));
+    }
+
     private function ensureOrdersTableSupportsForm(): void
     {
         if (! Schema::hasTable('orders')) {

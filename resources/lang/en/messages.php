@@ -99,9 +99,12 @@ return [
         'flash' => [
             'status_updated' => 'Order status updated.',
             'updated' => 'Order details updated.',
+            'deleted' => 'Order deleted.',
         ],
         'actions' => [
             'edit' => 'Edit',
+            'delete' => 'Delete',
+            'confirm_delete' => 'Delete this order? This action cannot be undone.',
         ],
         'empty' => 'No orders have been submitted yet.',
         'samples' => [
