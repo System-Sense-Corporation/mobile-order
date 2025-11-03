@@ -8,11 +8,13 @@ use App\Models\Product;
 use App\Support\DemoCustomerData;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Contracts\View\View;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Validation\Rule;
 
 class OrderController extends Controller
 {
@@ -34,14 +36,26 @@ class OrderController extends Controller
 
         return view('orders', [
             'orders' => $orders,
+            'statusStyles' => $this->statusStyleMap(),
         ]);
     }
 
     /**
      * Show the form for creating a new resource.
      */
-    public function create(): View
+    public function create(Request $request): View
     {
+        $this->ensureOrdersTableSupportsForm();
+
+        $editingOrder = null;
+        $orderId = $request->query('order');
+
+        if ($orderId && Schema::hasTable('orders')) {
+            $editingOrder = Order::query()
+                ->with(['customer', 'product'])
+                ->find($orderId);
+        }
+
         if (Schema::hasTable('customers')) {
             DemoCustomerData::ensureInDatabase();
             $customers = Customer::query()->orderBy('name')->get();
@@ -68,6 +82,7 @@ class OrderController extends Controller
             'products' => $products,
             'customersAreDemo' => $customersAreDemo ?? false,
             'productsAreDemo' => $productsAreDemo ?? false,
+            'order' => $editingOrder,
         ]);
     }
 
@@ -97,12 +112,70 @@ class OrderController extends Controller
             'order_date' => $data['order_date'],
             'delivery_date' => $data['delivery_date'],
             'notes' => $data['notes'] ?? null,
-            'status' => 'pending',
+            'status' => Order::STATUS_PENDING,
         ]);
 
         return redirect()
             ->route('orders.index')
             ->with('status', __('messages.mobile_order.flash.saved'));
+    }
+
+    public function update(Request $request, Order $order): RedirectResponse
+    {
+        $this->ensureOrdersTableSupportsForm();
+
+        DemoCustomerData::ensureInDatabase();
+        $this->ensureDemoProductsInDatabase();
+
+        $data = $request->validate([
+            'order_date' => ['required', 'date'],
+            'delivery_date' => ['required', 'date', 'after_or_equal:order_date'],
+            'customer_id' => ['required', 'exists:customers,id'],
+            'product_id' => ['required', 'exists:products,id'],
+            'quantity' => ['required', 'integer', 'min:1'],
+            'notes' => ['nullable', 'string', 'max:2000'],
+        ]);
+
+        $order->update([
+            'customer_id' => $data['customer_id'],
+            'product_id' => $data['product_id'],
+            'quantity' => $data['quantity'],
+            'order_date' => $data['order_date'],
+            'delivery_date' => $data['delivery_date'],
+            'notes' => $data['notes'] ?? null,
+        ]);
+
+        return redirect()
+            ->route('orders.index')
+            ->with('status', __('messages.mobile_order.flash.updated'));
+    }
+
+    public function updateStatus(Request $request, Order $order): RedirectResponse|JsonResponse
+    {
+        $this->ensureOrdersTableSupportsForm();
+
+        $validated = $request->validate([
+            'status' => ['required', Rule::in(Order::allowedStatuses())],
+        ]);
+
+        $order->update([
+            'status' => $validated['status'],
+        ]);
+
+        if ($request->wantsJson()) {
+            $styles = $this->statusStyleMap();
+
+            return response()->json([
+                'status' => $order->status,
+                'label' => __('messages.orders.statuses.' . $order->status),
+                'style' => $styles[$order->status] ?? $styles['default'],
+                'message' => __('messages.orders.flash.status_updated'),
+            ]);
+        }
+
+        return redirect()
+            ->route('orders.index')
+            ->with('status', __('messages.orders.flash.status_updated'));
     }
 
     private function ensureOrdersTableSupportsForm(): void
@@ -162,6 +235,19 @@ class OrderController extends Controller
                 $table->text('notes')->nullable();
             }
         });
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    private function statusStyleMap(): array
+    {
+        return [
+            Order::STATUS_PENDING => 'bg-amber-100 text-amber-800 ring-amber-200',
+            Order::STATUS_PREPARING => 'bg-sky-100 text-sky-800 ring-sky-200',
+            Order::STATUS_SHIPPED => 'bg-emerald-100 text-emerald-800 ring-emerald-200',
+            'default' => 'bg-slate-100 text-slate-800 ring-slate-200',
+        ];
     }
 
     private function createOrdersTable(): void

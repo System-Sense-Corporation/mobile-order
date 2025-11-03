@@ -57,5 +57,31 @@ class OrderListingTest extends TestCase
         $response->assertSee((string) $secondOrder->quantity);
         $response->assertSee(__('messages.orders.statuses.shipped'));
         $response->assertSee($secondOrder->delivery_date->format('Y/m/d'));
+        $response->assertSee('name="status"', false);
+        $response->assertSee('value="' . Order::STATUS_PREPARING . '"', false);
+        $response->assertSee(route('orders.status', $firstOrder), false);
+        $response->assertSee(__('messages.orders.table.actions'));
+        $response->assertSee(__('messages.orders.actions.edit'));
+        $response->assertSee(route('orders.create', ['order' => $firstOrder->id]), false);
+    }
+
+    public function test_user_can_update_order_status_from_listing(): void
+    {
+        $user = User::factory()->create();
+        $order = Order::factory()->create([
+            'status' => Order::STATUS_PENDING,
+        ]);
+
+        $response = $this->actingAs($user)->patch(route('orders.status', $order), [
+            'status' => Order::STATUS_PREPARING,
+        ]);
+
+        $response->assertRedirect(route('orders.index'));
+        $response->assertSessionHas('status', __('messages.orders.flash.status_updated'));
+
+        $this->assertDatabaseHas('orders', [
+            'id' => $order->id,
+            'status' => Order::STATUS_PREPARING,
+        ]);
     }
 }

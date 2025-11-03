@@ -23,6 +23,8 @@ Route::middleware('auth')->group(function () {
     Route::redirect('/mobile-order', '/orders/form')->name('mobile-order.legacy');
     Route::redirect('/orders/create', '/orders/form');
     Route::post('/orders', [OrderController::class, 'store'])->name('orders.store');
+    Route::put('/orders/{order}', [OrderController::class, 'update'])->name('orders.update');
+    Route::patch('/orders/{order}/status', [OrderController::class, 'updateStatus'])->name('orders.status');
     Route::get('/products', fn () => view('products'))->name('products');
     Route::get('/customers', [CustomerController::class, 'index'])->name('customers');
     Route::get('/customers/form', [CustomerController::class, 'create'])->name('customers.form');

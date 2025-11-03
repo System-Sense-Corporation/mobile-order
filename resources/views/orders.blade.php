@@ -28,6 +28,19 @@
                     {{ __('messages.orders.empty') }}
                 </div>
             @else
+                @php
+                    $statusLabels = [
+                        \App\Models\Order::STATUS_PENDING => __('messages.orders.statuses.pending'),
+                        \App\Models\Order::STATUS_PREPARING => __('messages.orders.statuses.preparing'),
+                        \App\Models\Order::STATUS_SHIPPED => __('messages.orders.statuses.shipped'),
+                    ];
+                    $statusClasses = array_merge($statusStyles ?? [], [
+                        'default' => $statusStyles['default'] ?? 'bg-slate-100 text-slate-800 ring-slate-200',
+                    ]);
+                    $statusClassMap = collect($statusLabels)
+                        ->mapWithKeys(fn ($label, $status) => [$status => $statusClasses[$status] ?? $statusClasses['default']])
+                        ->toArray();
+                @endphp
                 <div class="overflow-x-auto">
                     <table class="min-w-full divide-y divide-slate-200">
                         <thead class="bg-white">
@@ -44,6 +57,9 @@
                                 <th scope="col" class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
                                     {{ __('messages.orders.table.status') }}
                                 </th>
+                                <th scope="col" class="px-6 py-3 text-right text-xs font-semibold uppercase tracking-wide text-slate-500">
+                                    {{ __('messages.orders.table.actions') }}
+                                </th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-slate-100 bg-white text-sm text-slate-700">
@@ -51,14 +67,9 @@
                                 @php
                                     $timestamp = $order->created_at ?? ($order->received_at ? \Illuminate\Support\Carbon::parse($order->received_at) : null);
                                     $createdAt = optional($timestamp)?->timezone(config('app.timezone'))->format('H:i');
-                                    $statusLabels = __('messages.orders.statuses');
-                                    $statusLabel = $statusLabels[$order->status] ?? ucfirst($order->status);
-                                    $statusStyles = [
-                                        'pending' => 'bg-amber-100 text-amber-800 ring-amber-200',
-                                        'preparing' => 'bg-sky-100 text-sky-800 ring-sky-200',
-                                        'shipped' => 'bg-emerald-100 text-emerald-800 ring-emerald-200',
-                                    ];
-                                    $badgeClass = $statusStyles[$order->status] ?? 'bg-slate-100 text-slate-800 ring-slate-200';
+                                    $statusKey = $order->status ?? \App\Models\Order::STATUS_PENDING;
+                                    $statusLabel = $statusLabels[$statusKey] ?? ucfirst($statusKey);
+                                    $badgeClass = $statusClassMap[$statusKey] ?? $statusClassMap[\App\Models\Order::STATUS_PENDING];
                                 @endphp
                                 <tr class="hover:bg-slate-50">
                                     <td class="whitespace-nowrap px-6 py-4 text-sm font-medium text-slate-900">
@@ -90,9 +101,42 @@
                                         @endif
                                     </td>
                                     <td class="px-6 py-4 text-sm">
-                                        <span class="inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-semibold ring-1 {{ $badgeClass }}">
-                                            {{ $statusLabel }}
-                                        </span>
+                                        <form method="POST" action="{{ route('orders.status', $order) }}" class="inline-flex items-center gap-2">
+                                            @csrf
+                                            @method('PATCH')
+                                            <label for="order-status-{{ $order->id }}" class="sr-only">{{ __('messages.orders.table.status') }}</label>
+                                            <div class="relative">
+                                                <select
+                                                    id="order-status-{{ $order->id }}"
+                                                    name="status"
+                                                    class="{{ $badgeClass }} status-select inline-flex w-full cursor-pointer appearance-none rounded-full border border-transparent px-3 py-1 text-xs font-semibold ring-1 transition focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+                                                    data-order-status-select
+                                                    data-base-class="status-select inline-flex w-full cursor-pointer appearance-none rounded-full border border-transparent px-3 py-1 text-xs font-semibold ring-1 transition focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+                                                    data-status-classes='@json($statusClassMap)'
+                                                >
+                                                    @foreach ($statusLabels as $statusValue => $label)
+                                                        <option value="{{ $statusValue }}" @selected($statusValue === $statusKey)>
+                                                            {{ $label }}
+                                                        </option>
+                                                    @endforeach
+                                                </select>
+                                                <svg class="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 8l4 4 4-4" />
+                                                </svg>
+                                            </div>
+                                        </form>
+                                    </td>
+                                    <td class="px-6 py-4 text-right text-sm">
+                                        <a
+                                            href="{{ route('orders.create', ['order' => $order->id]) }}"
+                                            class="inline-flex items-center gap-2 rounded-full border border-slate-300 px-3 py-1.5 text-xs font-semibold text-slate-600 transition hover:bg-slate-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+                                        >
+                                            <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                                <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793z" />
+                                                <path d="M4 13.5V16h2.5l7.086-7.086-2.828-2.828L4 13.5z" />
+                                            </svg>
+                                            <span>{{ __('messages.orders.actions.edit') }}</span>
+                                        </a>
                                     </td>
                                 </tr>
                             @endforeach
@@ -103,3 +147,36 @@
         </div>
     </div>
 @endsection
+
+@push('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('[data-order-status-select]').forEach((select) => {
+                const baseClass = select.dataset.baseClass || select.className;
+                let statusClasses = {};
+
+                try {
+                    statusClasses = JSON.parse(select.dataset.statusClasses || '{}');
+                } catch (error) {
+                    statusClasses = {};
+                }
+
+                const applyClasses = () => {
+                    const style = statusClasses[select.value] || statusClasses.default || '';
+                    select.className = style ? `${baseClass} ${style}` : baseClass;
+                };
+
+                applyClasses();
+
+                select.addEventListener('change', () => {
+                    applyClasses();
+                    const form = select.closest('form');
+
+                    if (form) {
+                        form.submit();
+                    }
+                });
+            });
+        });
+    </script>
+@endpush
