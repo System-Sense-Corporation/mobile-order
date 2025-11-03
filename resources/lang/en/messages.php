@@ -66,6 +66,7 @@ return [
         'buttons' => [
             'reset' => 'Clear',
             'submit' => 'Save Order',
+            'update' => 'Update Order',
         ],
         'empty' => [
             'customers' => 'No customers available',
@@ -73,6 +74,7 @@ return [
         ],
         'flash' => [
             'saved' => 'The order was registered successfully.',
+            'updated' => 'The order was updated successfully.',
         ],
         'demo_notice' => 'Sample customer and product data are shown for preview only.',
     ],
@@ -83,6 +85,7 @@ return [
             'customer' => 'Customer',
             'items' => 'Order Details',
             'status' => 'Status',
+            'actions' => 'Actions',
         ],
         'labels' => [
             'delivery' => 'Delivery',
@@ -95,6 +98,10 @@ return [
         ],
         'flash' => [
             'status_updated' => 'Order status updated.',
+            'updated' => 'Order details updated.',
+        ],
+        'actions' => [
+            'edit' => 'Edit',
         ],
         'empty' => 'No orders have been submitted yet.',
         'samples' => [

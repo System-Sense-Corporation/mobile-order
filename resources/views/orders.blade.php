@@ -57,6 +57,9 @@
                                 <th scope="col" class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
                                     {{ __('messages.orders.table.status') }}
                                 </th>
+                                <th scope="col" class="px-6 py-3 text-right text-xs font-semibold uppercase tracking-wide text-slate-500">
+                                    {{ __('messages.orders.table.actions') }}
+                                </th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-slate-100 bg-white text-sm text-slate-700">
@@ -122,6 +125,18 @@
                                                 </svg>
                                             </div>
                                         </form>
+                                    </td>
+                                    <td class="px-6 py-4 text-right text-sm">
+                                        <a
+                                            href="{{ route('orders.create', ['order' => $order->id]) }}"
+                                            class="inline-flex items-center gap-2 rounded-full border border-slate-300 px-3 py-1.5 text-xs font-semibold text-slate-600 transition hover:bg-slate-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+                                        >
+                                            <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                                <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793z" />
+                                                <path d="M4 13.5V16h2.5l7.086-7.086-2.828-2.828L4 13.5z" />
+                                            </svg>
+                                            <span>{{ __('messages.orders.actions.edit') }}</span>
+                                        </a>
                                     </td>
                                 </tr>
                             @endforeach

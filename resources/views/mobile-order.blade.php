@@ -8,6 +8,8 @@
     @php
         $customersAreDemo = $customersAreDemo ?? false;
         $productsAreDemo = $productsAreDemo ?? false;
+        $editingOrder = $order ?? null;
+        $isEditing = $editingOrder !== null;
     @endphp
     @if (session('status'))
         <div class="mb-6 rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700">
@@ -20,8 +22,15 @@
         data-customers-demo="{{ $customersAreDemo ? 'true' : 'false' }}"
         data-products-demo="{{ $productsAreDemo ? 'true' : 'false' }}"
     >
-        <form class="space-y-6" method="POST" action="{{ route('orders.store') }}">
+        <form
+            class="space-y-6"
+            method="POST"
+            action="{{ $isEditing ? route('orders.update', $editingOrder) : route('orders.store') }}"
+        >
             @csrf
+            @if ($isEditing)
+                @method('PUT')
+            @endif
             <div class="grid gap-4 sm:grid-cols-2">
                 <label class="form-field">
                     <span class="form-label">{{ __('messages.mobile_order.fields.order_date') }}</span>
@@ -29,7 +38,7 @@
                         type="date"
                         name="order_date"
                         class="form-input"
-                        value="{{ old('order_date', now()->toDateString()) }}"
+                        value="{{ old('order_date', optional($editingOrder?->order_date)->format('Y-m-d') ?? now()->toDateString()) }}"
                         required
                     >
                     @error('order_date')
@@ -42,7 +51,7 @@
                         type="date"
                         name="delivery_date"
                         class="form-input"
-                        value="{{ old('delivery_date', now()->addDay()->toDateString()) }}"
+                        value="{{ old('delivery_date', optional($editingOrder?->delivery_date)->format('Y-m-d') ?? now()->addDay()->toDateString()) }}"
                         required
                     >
                     @error('delivery_date')
@@ -60,11 +69,12 @@
                     data-source="{{ route('customers') }}"
                     data-empty-text="{{ __('messages.mobile_order.empty.customers') }}"
                 >
-                    <option value="" disabled {{ old('customer_id') ? '' : 'selected' }}>
+                    @php($selectedCustomer = old('customer_id', $editingOrder?->customer_id))
+                    <option value="" disabled {{ $selectedCustomer ? '' : 'selected' }}>
                         {{ __('messages.mobile_order.placeholders.customer') }}
                     </option>
                     @forelse ($customers as $customer)
-                        <option value="{{ $customer->id }}" @selected(old('customer_id') == $customer->id)>
+                        <option value="{{ $customer->id }}" @selected($selectedCustomer == $customer->id)>
                             {{ $customer->name }}
                         </option>
                     @empty
@@ -79,11 +89,12 @@
                 <label class="form-field sm:col-span-2">
                     <span class="form-label">{{ __('messages.mobile_order.fields.product') }}</span>
                     <select name="product_id" class="form-input" required>
-                        <option value="" disabled {{ old('product_id') ? '' : 'selected' }}>
+                        @php($selectedProduct = old('product_id', $editingOrder?->product_id))
+                        <option value="" disabled {{ $selectedProduct ? '' : 'selected' }}>
                             {{ __('messages.mobile_order.placeholders.product') }}
                         </option>
                         @forelse ($products as $product)
-                            <option value="{{ $product->id }}" @selected(old('product_id') == $product->id)>
+                            <option value="{{ $product->id }}" @selected($selectedProduct == $product->id)>
                                 {{ $product->name }}
                             </option>
                         @empty
@@ -101,7 +112,7 @@
                         name="quantity"
                         class="form-input"
                         min="1"
-                        value="{{ old('quantity', 1) }}"
+                        value="{{ old('quantity', $editingOrder?->quantity ?? 1) }}"
                         required
                     >
                     @error('quantity')
@@ -111,14 +122,16 @@
             </div>
             <label class="form-field">
                 <span class="form-label">{{ __('messages.mobile_order.fields.notes') }}</span>
-                <textarea rows="3" name="notes" class="form-input" placeholder="{{ __('messages.mobile_order.placeholders.notes') }}">{{ old('notes') }}</textarea>
+                <textarea rows="3" name="notes" class="form-input" placeholder="{{ __('messages.mobile_order.placeholders.notes') }}">{{ old('notes', $editingOrder?->notes) }}</textarea>
                 @error('notes')
                     <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
                 @enderror
             </label>
             <div class="flex justify-end gap-3">
                 <button type="reset" class="btn-secondary">{{ __('messages.mobile_order.buttons.reset') }}</button>
-                <button type="submit" class="btn-primary">{{ __('messages.mobile_order.buttons.submit') }}</button>
+                <button type="submit" class="btn-primary">
+                    {{ $isEditing ? __('messages.mobile_order.buttons.update') : __('messages.mobile_order.buttons.submit') }}
+                </button>
             </div>
         </form>
         @if ($customersAreDemo || $productsAreDemo)

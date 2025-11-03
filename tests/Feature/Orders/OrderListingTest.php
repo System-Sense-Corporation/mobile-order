@@ -60,6 +60,9 @@ class OrderListingTest extends TestCase
         $response->assertSee('name="status"', false);
         $response->assertSee('value="' . Order::STATUS_PREPARING . '"', false);
         $response->assertSee(route('orders.status', $firstOrder), false);
+        $response->assertSee(__('messages.orders.table.actions'));
+        $response->assertSee(__('messages.orders.actions.edit'));
+        $response->assertSee(route('orders.create', ['order' => $firstOrder->id]), false);
     }
 
     public function test_user_can_update_order_status_from_listing(): void

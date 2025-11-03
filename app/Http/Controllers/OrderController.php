@@ -43,8 +43,19 @@ class OrderController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create(): View
+    public function create(Request $request): View
     {
+        $this->ensureOrdersTableSupportsForm();
+
+        $editingOrder = null;
+        $orderId = $request->query('order');
+
+        if ($orderId && Schema::hasTable('orders')) {
+            $editingOrder = Order::query()
+                ->with(['customer', 'product'])
+                ->find($orderId);
+        }
+
         if (Schema::hasTable('customers')) {
             DemoCustomerData::ensureInDatabase();
             $customers = Customer::query()->orderBy('name')->get();
@@ -71,6 +82,7 @@ class OrderController extends Controller
             'products' => $products,
             'customersAreDemo' => $customersAreDemo ?? false,
             'productsAreDemo' => $productsAreDemo ?? false,
+            'order' => $editingOrder,
         ]);
     }
 
@@ -106,6 +118,36 @@ class OrderController extends Controller
         return redirect()
             ->route('orders.index')
             ->with('status', __('messages.mobile_order.flash.saved'));
+    }
+
+    public function update(Request $request, Order $order): RedirectResponse
+    {
+        $this->ensureOrdersTableSupportsForm();
+
+        DemoCustomerData::ensureInDatabase();
+        $this->ensureDemoProductsInDatabase();
+
+        $data = $request->validate([
+            'order_date' => ['required', 'date'],
+            'delivery_date' => ['required', 'date', 'after_or_equal:order_date'],
+            'customer_id' => ['required', 'exists:customers,id'],
+            'product_id' => ['required', 'exists:products,id'],
+            'quantity' => ['required', 'integer', 'min:1'],
+            'notes' => ['nullable', 'string', 'max:2000'],
+        ]);
+
+        $order->update([
+            'customer_id' => $data['customer_id'],
+            'product_id' => $data['product_id'],
+            'quantity' => $data['quantity'],
+            'order_date' => $data['order_date'],
+            'delivery_date' => $data['delivery_date'],
+            'notes' => $data['notes'] ?? null,
+        ]);
+
+        return redirect()
+            ->route('orders.index')
+            ->with('status', __('messages.mobile_order.flash.updated'));
     }
 
     public function updateStatus(Request $request, Order $order): RedirectResponse|JsonResponse
