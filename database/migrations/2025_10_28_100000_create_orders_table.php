@@ -6,26 +6,23 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
-        Schema::create('orders', function (Blueprint $table) {
+        // ตาราง orders มีอยู่แล้ว ให้ข้าม เพื่อไม่ให้ deploy ล้ม
+        if (Schema::hasTable('orders')) {
+            return;
+        }
+
+        Schema::create('orders', function (Blueprint $table): void {
             $table->id();
-            $table->date('order_date');
-            $table->date('delivery_date');
-            $table->string('customer');
-            $table->string('product');
-            $table->unsignedInteger('quantity');
-            $table->text('notes')->nullable();
+            $table->foreignId('customer_id')->nullable()->constrained()->nullOnDelete();
+            $table->foreignId('product_id')->nullable()->constrained()->nullOnDelete();
+            $table->unsignedInteger('quantity')->default(1);
+            $table->string('status')->default('pending');
             $table->timestamps();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('orders');
