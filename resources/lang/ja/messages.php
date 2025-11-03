@@ -104,6 +104,7 @@ return [
         'actions' => [
             'edit' => '編集',
             'delete' => '削除',
+            'download' => 'Excelをダウンロード',
             'confirm_delete' => 'この受注を削除しますか？元に戻せません。',
         ],
         'empty' => 'まだ受注はありません。',

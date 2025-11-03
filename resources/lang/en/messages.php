@@ -104,6 +104,7 @@ return [
         'actions' => [
             'edit' => 'Edit',
             'delete' => 'Delete',
+            'download' => 'Download Excel',
             'confirm_delete' => 'Delete this order? This action cannot be undone.',
         ],
         'empty' => 'No orders have been submitted yet.',

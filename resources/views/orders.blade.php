@@ -17,10 +17,26 @@
 
         <div class="overflow-hidden rounded-xl bg-white shadow-sm ring-1 ring-black/5">
             <div class="border-b border-slate-200 bg-slate-50 px-6 py-4">
-                <h2 class="text-lg font-semibold text-slate-900">{{ __('messages.orders.title') }}</h2>
-                <p class="mt-1 text-sm text-slate-500">
-                    {{ __('messages.index.cards.orders.description') }}
-                </p>
+                <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+                    <div>
+                        <h2 class="text-lg font-semibold text-slate-900">{{ __('messages.orders.title') }}</h2>
+                        <p class="mt-1 text-sm text-slate-500">
+                            {{ __('messages.index.cards.orders.description') }}
+                        </p>
+                    </div>
+                    <div class="flex flex-wrap items-center gap-2">
+                        <a
+                            href="{{ route('orders.export') }}"
+                            class="inline-flex items-center gap-2 rounded-full bg-accent px-4 py-2 text-xs font-semibold text-white shadow-sm transition hover:bg-accent/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+                        >
+                            <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 13.5V16A1.5 1.5 0 005.25 17.5h9.5A1.5 1.5 0 0016.25 16v-2.5" />
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M10 3.25v9.5m0 0l3-3m-3 3l-3-3" />
+                            </svg>
+                            <span>{{ __('messages.orders.actions.download') }}</span>
+                        </a>
+                    </div>
+                </div>
             </div>
 
             @if ($orders->isEmpty())
