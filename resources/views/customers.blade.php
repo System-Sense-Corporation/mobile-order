@@ -48,10 +48,10 @@
             @else
                 <ul class="divide-y divide-slate-100">
                     @foreach ($customers as $customer)
-                        <li class="px-6 py-5">
-                            <div class="flex flex-wrap items-start justify-between gap-6">
-                                <div class="flex-1 min-w-0">
-                                    <div class="flex flex-wrap items-center gap-3">
+                        <li class="px-6 py-6">
+                            <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                                <div class="flex-1 min-w-0 space-y-2">
+                                    <div class="flex flex-wrap items-center gap-x-3 gap-y-2">
                                         <h3 class="text-base font-semibold text-slate-900">{{ $customer->name }}</h3>
                                         @if ($customer->contact_person)
                                             <span class="text-sm text-slate-500">
@@ -60,16 +60,16 @@
                                         @endif
                                     </div>
                                     @if (! empty($customer->notes))
-                                        <p class="mt-2 text-sm text-slate-600">{{ $customer->notes }}</p>
+                                        <p class="text-sm text-slate-600">{{ $customer->notes }}</p>
                                     @endif
                                 </div>
-                                <div class="flex flex-col items-end gap-2 text-sm text-slate-600">
-                                    <div>
+                                <div class="flex flex-1 flex-col items-start gap-3 text-sm text-slate-600 md:max-w-sm md:flex-none md:items-end">
+                                    <div class="flex flex-wrap items-center gap-x-2 gap-y-1 md:justify-end">
                                         <span class="font-medium text-slate-900">{{ __('messages.customers.contact_label') }}:</span>
                                         <span>{{ $customer->contact ?? '—' }}</span>
                                     </div>
                                     @if ($canManageCustomers)
-                                        <div class="flex flex-wrap items-center justify-end gap-2">
+                                        <div class="flex flex-wrap items-center gap-2 md:justify-end">
                                             <a
                                                 href="{{ route('customers.form', ['customer' => $customer->id]) }}"
                                                 class="inline-flex items-center gap-2 rounded-full border border-slate-300 px-3 py-1.5 text-xs font-semibold text-slate-600 transition hover:bg-slate-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
