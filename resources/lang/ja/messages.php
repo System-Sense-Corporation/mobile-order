@@ -66,6 +66,7 @@ return [
         'buttons' => [
             'reset' => 'クリア',
             'submit' => '登録する',
+            'update' => '更新する',
         ],
         'empty' => [
             'customers' => '登録済みの顧客がありません',
@@ -73,6 +74,7 @@ return [
         ],
         'flash' => [
             'saved' => '受注を登録しました。',
+            'updated' => '受注内容を更新しました。',
         ],
         'demo_notice' => 'サンプルの取引先・商品データを表示しています。',
     ],
@@ -83,6 +85,7 @@ return [
             'customer' => '顧客',
             'items' => '注文内容',
             'status' => 'ステータス',
+            'actions' => '操作',
         ],
         'labels' => [
             'delivery' => '納品',
@@ -92,6 +95,13 @@ return [
             'pending' => '確認中',
             'preparing' => '出荷準備中',
             'shipped' => '出荷済',
+        ],
+        'flash' => [
+            'status_updated' => 'ステータスを更新しました。',
+            'updated' => '受注内容を更新しました。',
+        ],
+        'actions' => [
+            'edit' => '編集',
         ],
         'empty' => 'まだ受注はありません。',
         'samples' => [
