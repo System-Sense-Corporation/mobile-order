@@ -43,12 +43,21 @@ class CustomerController extends Controller
         ]);
     }
 
-    public function create(): View
+    public function create(Request $request): View
     {
-        return view('customers.form', [
-            'customer' => new Customer(),
-            'formAction' => route('customers.store'),
-        ]);
+        $customerId = $request->query('customer');
+
+        if ($customerId !== null && $customerId !== '') {
+            if (! Schema::hasTable('customers')) {
+                abort(500, 'Customers table is not available.');
+            }
+
+            $customer = Customer::query()->findOrFail($customerId);
+
+            return $this->renderForm($customer);
+        }
+
+        return $this->renderForm(new Customer());
     }
 
     public function store(Request $request): RedirectResponse
@@ -80,10 +89,7 @@ class CustomerController extends Controller
             abort(500, 'Customers table is not available.');
         }
 
-        return view('customers.form', [
-            'customer' => $customer,
-            'formAction' => route('customers.update', $customer),
-        ]);
+        return $this->renderForm($customer);
     }
 
     public function update(Request $request, Customer $customer): RedirectResponse
@@ -143,5 +149,15 @@ class CustomerController extends Controller
     protected function validationMessages(): array
     {
         return Arr::dot(Lang::get('messages.customers.validation'));
+    }
+
+    protected function renderForm(Customer $customer): View
+    {
+        return view('customers.form', [
+            'customer' => $customer,
+            'formAction' => $customer->exists
+                ? route('customers.update', $customer)
+                : route('customers.store'),
+        ]);
     }
 }
