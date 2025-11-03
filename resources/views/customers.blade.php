@@ -49,8 +49,8 @@
                 <ul class="divide-y divide-slate-100">
                     @foreach ($customers as $customer)
                         <li class="px-6 py-6">
-                            <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-                                <div class="flex-1 min-w-0 space-y-2">
+                            <div class="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
+                                <div class="min-w-0 flex-1 space-y-3">
                                     <div class="flex flex-wrap items-center gap-x-3 gap-y-2">
                                         <h3 class="text-base font-semibold text-slate-900">{{ $customer->name }}</h3>
                                         @if ($customer->contact_person)
@@ -63,13 +63,13 @@
                                         <p class="text-sm text-slate-600">{{ $customer->notes }}</p>
                                     @endif
                                 </div>
-                                <div class="flex flex-1 flex-col items-start gap-3 text-sm text-slate-600 md:max-w-sm md:flex-none md:items-end">
-                                    <div class="flex flex-wrap items-center gap-x-2 gap-y-1 md:justify-end">
+                                <div class="flex w-full flex-col items-start gap-4 text-sm text-slate-600 md:w-auto md:flex-none md:items-end md:self-stretch md:text-right">
+                                    <div class="flex w-full flex-wrap items-center gap-x-2 gap-y-1 md:w-auto md:flex-nowrap md:justify-end md:text-right">
                                         <span class="font-medium text-slate-900">{{ __('messages.customers.contact_label') }}:</span>
-                                        <span>{{ $customer->contact ?? '—' }}</span>
+                                        <span class="break-words text-slate-700 md:max-w-xs md:text-right">{{ $customer->contact ?? '' }}</span>
                                     </div>
                                     @if ($canManageCustomers)
-                                        <div class="flex flex-wrap items-center gap-2 md:justify-end">
+                                        <div class="flex w-full flex-wrap items-center gap-2 md:w-auto md:flex-nowrap md:justify-end md:gap-3 md:text-right">
                                             <a
                                                 href="{{ route('customers.form', ['customer' => $customer->id]) }}"
                                                 class="inline-flex items-center gap-2 rounded-full border border-slate-300 px-3 py-1.5 text-xs font-semibold text-slate-600 transition hover:bg-slate-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
@@ -84,6 +84,7 @@
                                                 method="POST"
                                                 action="{{ route('customers.destroy', $customer) }}"
                                                 onsubmit="return confirm('{{ __('messages.customers.actions.confirm_delete', ['name' => $customer->name]) }}');"
+                                                class="md:self-end"
                                             >
                                                 @csrf
                                                 @method('DELETE')
