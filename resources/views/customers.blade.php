@@ -63,13 +63,13 @@
                                         <p class="text-sm text-slate-600">{{ $customer->notes }}</p>
                                     @endif
                                 </div>
-                                <div class="flex w-full flex-col items-start gap-4 text-sm text-slate-600 md:w-auto md:flex-none md:items-end md:text-right">
-                                    <div class="flex w-full flex-wrap items-center gap-x-2 gap-y-1 md:w-auto md:flex-nowrap md:justify-end">
+                                <div class="flex w-full flex-col items-start gap-4 text-sm text-slate-600 md:w-auto md:flex-none md:items-start md:text-left">
+                                    <div class="flex w-full flex-wrap items-center gap-x-2 gap-y-1 md:w-auto md:flex-nowrap md:justify-start">
                                         <span class="font-medium text-slate-900">{{ __('messages.customers.contact_label') }}:</span>
-                                        <span class="break-words text-slate-700 md:max-w-xs md:text-right">{{ $customer->contact ?? '' }}</span>
+                                        <span class="break-words text-slate-700 md:max-w-xs md:text-left">{{ $customer->contact ?? '' }}</span>
                                     </div>
                                     @if ($canManageCustomers)
-                                        <div class="flex w-full flex-wrap items-center justify-start gap-2 md:w-auto md:flex-nowrap md:justify-end md:gap-3">
+                                        <div class="flex w-full flex-wrap items-center justify-start gap-2 md:w-auto md:flex-nowrap md:justify-start md:gap-3">
                                             <a
                                                 href="{{ route('customers.form', ['customer' => $customer->id]) }}"
                                                 class="inline-flex items-center gap-2 rounded-full border border-slate-300 px-3 py-1.5 text-xs font-semibold text-slate-600 transition hover:bg-slate-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
