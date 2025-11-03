@@ -13,96 +13,86 @@ return new class extends Migration
     public function up(): void
     {
         if (! Schema::hasTable('orders')) {
-            Schema::create('orders', function (Blueprint $table) {
-                $table->id();
-                $table->foreignId('customer_id')->constrained()->cascadeOnDelete();
-                $table->foreignId('product_id')->constrained()->cascadeOnDelete();
-                $table->unsignedInteger('quantity');
-                $table->string('status')->default('pending');
-                $table->date('order_date');
-                $table->date('delivery_date');
-                $table->text('notes')->nullable();
-                $table->timestamps();
+            $this->createOrdersTable();
+
+            return;
+        }
+
+        $requiredColumns = [
+            'customer_id',
+            'product_id',
+            'quantity',
+            'status',
+            'order_date',
+            'delivery_date',
+            'notes',
+        ];
+
+        $missingColumns = array_values(array_filter(
+            $requiredColumns,
+            static fn (string $column): bool => ! Schema::hasColumn('orders', $column)
+        ));
+
+        if ($missingColumns === []) {
+            return;
+        }
+
+        $missingLookup = array_flip($missingColumns);
+
+        if (! isset($missingLookup['customer_id']) && ! isset($missingLookup['product_id'])) {
+            Schema::table('orders', function (Blueprint $table) use ($missingLookup): void {
+                if (isset($missingLookup['quantity'])) {
+                    $table->unsignedInteger('quantity')->default(1)->after('product_id');
+                }
+
+                if (isset($missingLookup['status'])) {
+                    $table->string('status')->default('pending')->after('quantity');
+                }
+
+                if (isset($missingLookup['order_date'])) {
+                    $table->date('order_date')->nullable()->after('status');
+                }
+
+                if (isset($missingLookup['delivery_date'])) {
+                    $table->date('delivery_date')->nullable()->after('order_date');
+                }
+
+                if (isset($missingLookup['notes'])) {
+                    $table->text('notes')->nullable()->after('delivery_date');
+                }
             });
 
             return;
         }
 
-        $missingCustomerId = ! Schema::hasColumn('orders', 'customer_id');
-        $missingProductId = ! Schema::hasColumn('orders', 'product_id');
-        $missingStatus = ! Schema::hasColumn('orders', 'status');
-        $missingOrderDate = ! Schema::hasColumn('orders', 'order_date');
-        $missingDeliveryDate = ! Schema::hasColumn('orders', 'delivery_date');
-        $missingNotes = ! Schema::hasColumn('orders', 'notes');
-        $hasCustomerName = Schema::hasColumn('orders', 'customer');
-        $hasProductName = Schema::hasColumn('orders', 'product');
-
-        if ($missingCustomerId || $missingProductId || $missingStatus || $missingOrderDate || $missingDeliveryDate || $missingNotes) {
-            Schema::table('orders', function (Blueprint $table) use (
-                $missingCustomerId,
-                $missingProductId,
-                $missingStatus,
-                $missingOrderDate,
-                $missingDeliveryDate,
-                $missingNotes
-            ) {
-                if ($missingCustomerId) {
-                    $table->foreignId('customer_id')
-                        ->nullable()
-                        ->after('id')
-                        ->constrained()
-                        ->cascadeOnDelete();
-                }
-
-                if ($missingProductId) {
-                    $table->foreignId('product_id')
-                        ->nullable()
-                        ->after('customer_id')
-                        ->constrained()
-                        ->cascadeOnDelete();
-                }
-
-                if ($missingStatus) {
-                    $table->string('status')
-                        ->default('pending')
-                        ->after('quantity');
-                }
-
-                if ($missingOrderDate) {
-                    $table->date('order_date')
-                        ->nullable()
-                        ->after('status');
-                }
-
-                if ($missingDeliveryDate) {
-                    $table->date('delivery_date')
-                        ->nullable()
-                        ->after('order_date');
-                }
-
-                if ($missingNotes) {
-                    $table->text('notes')
-                        ->nullable()
-                        ->after('delivery_date');
-                }
-            });
+        if (Schema::hasTable('orders_legacy')) {
+            Schema::drop('orders_legacy');
         }
 
-        if ($hasCustomerName || $hasProductName) {
-            Schema::table('orders', function (Blueprint $table) use ($hasCustomerName, $hasProductName) {
-                if ($hasCustomerName) {
-                    $table->dropColumn('customer');
-                }
+        Schema::rename('orders', 'orders_legacy');
 
-                if ($hasProductName) {
-                    $table->dropColumn('product');
-                }
-            });
+        $this->createOrdersTable();
+
+        $legacyOrders = DB::table('orders_legacy')->get();
+
+        foreach ($legacyOrders as $legacyOrder) {
+            $customerId = $this->matchCustomerId($legacyOrder->customer_name ?? null);
+            [$productId, $quantity] = $this->matchProduct($legacyOrder->items ?? null);
+
+            DB::table('orders')->insert([
+                'customer_id' => $customerId,
+                'product_id' => $productId,
+                'quantity' => $quantity ?? 1,
+                'status' => $legacyOrder->status ?? 'pending',
+                'order_date' => $this->normalizeDate($legacyOrder->received_at ?? $legacyOrder->created_at ?? null),
+                'delivery_date' => null,
+                'notes' => null,
+                'created_at' => $legacyOrder->created_at,
+                'updated_at' => $legacyOrder->updated_at,
+            ]);
         }
 
-        if ($missingStatus) {
-            DB::table('orders')->whereNull('status')->update(['status' => 'pending']);
-        }
+        Schema::drop('orders_legacy');
     }
 
     /**
@@ -114,60 +104,76 @@ return new class extends Migration
             return;
         }
 
-        $needsCustomerColumn = ! Schema::hasColumn('orders', 'customer');
-        $needsProductColumn = ! Schema::hasColumn('orders', 'product');
-        $hasCustomerId = Schema::hasColumn('orders', 'customer_id');
-        $hasProductId = Schema::hasColumn('orders', 'product_id');
-        $hasStatus = Schema::hasColumn('orders', 'status');
-        $hasOrderDate = Schema::hasColumn('orders', 'order_date');
-        $hasDeliveryDate = Schema::hasColumn('orders', 'delivery_date');
-        $hasNotes = Schema::hasColumn('orders', 'notes');
+        Schema::drop('orders');
 
-        if ($needsCustomerColumn || $needsProductColumn) {
-            Schema::table('orders', function (Blueprint $table) use ($needsCustomerColumn, $needsProductColumn) {
-                if ($needsCustomerColumn) {
-                    $table->string('customer')->nullable();
-                }
+        Schema::create('orders', function (Blueprint $table): void {
+            $table->id();
+            $table->timestamp('received_at')->nullable()->index();
+            $table->string('customer_name');
+            $table->string('items');
+            $table->string('status')->default('pending');
+            $table->timestamps();
+        });
+    }
 
-                if ($needsProductColumn) {
-                    $table->string('product')->nullable();
-                }
-            });
+    private function createOrdersTable(): void
+    {
+        Schema::create('orders', function (Blueprint $table): void {
+            $table->id();
+            $table->foreignId('customer_id')->nullable()->constrained()->nullOnDelete();
+            $table->foreignId('product_id')->nullable()->constrained()->nullOnDelete();
+            $table->unsignedInteger('quantity');
+            $table->string('status')->default('pending');
+            $table->date('order_date')->nullable();
+            $table->date('delivery_date')->nullable();
+            $table->text('notes')->nullable();
+            $table->timestamps();
+        });
+    }
+
+    private function matchCustomerId(?string $customerName): ?int
+    {
+        if ($customerName === null || $customerName === '') {
+            return null;
         }
 
-        if ($hasCustomerId || $hasProductId || $hasStatus || $hasOrderDate || $hasDeliveryDate || $hasNotes) {
-            Schema::table('orders', function (Blueprint $table) use (
-                $hasCustomerId,
-                $hasProductId,
-                $hasStatus,
-                $hasOrderDate,
-                $hasDeliveryDate,
-                $hasNotes
-            ) {
-                if ($hasCustomerId) {
-                    $table->dropConstrainedForeignId('customer_id');
-                }
+        return DB::table('customers')->where('name', $customerName)->value('id');
+    }
 
-                if ($hasProductId) {
-                    $table->dropConstrainedForeignId('product_id');
-                }
-
-                if ($hasStatus) {
-                    $table->dropColumn('status');
-                }
-
-                if ($hasOrderDate) {
-                    $table->dropColumn('order_date');
-                }
-
-                if ($hasDeliveryDate) {
-                    $table->dropColumn('delivery_date');
-                }
-
-                if ($hasNotes) {
-                    $table->dropColumn('notes');
-                }
-            });
+    /**
+     * @return array{0: int|null, 1: int|null}
+     */
+    private function matchProduct(?string $items): array
+    {
+        if ($items === null || $items === '') {
+            return [null, null];
         }
+
+        $productName = $items;
+        $quantity = null;
+
+        if (preg_match('/^(.+?)[\s\x{00D7}xX]+(\d+)$/u', trim($items), $matches) === 1) {
+            $productName = trim($matches[1]);
+            $quantity = (int) $matches[2];
+        }
+
+        $productId = DB::table('products')->where('name', $productName)->value('id');
+
+        return [$productId, $quantity];
+    }
+
+    private function normalizeDate(?string $value): ?string
+    {
+        if ($value === null || $value === '') {
+            return null;
+        }
+
+        $timestamp = strtotime($value);
+
+        if ($timestamp === false) {
+            return null;
+        }
+
+        return date('Y-m-d', $timestamp);
     }
 };
