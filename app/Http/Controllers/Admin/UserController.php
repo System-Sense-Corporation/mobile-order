@@ -10,10 +10,12 @@ use Illuminate\Validation\Rule;
 
 class UserController extends Controller
 {
-    public function index(): View
+    public function index(Request $request): View
     {
+        $createdUsers = $request->session()->get('admin_users', []);
+
         return view('admin.users.index', [
-            'users' => $this->demoUsers(),
+            'users' => array_merge($this->demoUsers(), $createdUsers),
         ]);
     }
 
@@ -27,7 +29,7 @@ class UserController extends Controller
         $departmentOptions = array_keys((array) trans('messages.admin_users.form.department.options'));
         $roleOptions = array_keys((array) trans('messages.admin_users.roles'));
 
-        $request->validate([
+        $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255'],
             'phone' => ['nullable', 'string', 'max:50'],
@@ -37,6 +39,24 @@ class UserController extends Controller
             'require_password_change' => ['nullable', 'boolean'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
         ]);
+
+        $createdUsers = $request->session()->get('admin_users', []);
+        $existingUsers = array_merge($this->demoUsers(), $createdUsers);
+
+        $department = trans('messages.admin_users.form.department.options.' . $validated['department']);
+
+        $createdUsers[] = [
+            'user_id' => $this->nextUserId($existingUsers),
+            'name' => $validated['name'],
+            'department' => $department,
+            'authority' => $validated['authority'],
+            'email' => $validated['email'],
+            'phone' => ($validated['phone'] ?? null) ?: '—',
+            'status' => 'active',
+            'last_login' => '—',
+        ];
+
+        $request->session()->put('admin_users', $createdUsers);
 
         return redirect()
             ->route('admin.users.index')
@@ -112,5 +132,18 @@ class UserController extends Controller
                 'last_login' => '2024-04-18 07:55',
             ],
         ];
+    }
+
+    private function nextUserId(array $users): string
+    {
+        $max = 0;
+
+        foreach ($users as $user) {
+            if (preg_match('/USR-(\d+)/', $user['user_id'], $matches)) {
+                $max = max($max, (int) $matches[1]);
+            }
+        }
+
+        return sprintf('USR-%04d', $max + 1);
     }
 }
