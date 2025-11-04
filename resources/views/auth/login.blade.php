@@ -10,6 +10,14 @@
             {{ __('messages.auth.login_subheading') }}
         </p>
 
+        {{-- ✨✨ นี่คือปุ่มที่พี่เพิ่มเข้ามาค่ะ ✨✨ --}}
+        <div style="text-align: center; margin: 1.5rem 0;">
+            <a href="{{ route('switch-lang', ['locale' => 'en']) }}" style="text-decoration: none; padding: 5px;">🇬🇧 EN</a> |
+            <a href="{{ route('switch-lang', ['locale' => 'th']) }}" style="text-decoration: none; padding: 5px;">🇹🇭 TH</a> |
+            <a href="{{ route('switch-lang', ['locale' => 'ja']) }}" style="text-decoration: none; padding: 5px;">🇯🇵 JA</a>
+        </div>
+        {{-- ✨✨ สิ้นสุดตรงนี้นะคะ ✨✨ --}}
+
         <form method="POST" action="{{ route('login.store') }}" class="mt-6 space-y-5">
             @csrf
 

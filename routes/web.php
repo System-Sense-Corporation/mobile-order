@@ -8,6 +8,19 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Session;
+
+Route::get('/lang/{locale}', function ($locale) {
+    // เช็คว่าภาษาที่ขอมารองรับมั้ย
+    if (in_array($locale, ['en', 'th', 'ja'])) {
+        // ถ้าโอเค ก็เก็บลง session
+        Session::put('locale', $locale);
+        App::setLocale($locale); // ตั้งค่าภาษาสำหรับ request นี้เลย
+    }
+    return redirect()->back(); // กลับไปหน้าเดิมที่กดมา
+})->name('switch-lang'); // ตั้งชื่อ route ว่า 'switch-lang'
+
 
 Route::middleware('guest')->group(function () {
     Route::get('/login', [AuthController::class, 'create'])->name('login');

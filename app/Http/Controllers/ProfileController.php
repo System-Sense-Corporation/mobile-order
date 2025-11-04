@@ -51,8 +51,6 @@ class ProfileController extends Controller
 
             return back()->with('success', trans('messages.profile.flash.password_updated'));
         }
-
-        // ถ้าไม่มี intent ตรงเงื่อนไข
         return back();
     }
 }
