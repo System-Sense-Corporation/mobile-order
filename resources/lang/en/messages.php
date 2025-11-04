@@ -293,10 +293,135 @@ return [
             'editor' => 'Editor',
             'viewer' => 'Viewer',
         ],
+        'roles' => [
+            'admin' => 'Administrator',
+            'editor' => 'Editor',
+            'viewer' => 'Viewer',
+        ],
+        'role_descriptions' => [
+            'admin' => 'Full access to manage system settings and users.',
+            'editor' => 'Can manage orders, products, and customers.',
+            'viewer' => 'Can browse data but cannot make changes.',
+        ],
         'statuses' => [
             'active' => 'Active',
             'inactive' => 'Inactive',
             'suspended' => 'Suspended',
+        ],
+        'create' => [
+            'title' => 'Create User',
+            'description' => 'Register a new staff account and assign the appropriate authority.',
+        ],
+        'form' => [
+            'validation_error_heading' => 'Please fix the issues below and try again.',
+            'name' => [
+                'label' => 'Full name',
+                'placeholder' => 'e.g. John Smith',
+            ],
+            'email' => [
+                'label' => 'Email address',
+                'placeholder' => 'user@example.com',
+            ],
+            'phone' => [
+                'label' => 'Mobile phone',
+                'placeholder' => 'e.g. 090-1234-5678',
+            ],
+            'department' => [
+                'label' => 'Department',
+                'placeholder' => 'Select a department',
+                'options' => [
+                    'sales' => 'Sales',
+                    'support' => 'Customer Support',
+                    'logistics' => 'Logistics',
+                    'management' => 'Management',
+                ],
+            ],
+            'authority' => [
+                'label' => 'Authority level',
+            ],
+            'notify_new_orders' => [
+                'label' => 'Notify about new orders',
+                'help' => 'Send email notifications whenever a new order is submitted.',
+            ],
+            'require_password_change' => [
+                'label' => 'Require password change on first login',
+                'help' => 'Prompt the user to set a new password after their first sign-in.',
+            ],
+            'password' => [
+                'label' => 'Temporary password',
+                'placeholder' => 'Enter a temporary password',
+            ],
+            'password_confirmation' => [
+                'label' => 'Confirm password',
+                'placeholder' => 'Re-enter the password',
+            ],
+            'cancel_button' => 'Cancel',
+            'submit_button' => 'Create user',
+        ],
+        'permissions' => [
+            'form_title' => 'Access permissions',
+            'form_description' => 'Select the areas this user can access after signing in.',
+            'matrix_title' => 'Permission matrix',
+            'matrix_description' => 'Toggle access to each module for every user and save to apply the changes.',
+            'validation_error_heading' => 'We couldn’t update the permissions. Please review the selections below.',
+            'columns' => [
+                'user' => 'User',
+            ],
+            'actions' => [
+                'save' => 'Save permissions',
+                'reset' => 'Reset selection',
+                'toggle_row' => 'Toggle all',
+            ],
+            'modules' => [
+                'quotation' => [
+                    'label' => 'Quotation',
+                    'description' => 'Create and manage quotation documents.',
+                ],
+                'tax_invoice_schedule' => [
+                    'label' => 'Tax invoice schedule list',
+                    'description' => 'Review upcoming tax invoice deadlines.',
+                ],
+                'billing_note' => [
+                    'label' => 'Billing note',
+                    'description' => 'Issue billing notes for completed jobs.',
+                ],
+                'purchase_order' => [
+                    'label' => 'Purchase order',
+                    'description' => 'Approve and send purchase orders to suppliers.',
+                ],
+                'debit_credit_note' => [
+                    'label' => 'Debit/Credit note',
+                    'description' => 'Record debit or credit adjustments.',
+                ],
+                'job_file' => [
+                    'label' => 'JOB file',
+                    'description' => 'Access supporting documents for each job.',
+                ],
+                'delivery' => [
+                    'label' => 'Delivery',
+                    'description' => 'Track delivery schedules and status updates.',
+                ],
+                'loading' => [
+                    'label' => 'Loading',
+                    'description' => 'Monitor loading progress at the warehouse.',
+                ],
+                'pickup' => [
+                    'label' => 'Pickup',
+                    'description' => 'Coordinate pickup appointments and routes.',
+                ],
+                'inspection' => [
+                    'label' => 'Inspection',
+                    'description' => 'Review inspection checklists and approvals.',
+                ],
+                'stock' => [
+                    'label' => 'Stock',
+                    'description' => 'View available inventory levels.',
+                ],
+            ],
+        ],
+        'flash' => [
+            'created' => 'The user has been registered successfully.',
+            'permissions_saved' => 'Permission assignments have been updated.',
         ],
     ],
     'settings' => [
