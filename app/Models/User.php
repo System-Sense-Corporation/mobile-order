@@ -90,7 +90,7 @@ class User extends Authenticatable
         }
 
         if (! $this->role_id) {
-            return false;
+            return true;
         }
 
         if (! array_key_exists($routeName, $this->permissionCache)) {
