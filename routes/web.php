@@ -23,6 +23,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/', fn () => view('index'))->name('home');
         Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
         Route::get('/orders/export', [OrderController::class, 'export'])->name('orders.export');
+        Route::post('/orders/export/email', [OrderController::class, 'emailExport'])->name('orders.email');
         Route::get('/orders/form', [OrderController::class, 'create'])->name('orders.create');
         Route::post('/orders', [OrderController::class, 'store'])->name('orders.store');
         Route::put('/orders/{order}', [OrderController::class, 'update'])->name('orders.update');
