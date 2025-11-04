@@ -100,12 +100,23 @@ return [
             'status_updated' => 'ステータスを更新しました。',
             'updated' => '受注内容を更新しました。',
             'deleted' => '受注を削除しました。',
+            'emailed' => '受注レポートをメールで送信しました。',
+            'email_failed' => 'メールの送信に失敗しました。メール設定を確認してもう一度お試しください。',
         ],
         'actions' => [
             'edit' => '編集',
             'delete' => '削除',
             'download' => 'Excelをダウンロード',
+            'send' => '送信',
+            'email_label' => '送信先メールアドレス',
+            'email_placeholder' => 'example@example.com',
             'confirm_delete' => 'この受注を削除しますか？元に戻せません。',
+        ],
+        'mail' => [
+            'subject' => '当日受注一覧のエクスポート',
+            'body' => '最新の受注レポートをExcelファイルで添付しました。',
+            'greeting' => 'こんにちは。',
+            'signoff' => 'モバイルオーダーをご利用いただきありがとうございます。',
         ],
         'empty' => 'まだ受注はありません。',
         'samples' => [

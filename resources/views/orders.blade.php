@@ -24,17 +24,51 @@
                             {{ __('messages.index.cards.orders.description') }}
                         </p>
                     </div>
-                    <div class="flex flex-wrap items-center gap-2">
-                        <a
-                            href="{{ route('orders.export') }}"
-                            class="inline-flex items-center gap-2 rounded-full bg-accent px-4 py-2 text-xs font-semibold text-white shadow-sm transition hover:bg-accent/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
-                        >
-                            <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 13.5V16A1.5 1.5 0 005.25 17.5h9.5A1.5 1.5 0 0016.25 16v-2.5" />
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M10 3.25v9.5m0 0l3-3m-3 3l-3-3" />
-                            </svg>
-                            <span>{{ __('messages.orders.actions.download') }}</span>
-                        </a>
+                    <div class="flex flex-col items-stretch gap-2 sm:items-end">
+                        <div class="flex flex-wrap items-center justify-end gap-2">
+                            <form
+                                method="POST"
+                                action="{{ route('orders.email') }}"
+                                class="flex flex-wrap items-center gap-2"
+                            >
+                                @csrf
+                                <label class="sr-only" for="export-email">{{ __('messages.orders.actions.email_label') }}</label>
+                                <input
+                                    type="email"
+                                    name="email"
+                                    id="export-email"
+                                    value="{{ old('email') }}"
+                                    required
+                                    placeholder="{{ __('messages.orders.actions.email_placeholder') }}"
+                                    class="w-48 rounded-full border border-slate-300 px-3 py-1.5 text-xs text-slate-700 shadow-sm transition focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/50"
+                                />
+                                <button
+                                    type="submit"
+                                    class="inline-flex items-center gap-2 rounded-full bg-[#F4DADA] px-4 py-2 text-xs font-semibold text-slate-900 shadow-sm transition hover:bg-[#f0caca] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#F4DADA]"
+                                >
+                                    <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M3.977 6.186a2.25 2.25 0 01.144-.546l.146-.438C4.67 3.68 5.52 3 6.489 3h7.022c.97 0 1.82.68 2.222 2.202l.146.438c.223.668.223 1.385 0 2.053l-.146.438C15.33 9.32 14.48 10 13.511 10H6.489c-.97 0-1.82-.68-2.222-2.202l-.146-.438a2.251 2.251 0 01-.144-.546z" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M4.75 6.75l4.186 2.79a1.5 1.5 0 001.628 0L14.75 6.75" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M5 11.5h10" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M5 14h6" />
+                                    </svg>
+                                    <span>{{ __('messages.orders.actions.send') }}</span>
+                                </button>
+                            </form>
+                            <a
+                                href="{{ route('orders.export') }}"
+                                class="inline-flex items-center gap-2 rounded-full bg-accent px-4 py-2 text-xs font-semibold text-white shadow-sm transition hover:bg-accent/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+                            >
+                                <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 13.5V16A1.5 1.5 0 005.25 17.5h9.5A1.5 1.5 0 0016.25 16v-2.5" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M10 3.25v9.5m0 0l3-3m-3 3l-3-3" />
+                                </svg>
+                                <span>{{ __('messages.orders.actions.download') }}</span>
+                            </a>
+                        </div>
+                        @error('email')
+                            <p class="text-xs font-medium text-red-600">{{ $message }}</p>
+                        @enderror
                     </div>
                 </div>
             </div>

@@ -100,12 +100,23 @@ return [
             'status_updated' => 'Order status updated.',
             'updated' => 'Order details updated.',
             'deleted' => 'Order deleted.',
+            'emailed' => 'Order report emailed successfully.',
+            'email_failed' => 'Unable to send the report. Please check your mail settings and try again.',
         ],
         'actions' => [
             'edit' => 'Edit',
             'delete' => 'Delete',
             'download' => 'Download Excel',
+            'send' => 'Send',
+            'email_label' => 'Email address to send the report to',
+            'email_placeholder' => 'recipient@example.com',
             'confirm_delete' => 'Delete this order? This action cannot be undone.',
+        ],
+        'mail' => [
+            'subject' => "Today's orders export",
+            'body' => 'The latest order report is attached as an Excel file.',
+            'greeting' => 'Hello,',
+            'signoff' => 'Thank you for using Mobile Order.',
         ],
         'empty' => 'No orders have been submitted yet.',
         'samples' => [
