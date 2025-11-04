@@ -293,10 +293,135 @@ return [
             'editor' => '編集者',
             'viewer' => '閲覧者',
         ],
+        'roles' => [
+            'admin' => '管理者',
+            'editor' => '編集者',
+            'viewer' => '閲覧者',
+        ],
+        'role_descriptions' => [
+            'admin' => 'システム設定やユーザー管理を含むすべての操作が可能です。',
+            'editor' => '注文・商品・顧客の管理が可能です。',
+            'viewer' => 'データの閲覧のみ可能です。',
+        ],
         'statuses' => [
             'active' => '有効',
             'inactive' => '無効',
             'suspended' => '利用停止',
+        ],
+        'create' => [
+            'title' => 'ユーザー登録',
+            'description' => 'スタッフアカウントを作成し、適切な権限を割り当てます。',
+        ],
+        'form' => [
+            'validation_error_heading' => '入力内容をご確認ください。',
+            'name' => [
+                'label' => '氏名',
+                'placeholder' => '例）山田 太郎',
+            ],
+            'email' => [
+                'label' => 'メールアドレス',
+                'placeholder' => 'user@example.com',
+            ],
+            'phone' => [
+                'label' => '携帯電話',
+                'placeholder' => '例）090-1234-5678',
+            ],
+            'department' => [
+                'label' => '部署',
+                'placeholder' => '部署を選択',
+                'options' => [
+                    'sales' => '営業部',
+                    'support' => 'カスタマーサポート部',
+                    'logistics' => '物流部',
+                    'management' => '管理部',
+                ],
+            ],
+            'authority' => [
+                'label' => '権限',
+            ],
+            'notify_new_orders' => [
+                'label' => '新規注文を通知する',
+                'help' => '新しい注文が登録された際にメール通知します。',
+            ],
+            'require_password_change' => [
+                'label' => '初回ログイン時にパスワード変更を必須にする',
+                'help' => '初回ログイン後に新しいパスワードの設定を促します。',
+            ],
+            'password' => [
+                'label' => '仮パスワード',
+                'placeholder' => '仮パスワードを入力',
+            ],
+            'password_confirmation' => [
+                'label' => 'パスワード（確認）',
+                'placeholder' => 'もう一度入力してください',
+            ],
+            'cancel_button' => 'キャンセル',
+            'submit_button' => 'ユーザーを登録',
+        ],
+        'permissions' => [
+            'form_title' => 'アクセス権限',
+            'form_description' => 'サインイン後に利用できる機能を選択してください。',
+            'matrix_title' => '権限一覧',
+            'matrix_description' => 'ユーザーごとに各モジュールのアクセス権限を切り替え、保存して反映します。',
+            'validation_error_heading' => '権限を更新できませんでした。選択内容を確認してください。',
+            'columns' => [
+                'user' => 'ユーザー',
+            ],
+            'actions' => [
+                'save' => '権限を保存',
+                'reset' => '選択をリセット',
+                'toggle_row' => 'すべて切り替え',
+            ],
+            'modules' => [
+                'quotation' => [
+                    'label' => '見積書',
+                    'description' => '見積書の作成と管理を行います。',
+                ],
+                'tax_invoice_schedule' => [
+                    'label' => '税請求書スケジュール一覧',
+                    'description' => '税請求書の期限を確認します。',
+                ],
+                'billing_note' => [
+                    'label' => '請求書メモ',
+                    'description' => '完了した案件の請求書メモを発行します。',
+                ],
+                'purchase_order' => [
+                    'label' => '発注書',
+                    'description' => '仕入先への発注書を承認・送信します。',
+                ],
+                'debit_credit_note' => [
+                    'label' => 'デビット／クレジットノート',
+                    'description' => '調整用のデビット／クレジットノートを記録します。',
+                ],
+                'job_file' => [
+                    'label' => 'JOBファイル',
+                    'description' => '各案件の関連資料にアクセスします。',
+                ],
+                'delivery' => [
+                    'label' => '配送',
+                    'description' => '配送スケジュールと進捗を確認します。',
+                ],
+                'loading' => [
+                    'label' => '積み込み',
+                    'description' => '倉庫での積み込み状況を管理します。',
+                ],
+                'pickup' => [
+                    'label' => '集荷',
+                    'description' => '集荷予定と対応を調整します。',
+                ],
+                'inspection' => [
+                    'label' => '検品',
+                    'description' => '検品チェックリストと承認状況を確認します。',
+                ],
+                'stock' => [
+                    'label' => '在庫',
+                    'description' => '利用可能な在庫数を確認します。',
+                ],
+            ],
+        ],
+        'flash' => [
+            'created' => 'ユーザーを登録しました。',
+            'permissions_saved' => '権限設定を更新しました。',
         ],
     ],
     'settings' => [
