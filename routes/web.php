@@ -23,6 +23,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/', fn () => view('index'))->name('home');
         Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
         Route::get('/orders/export', [OrderController::class, 'export'])->name('orders.export');
+        Route::post('/orders/export/email', [OrderController::class, 'emailExport'])->name('orders.email');
         Route::get('/orders/form', [OrderController::class, 'create'])->name('orders.create');
         Route::post('/orders', [OrderController::class, 'store'])->name('orders.store');
         Route::put('/orders/{order}', [OrderController::class, 'update'])->name('orders.update');
@@ -45,6 +46,15 @@ Route::middleware('auth')->group(function () {
         Route::get('/admin/users', [AdminUserController::class, 'index'])->name('admin.users.index');
         Route::get('/admin/users/form', [AdminUserController::class, 'create'])->name('admin.users.form');
         Route::post('/admin/users', [AdminUserController::class, 'store'])->name('admin.users.store');
+        Route::get('/admin/users/{user}', [AdminUserController::class, 'edit'])
+            ->where('user', 'USR-[0-9]+')
+            ->name('admin.users.edit');
+        Route::put('/admin/users/{user}', [AdminUserController::class, 'update'])
+            ->where('user', 'USR-[0-9]+')
+            ->name('admin.users.update');
+        Route::delete('/admin/users/{user}', [AdminUserController::class, 'destroy'])
+            ->where('user', 'USR-[0-9]+')
+            ->name('admin.users.destroy');
 
         Route::get('/settings', fn () => view('settings'))->name('settings');
 

@@ -11,20 +11,40 @@
     <header class="bg-accent text-white">
         @php
             $navigationLinks = [
-                ['route' => 'orders.create',     'label' => __('messages.navigation.mobile-order')],
-                ['route' => 'orders.index',      'label' => __('messages.navigation.orders')],
-                ['route' => 'products',          'label' => __('messages.navigation.products')],
-                ['route' => 'customers',         'label' => __('messages.navigation.customers')],
-                ['route' => 'admin.users.index', 'label' => __('messages.navigation.admin-users')],
-                ['route' => 'settings',          'label' => __('messages.navigation.settings')],
-                ['route' => 'profile',           'label' => __('messages.navigation.profile')],
+                ['route' => 'orders.create', 'label' => __('messages.navigation.mobile-order')],
+                ['route' => 'orders.index',  'label' => __('messages.navigation.orders')],
+                ['route' => 'products',      'label' => __('messages.navigation.products')],
+                ['route' => 'customers',     'label' => __('messages.navigation.customers')],
+                [
+                    'route'    => 'settings',
+                    'label'    => __('messages.navigation.settings'),
+                    'children' => [
+                        ['route' => 'admin.users.index', 'label' => __('messages.navigation.admin-users')],
+                        ['route' => 'profile',           'label' => __('messages.navigation.profile')],
+                    ],
+                ],
             ];
 
             $user = auth()->user();
             if ($user) {
-                $navigationLinks = array_values(array_filter($navigationLinks, function (array $item) use ($user): bool {
-                    return $user->hasPermission($item['route']);
-                }));
+                $navigationLinks = array_values(array_filter(array_map(function (array $item) use ($user) {
+                    if (! empty($item['children'])) {
+                        $item['children'] = array_values(array_filter($item['children'], function (array $child) use ($user): bool {
+                            return $user->hasPermission($child['route']);
+                        }));
+                    }
+
+                    $canVisit = $user->hasPermission($item['route'] ?? null);
+                    $hasChildren = ! empty($item['children']);
+
+                    if (! $canVisit && ! $hasChildren) {
+                        return null;
+                    }
+
+                    $item['can_visit'] = $canVisit;
+
+                    return $item;
+                }, $navigationLinks), static fn ($item) => $item !== null));
             }
 
             $availableLocales = config('app.available_locales', []);
@@ -93,9 +113,34 @@
                             {{ __('messages.navigation.home') }}
                         </a>
                         @foreach ($navigationLinks as $item)
-                            <a href="{{ route($item['route']) }}" class="block w-full rounded px-3 py-2 text-white/90 transition hover:bg-white/15 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white/70">
-                                {{ $item['label'] }}
-                            </a>
+                            <div class="flex flex-col gap-1">
+                                @if ($item['can_visit'] ?? true)
+                                    <a href="{{ route($item['route']) }}" @if (! empty($item['children'])) aria-haspopup="true" @endif class="flex w-full items-center justify-between rounded px-3 py-2 text-left text-white/90 transition hover:bg-white/15 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white/70">
+                                        <span>{{ $item['label'] }}</span>
+                                        @if (! empty($item['children']))
+                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="h-4 w-4">
+                                                <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 10.585l3.71-3.354a.75.75 0 011.04 1.08l-4.25 3.842a.75.75 0 01-1.04 0L5.21 8.29a.75.75 0 01.02-1.08z" clip-rule="evenodd" />
+                                            </svg>
+                                        @endif
+                                    </a>
+                                @else
+                                    <button type="button" class="flex w-full items-center justify-between rounded px-3 py-2 text-left text-white/90 transition hover:bg-white/15 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white/70" aria-haspopup="true">
+                                        {{ $item['label'] }}
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="h-4 w-4">
+                                            <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 10.585l3.71-3.354a.75.75 0 011.04 1.08l-4.25 3.842a.75.75 0 01-1.04 0L5.21 8.29a.75.75 0 01.02-1.08z" clip-rule="evenodd" />
+                                        </svg>
+                                    </button>
+                                @endif
+                                @if (! empty($item['children']))
+                                    <div class="ml-3 flex flex-col gap-1 border-l border-white/20 pl-3">
+                                        @foreach ($item['children'] as $child)
+                                            <a href="{{ route($child['route']) }}" class="block rounded px-3 py-2 text-white/80 transition hover:bg-white/15 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white/70">
+                                                {{ $child['label'] }}
+                                            </a>
+                                        @endforeach
+                                    </div>
+                                @endif
+                            </div>
                         @endforeach
                     </nav>
 
@@ -152,9 +197,39 @@
                         {{ __('messages.navigation.home') }}
                     </a>
                     @foreach ($navigationLinks as $item)
-                        <a href="{{ route($item['route']) }}" class="block w-full rounded px-3 py-2 text-white/90 transition hover:bg-white/15 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white/70 md:inline-block md:w-auto">
-                            {{ $item['label'] }}
-                        </a>
+                        @if (! empty($item['children']))
+                            <div class="relative group md:inline-block md:w-auto">
+                                @php
+                                    $parentClasses = 'flex w-full items-center justify-between gap-1 rounded px-3 py-2 text-white/90 transition hover:bg-white/15 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white/70 md:inline-flex';
+                                @endphp
+                                @if ($item['can_visit'] ?? true)
+                                    <a href="{{ route($item['route']) }}" class="{{ $parentClasses }}" aria-haspopup="true">
+                                        <span>{{ $item['label'] }}</span>
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="h-4 w-4">
+                                            <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 10.585l3.71-3.354a.75.75 0 011.04 1.08l-4.25 3.842a.75.75 0 01-1.04 0L5.21 8.29a.75.75 0 01.02-1.08z" clip-rule="evenodd" />
+                                        </svg>
+                                    </a>
+                                @else
+                                    <button type="button" class="{{ $parentClasses }}" aria-haspopup="true">
+                                        <span>{{ $item['label'] }}</span>
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="h-4 w-4">
+                                            <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 10.585l3.71-3.354a.75.75 0 011.04 1.08l-4.25 3.842a.75.75 0 01-1.04 0L5.21 8.29a.75.75 0 01.02-1.08z" clip-rule="evenodd" />
+                                        </svg>
+                                    </button>
+                                @endif
+                                <div class="invisible absolute left-0 top-full z-20 mt-2 min-w-[200px] rounded-md bg-white py-2 text-sm text-accent opacity-0 shadow-lg transition group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100" data-desktop-submenu>
+                                    @foreach ($item['children'] as $child)
+                                        <a href="{{ route($child['route']) }}" class="block px-4 py-2 text-left text-accent transition hover:bg-accent/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent/40">
+                                            {{ $child['label'] }}
+                                        </a>
+                                    @endforeach
+                                </div>
+                            </div>
+                        @else
+                            <a href="{{ route($item['route']) }}" class="block w-full rounded px-3 py-2 text-white/90 transition hover:bg-white/15 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white/70 md:inline-block md:w-auto">
+                                {{ $item['label'] }}
+                            </a>
+                        @endif
                     @endforeach
                 </nav>
 

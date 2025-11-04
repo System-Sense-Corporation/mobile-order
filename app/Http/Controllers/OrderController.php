@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\OrdersExportMail;
 use App\Models\Customer;
 use App\Models\Order;
 use App\Models\Product;
@@ -13,6 +14,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Validation\Rule;
 use Symfony\Component\HttpFoundation\StreamedResponse;
@@ -192,6 +194,42 @@ class OrderController extends Controller
 
     public function export(): StreamedResponse
     {
+        [$orders, $statusLabels, $filename] = $this->prepareExportData();
+
+        $table = $this->buildExportTable($orders, $statusLabels);
+
+        $headers = [
+            'Content-Type' => 'application/vnd.ms-excel; charset=UTF-8',
+        ];
+
+        return response()->streamDownload(function () use ($table) {
+            echo "\xEF\xBB\xBF";
+            echo $table;
+        }, $filename, $headers);
+    }
+
+    public function emailExport(Request $request): RedirectResponse
+    {
+        $validated = $request->validate([
+            'email' => ['required', 'email'],
+        ]);
+
+        [$orders, $statusLabels, $filename] = $this->prepareExportData();
+
+        $content = "\xEF\xBB\xBF" . $this->buildExportTable($orders, $statusLabels);
+
+        Mail::to($validated['email'])->send(new OrdersExportMail($filename, $content));
+
+        return redirect()
+            ->route('orders.index')
+            ->with('status', __('messages.orders.flash.emailed'));
+    }
+
+    /**
+     * @return array{Collection<int, Order>, array<string, string>, string}
+     */
+    protected function prepareExportData(): array
+    {
         $this->ensureOrdersTableSupportsForm();
 
         if (! Schema::hasTable('orders')) {
@@ -211,69 +249,71 @@ class OrderController extends Controller
 
         $filename = 'orders-' . now()->timezone(config('app.timezone'))->format('Ymd-His') . '.xls';
 
-        $headers = [
-            'Content-Type' => 'application/vnd.ms-excel; charset=UTF-8',
+        return [$orders, $statusLabels, $filename];
+    }
+
+    /**
+     * @param  Collection<int, Order>  $orders
+     * @param  array<string, string>  $statusLabels
+     */
+    protected function buildExportTable(Collection $orders, array $statusLabels): string
+    {
+        $columns = [
+            __('messages.orders.table.time'),
+            __('messages.orders.table.customer'),
+            __('messages.orders.table.items'),
+            __('messages.orders.table.status'),
         ];
 
-        return response()->streamDownload(function () use ($orders, $statusLabels) {
-            $columns = [
-                __('messages.orders.table.time'),
-                __('messages.orders.table.customer'),
-                __('messages.orders.table.items'),
-                __('messages.orders.table.status'),
-            ];
+        $table = '<table border="1">';
+        $table .= '<thead><tr>';
 
-            echo "\xEF\xBB\xBF";
-            echo '<table border="1">';
-            echo '<thead><tr>';
+        foreach ($columns as $column) {
+            $table .= '<th>' . htmlspecialchars($column, ENT_QUOTES, 'UTF-8') . '</th>';
+        }
 
-            foreach ($columns as $column) {
-                echo '<th>' . htmlspecialchars($column, ENT_QUOTES, 'UTF-8') . '</th>';
-            }
+        $table .= '</tr></thead>';
+        $table .= '<tbody>';
 
-            echo '</tr></thead>';
-            echo '<tbody>';
+        if ($orders->isEmpty()) {
+            $table .= '<tr><td colspan="' . count($columns) . '">' . htmlspecialchars(__('messages.orders.empty'), ENT_QUOTES, 'UTF-8') . '</td></tr>';
+        } else {
+            foreach ($orders as $order) {
+                $timestamp = $order->created_at ?? ($order->received_at ? \Illuminate\Support\Carbon::parse($order->received_at) : null);
+                $receivedAt = optional($timestamp)?->timezone(config('app.timezone'))->format('H:i');
+                $customer = $order->customer?->name ?? $order->customer_name ?? '—';
+                $quantity = $order->quantity ?? 1;
+                $product = $order->product?->name;
+                $items = $product ? $product . ' × ' . number_format($quantity) : ($order->items ?: '—');
+                $delivery = optional($order->delivery_date)?->format('Y/m/d');
+                $notes = $order->notes;
+                $statusKey = $order->status ?? Order::STATUS_PENDING;
+                $status = $statusLabels[$statusKey] ?? ucfirst($statusKey);
 
-            if ($orders->isEmpty()) {
-                echo '<tr><td colspan="' . count($columns) . '">' . htmlspecialchars(__('messages.orders.empty'), ENT_QUOTES, 'UTF-8') . '</td></tr>';
-            } else {
-                foreach ($orders as $order) {
-                    $timestamp = $order->created_at ?? ($order->received_at ? \Illuminate\Support\Carbon::parse($order->received_at) : null);
-                    $receivedAt = optional($timestamp)?->timezone(config('app.timezone'))->format('H:i');
-                    $customer = $order->customer?->name ?? $order->customer_name ?? '—';
-                    $quantity = $order->quantity ?? 1;
-                    $product = $order->product?->name;
-                    $items = $product ? $product . ' × ' . number_format($quantity) : ($order->items ?: '—');
-                    $delivery = optional($order->delivery_date)?->format('Y/m/d');
-                    $notes = $order->notes;
-                    $statusKey = $order->status ?? Order::STATUS_PENDING;
-                    $status = $statusLabels[$statusKey] ?? ucfirst($statusKey);
+                $table .= '<tr>';
+                $table .= '<td>' . htmlspecialchars($receivedAt ?? '', ENT_QUOTES, 'UTF-8') . '</td>';
+                $table .= '<td>' . htmlspecialchars($customer, ENT_QUOTES, 'UTF-8') . '</td>';
 
-                    echo '<tr>';
-                    echo '<td>' . htmlspecialchars($receivedAt ?? '', ENT_QUOTES, 'UTF-8') . '</td>';
-                    echo '<td>' . htmlspecialchars($customer, ENT_QUOTES, 'UTF-8') . '</td>';
+                $details = $items;
 
-                    $details = $items;
-
-                    if ($delivery) {
-                        $details .= "\n" . __('messages.orders.labels.delivery') . ': ' . $delivery;
-                    }
-
-                    if (! empty($notes)) {
-                        $details .= "\n" . __('messages.orders.labels.notes') . ': ' . $notes;
-                    }
-
-                    $details = nl2br(htmlspecialchars($details, ENT_QUOTES, 'UTF-8'));
-
-                    echo '<td>' . $details . '</td>';
-                    echo '<td>' . htmlspecialchars($status, ENT_QUOTES, 'UTF-8') . '</td>';
-                    echo '</tr>';
+                if ($delivery) {
+                    $details .= "\n" . __('messages.orders.labels.delivery') . ': ' . $delivery;
                 }
-            }
 
-            echo '</tbody>';
-            echo '</table>';
-        }, $filename, $headers);
+                if (! empty($notes)) {
+                    $details .= "\n" . __('messages.orders.labels.notes') . ': ' . $notes;
+                }
+
+                $table .= '<td style="white-space: pre-line">' . htmlspecialchars($details, ENT_QUOTES, 'UTF-8') . '</td>';
+                $table .= '<td>' . htmlspecialchars($status, ENT_QUOTES, 'UTF-8') . '</td>';
+                $table .= '</tr>';
+            }
+        }
+
+        $table .= '</tbody>';
+        $table .= '</table>';
+
+        return $table;
     }
 
     private function ensureOrdersTableSupportsForm(): void

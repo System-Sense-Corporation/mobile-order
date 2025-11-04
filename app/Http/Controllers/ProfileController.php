@@ -4,30 +4,39 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rule;
 
 class ProfileController extends Controller
 {
     public function edit()
     {
-        // ส่งข้อมูล user ปัจจุบันให้หน้า profile.blade.php ใช้
-        return view('profile', ['user' => auth()->user()]);
+        $departmentOptions = (array) trans('messages.admin_users.form.department.options');
+
+        // ส่งข้อมูล user ปัจจุบันและตัวเลือกแผนกให้หน้า profile.blade.php ใช้
+        return view('profile', [
+            'user' => auth()->user(),
+            'departmentOptions' => $departmentOptions,
+        ]);
     }
 
     public function update(Request $request)
     {
         $user = auth()->user();
 
-        // ✅ กรณี: ฟอร์มแก้ข้อมูลบัญชี (ชื่อ อีเมล เบอร์โทร)
+        // ✅ กรณี: ฟอร์มแก้ข้อมูลบัญชี (ชื่อ แผนก อีเมล เบอร์โทร)
         if ($request->input('intent') === 'profile') {
+            $departmentOptions = array_keys((array) trans('messages.admin_users.form.department.options'));
+
             $data = $request->validate([
                 'name'      => 'required|string|max:255',
                 'email'     => 'required|email|max:255|unique:users,email,' . $user->id,
+                'department' => ['nullable', 'string', Rule::in($departmentOptions)],
                 'telephone' => 'nullable|string|max:20',
             ]);
 
             $user->update($data);
 
-            return back()->with('success', 'อัปเดตข้อมูลเรียบร้อยแล้ว');
+            return back()->with('success', trans('messages.profile.flash.profile_updated'));
         }
 
         // ✅ กรณี: ฟอร์มเปลี่ยนรหัสผ่าน
@@ -40,7 +49,7 @@ class ProfileController extends Controller
             $user->password = Hash::make($request->password);
             $user->save();
 
-            return back()->with('success', 'เปลี่ยนรหัสผ่านเรียบร้อยแล้ว');
+            return back()->with('success', trans('messages.profile.flash.password_updated'));
         }
 
         // ถ้าไม่มี intent ตรงเงื่อนไข

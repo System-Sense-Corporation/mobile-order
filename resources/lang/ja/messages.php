@@ -100,12 +100,22 @@ return [
             'status_updated' => 'ステータスを更新しました。',
             'updated' => '受注内容を更新しました。',
             'deleted' => '受注を削除しました。',
+            'emailed' => '受注レポートをメールで送信しました。',
         ],
         'actions' => [
             'edit' => '編集',
             'delete' => '削除',
             'download' => 'Excelをダウンロード',
+            'send' => '送信',
+            'email_label' => '送信先メールアドレス',
+            'email_placeholder' => 'example@example.com',
             'confirm_delete' => 'この受注を削除しますか？元に戻せません。',
+        ],
+        'mail' => [
+            'subject' => '当日受注一覧のエクスポート',
+            'body' => '最新の受注レポートをExcelファイルで添付しました。',
+            'greeting' => 'こんにちは。',
+            'signoff' => 'モバイルオーダーをご利用いただきありがとうございます。',
         ],
         'empty' => 'まだ受注はありません。',
         'samples' => [
@@ -270,6 +280,8 @@ return [
         'description' => 'スタッフアカウントと権限を管理します。',
         'actions' => [
             'create' => '新規作成',
+            'edit' => '編集',
+            'delete' => '削除',
         ],
         'filters' => [
             'permission' => '権限で絞り込む',
@@ -287,6 +299,7 @@ return [
             'phone' => '携帯電話',
             'status' => 'ステータス',
             'last_login' => '最終ログイン',
+            'actions' => '操作',
         ],
         'authorities' => [
             'admin' => '管理者',
@@ -311,6 +324,10 @@ return [
         'create' => [
             'title' => 'ユーザー登録',
             'description' => 'スタッフアカウントを作成し、適切な権限を割り当てます。',
+        ],
+        'edit' => [
+            'title' => 'ユーザー編集',
+            'description' => 'スタッフ情報や権限を更新します。',
         ],
         'form' => [
             'validation_error_heading' => '入力内容をご確認ください。',
@@ -357,10 +374,14 @@ return [
             ],
             'cancel_button' => 'キャンセル',
             'submit_button' => 'ユーザーを登録',
+            'submit_button_update' => '変更を保存',
         ],
         'flash' => [
             'created' => 'ユーザーを登録しました。',
+            'updated' => 'ユーザー情報を更新しました。',
+            'deleted' => 'ユーザーを削除しました。',
         ],
+        'confirm_delete' => ':name を削除してもよろしいですか？',
     ],
     'settings' => [
         'title' => '設定',
@@ -402,6 +423,18 @@ return [
         'title' => 'プロフィール',
         'description' => 'サインイン方法とアカウントの扱いを管理します。',
         'sections' => [
+            'account_information' => [
+                'title' => 'アカウント情報',
+                'description' => '表示名・部署・連絡先を更新します。',
+                'fields' => [
+                    'name' => '氏名',
+                    'email' => 'メールアドレス',
+                    'department' => '部署',
+                    'department_placeholder' => '部署を選択してください',
+                    'telephone' => '携帯電話番号',
+                ],
+                'button' => '変更を保存',
+            ],
             'password' => [
                 'title' => 'パスワードの更新',
                 'description' => '強固なパスワードでアカウントを保護しましょう。',
@@ -420,6 +453,10 @@ return [
                 'support' => '迷った場合は、実行する前にサポートへご相談ください。',
                 'button' => 'アカウントを削除',
             ],
+        ],
+        'flash' => [
+            'profile_updated' => 'プロフィール情報を更新しました。',
+            'password_updated' => 'パスワードを更新しました。',
         ],
     ],
 ];
