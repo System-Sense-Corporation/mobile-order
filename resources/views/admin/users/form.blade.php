@@ -1,12 +1,23 @@
 @extends('layouts.app')
 
-@section('title', __('messages.app.name') . ' - ' . __('messages.admin_users.create.title'))
+@php
+    $isEdit = isset($user) && $user !== null;
+    $pageTitle = $isEdit ? __('messages.admin_users.edit.title') : __('messages.admin_users.create.title');
+    $pageDescription = $isEdit ? __('messages.admin_users.edit.description') : __('messages.admin_users.create.description');
+    $formAction = $isEdit ? route('admin.users.update', $user['user_id']) : route('admin.users.store');
+    $initialPhone = $isEdit && isset($user['phone']) && $user['phone'] !== '—' ? $user['phone'] : '';
+    $phoneValue = old('phone', $initialPhone);
+    $notifyNewOrders = old('notify_new_orders', $user['notify_new_orders'] ?? true);
+    $requirePasswordChange = old('require_password_change', $user['require_password_change'] ?? false);
+@endphp
 
-@section('page-title', __('messages.admin_users.create.title'))
+@section('title', __('messages.app.name') . ' - ' . $pageTitle)
+
+@section('page-title', $pageTitle)
 
 @section('content')
     <div class="space-y-6">
-        <p class="text-sm text-black/70">{{ __('messages.admin_users.create.description') }}</p>
+        <p class="text-sm text-black/70">{{ $pageDescription }}</p>
 
         @if ($errors->any())
             <div class="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
@@ -19,12 +30,11 @@
             </div>
         @endif
 
-        <form
-            action="{{ route('admin.users.store') }}"
-            method="POST"
-            class="space-y-6 rounded-lg bg-white p-6 shadow-sm ring-1 ring-black/5"
-        >
+        <form action="{{ $formAction }}" method="POST" class="space-y-6 rounded-lg bg-white p-6 shadow-sm ring-1 ring-black/5">
             @csrf
+            @if ($isEdit)
+                @method('PUT')
+            @endif
 
             <div class="grid gap-6 md:grid-cols-2">
                 <div>
@@ -36,7 +46,7 @@
                         type="text"
                         id="name"
                         name="name"
-                        value="{{ old('name') }}"
+                        value="{{ old('name', $user['name'] ?? '') }}"
                         required
                         class="form-input mt-2 w-full rounded border border-black/10 bg-white px-3 py-2 text-sm text-black shadow-none focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/40"
                     >
@@ -54,7 +64,7 @@
                         type="email"
                         id="email"
                         name="email"
-                        value="{{ old('email') }}"
+                        value="{{ old('email', $user['email'] ?? '') }}"
                         required
                         class="form-input mt-2 w-full rounded border border-black/10 bg-white px-3 py-2 text-sm text-black shadow-none focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/40"
                     >
@@ -71,7 +81,7 @@
                         type="tel"
                         id="phone"
                         name="phone"
-                        value="{{ old('phone') }}"
+                        value="{{ $phoneValue }}"
                         class="form-input mt-2 w-full rounded border border-black/10 bg-white px-3 py-2 text-sm text-black shadow-none focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/40"
                         placeholder="{{ __('messages.admin_users.form.phone.placeholder') }}"
                     >
@@ -91,9 +101,9 @@
                         required
                         class="form-select mt-2 w-full rounded border border-black/10 bg-white px-3 py-2 text-sm text-black shadow-none focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/40"
                     >
-                        <option value="" disabled @selected(! old('department'))>{{ __('messages.admin_users.form.department.placeholder') }}</option>
+                        <option value="" disabled @selected(! old('department', $user['department_key'] ?? null))>{{ __('messages.admin_users.form.department.placeholder') }}</option>
                         @foreach (trans('messages.admin_users.form.department.options') as $value => $label)
-                            <option value="{{ $value }}" @selected(old('department') === $value)>{{ $label }}</option>
+                            <option value="{{ $value }}" @selected(old('department', $user['department_key'] ?? null) === $value)>{{ $label }}</option>
                         @endforeach
                     </select>
                     @error('department')
@@ -111,7 +121,7 @@
                                 type="radio"
                                 name="authority"
                                 value="{{ $value }}"
-                                @checked(old('authority', 'editor') === $value)
+                                @checked(old('authority', $user['authority'] ?? 'editor') === $value)
                                 required
                                 class="mt-1 h-4 w-4 border-black/30 text-accent focus:ring-accent"
                             >
@@ -133,7 +143,7 @@
                         type="checkbox"
                         name="notify_new_orders"
                         value="1"
-                        @checked(old('notify_new_orders', true))
+                        @checked((bool) $notifyNewOrders)
                         class="mt-1 h-4 w-4 rounded border-black/30 text-accent focus:ring-accent"
                     >
                     <span>
@@ -147,7 +157,7 @@
                         type="checkbox"
                         name="require_password_change"
                         value="1"
-                        @checked(old('require_password_change'))
+                        @checked((bool) $requirePasswordChange)
                         class="mt-1 h-4 w-4 rounded border-black/30 text-accent focus:ring-accent"
                     >
                     <span>
@@ -161,13 +171,17 @@
                 <div>
                     <label for="password" class="flex items-center gap-1 text-sm font-medium text-black/80">
                         {{ __('messages.admin_users.form.password.label') }}
-                        <span class="text-red-500">*</span>
+                        @unless ($isEdit)
+                            <span class="text-red-500">*</span>
+                        @endunless
                     </label>
                     <input
                         type="password"
                         id="password"
                         name="password"
-                        required
+                        @unless ($isEdit)
+                            required
+                        @endunless
                         class="form-input mt-2 w-full rounded border border-black/10 bg-white px-3 py-2 text-sm text-black shadow-none focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/40"
                         placeholder="{{ __('messages.admin_users.form.password.placeholder') }}"
                     >
@@ -179,13 +193,17 @@
                 <div>
                     <label for="password_confirmation" class="flex items-center gap-1 text-sm font-medium text-black/80">
                         {{ __('messages.admin_users.form.password_confirmation.label') }}
-                        <span class="text-red-500">*</span>
+                        @unless ($isEdit)
+                            <span class="text-red-500">*</span>
+                        @endunless
                     </label>
                     <input
                         type="password"
                         id="password_confirmation"
                         name="password_confirmation"
-                        required
+                        @unless ($isEdit)
+                            required
+                        @endunless
                         class="form-input mt-2 w-full rounded border border-black/10 bg-white px-3 py-2 text-sm text-black shadow-none focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/40"
                         placeholder="{{ __('messages.admin_users.form.password_confirmation.placeholder') }}"
                     >
@@ -203,7 +221,7 @@
                     type="submit"
                     class="inline-flex items-center justify-center rounded bg-accent px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-accent/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent/70"
                 >
-                    {{ __('messages.admin_users.form.submit_button') }}
+                    {{ $isEdit ? __('messages.admin_users.form.submit_button_update') : __('messages.admin_users.form.submit_button') }}
                 </button>
             </div>
         </form>
