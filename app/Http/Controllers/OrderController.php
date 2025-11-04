@@ -18,6 +18,7 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Validation\Rule;
 use Symfony\Component\HttpFoundation\StreamedResponse;
+use Throwable;
 
 class OrderController extends Controller
 {
@@ -218,7 +219,18 @@ class OrderController extends Controller
 
         $content = "\xEF\xBB\xBF" . $this->buildExportTable($orders, $statusLabels);
 
-        Mail::to($validated['email'])->send(new OrdersExportMail($filename, $content));
+        try {
+            Mail::mailer('failover')->to($validated['email'])->send(new OrdersExportMail($filename, $content));
+        } catch (Throwable $exception) {
+            report($exception);
+
+            return redirect()
+                ->route('orders.index')
+                ->withInput()
+                ->withErrors([
+                    'email' => __('messages.orders.flash.email_failed'),
+                ]);
+        }
 
         return redirect()
             ->route('orders.index')

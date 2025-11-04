@@ -101,6 +101,7 @@ return [
             'updated' => 'Order details updated.',
             'deleted' => 'Order deleted.',
             'emailed' => 'Order report emailed successfully.',
+            'email_failed' => 'Unable to send the report. Please check your mail settings and try again.',
         ],
         'actions' => [
             'edit' => 'Edit',
