@@ -270,6 +270,8 @@ return [
         'description' => 'スタッフアカウントと権限を管理します。',
         'actions' => [
             'create' => '新規作成',
+            'edit' => '編集',
+            'delete' => '削除',
         ],
         'filters' => [
             'permission' => '権限で絞り込む',
@@ -287,6 +289,7 @@ return [
             'phone' => '携帯電話',
             'status' => 'ステータス',
             'last_login' => '最終ログイン',
+            'actions' => '操作',
         ],
         'authorities' => [
             'admin' => '管理者',
@@ -311,6 +314,10 @@ return [
         'create' => [
             'title' => 'ユーザー登録',
             'description' => 'スタッフアカウントを作成し、適切な権限を割り当てます。',
+        ],
+        'edit' => [
+            'title' => 'ユーザー編集',
+            'description' => 'スタッフ情報や権限を更新します。',
         ],
         'form' => [
             'validation_error_heading' => '入力内容をご確認ください。',
@@ -357,10 +364,14 @@ return [
             ],
             'cancel_button' => 'キャンセル',
             'submit_button' => 'ユーザーを登録',
+            'submit_button_update' => '変更を保存',
         ],
         'flash' => [
             'created' => 'ユーザーを登録しました。',
+            'updated' => 'ユーザー情報を更新しました。',
+            'deleted' => 'ユーザーを削除しました。',
         ],
+        'confirm_delete' => ':name を削除してもよろしいですか？',
     ],
     'settings' => [
         'title' => '設定',
@@ -402,6 +413,18 @@ return [
         'title' => 'プロフィール',
         'description' => 'サインイン方法とアカウントの扱いを管理します。',
         'sections' => [
+            'account_information' => [
+                'title' => 'アカウント情報',
+                'description' => '表示名・部署・連絡先を更新します。',
+                'fields' => [
+                    'name' => '氏名',
+                    'email' => 'メールアドレス',
+                    'department' => '部署',
+                    'department_placeholder' => '部署を選択してください',
+                    'telephone' => '携帯電話番号',
+                ],
+                'button' => '変更を保存',
+            ],
             'password' => [
                 'title' => 'パスワードの更新',
                 'description' => '強固なパスワードでアカウントを保護しましょう。',
@@ -420,6 +443,10 @@ return [
                 'support' => '迷った場合は、実行する前にサポートへご相談ください。',
                 'button' => 'アカウントを削除',
             ],
+        ],
+        'flash' => [
+            'profile_updated' => 'プロフィール情報を更新しました。',
+            'password_updated' => 'パスワードを更新しました。',
         ],
     ],
 ];

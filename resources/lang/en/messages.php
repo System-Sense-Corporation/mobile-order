@@ -270,6 +270,8 @@ return [
         'description' => 'Manage staff accounts and their permissions.',
         'actions' => [
             'create' => 'Create New',
+            'edit' => 'Edit',
+            'delete' => 'Delete',
         ],
         'filters' => [
             'permission' => 'Filter by Authority',
@@ -287,6 +289,7 @@ return [
             'phone' => 'Mobile Phone',
             'status' => 'Status',
             'last_login' => 'Last Login',
+            'actions' => 'Actions',
         ],
         'authorities' => [
             'admin' => 'Administrator',
@@ -311,6 +314,10 @@ return [
         'create' => [
             'title' => 'Create User',
             'description' => 'Register a new staff account and assign the appropriate authority.',
+        ],
+        'edit' => [
+            'title' => 'Edit User',
+            'description' => 'Update the staff member’s details or permissions.',
         ],
         'form' => [
             'validation_error_heading' => 'Please fix the issues below and try again.',
@@ -357,10 +364,14 @@ return [
             ],
             'cancel_button' => 'Cancel',
             'submit_button' => 'Create user',
+            'submit_button_update' => 'Save changes',
         ],
         'flash' => [
             'created' => 'The user has been registered successfully.',
+            'updated' => 'The user has been updated successfully.',
+            'deleted' => 'The user has been removed.',
         ],
+        'confirm_delete' => 'Are you sure you want to delete :name?',
     ],
     'settings' => [
         'title' => 'Settings',
@@ -402,6 +413,18 @@ return [
         'title' => 'Profile',
         'description' => 'Manage how you sign in and what happens to your account.',
         'sections' => [
+            'account_information' => [
+                'title' => 'Account information',
+                'description' => 'Update your display name, department, and contact details.',
+                'fields' => [
+                    'name' => 'Full name',
+                    'email' => 'Email address',
+                    'department' => 'Department',
+                    'department_placeholder' => 'Select your department',
+                    'telephone' => 'Mobile phone number',
+                ],
+                'button' => 'Save changes',
+            ],
             'password' => [
                 'title' => 'Update password',
                 'description' => 'Set a strong password to keep your account secure.',
@@ -420,6 +443,10 @@ return [
                 'support' => 'Need help deciding? Contact our support team before continuing.',
                 'button' => 'Delete account',
             ],
+        ],
+        'flash' => [
+            'profile_updated' => 'Profile information updated successfully.',
+            'password_updated' => 'Password updated successfully.',
         ],
     ],
 ];
