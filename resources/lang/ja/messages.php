@@ -293,10 +293,73 @@ return [
             'editor' => '編集者',
             'viewer' => '閲覧者',
         ],
+        'roles' => [
+            'admin' => '管理者',
+            'editor' => '編集者',
+            'viewer' => '閲覧者',
+        ],
+        'role_descriptions' => [
+            'admin' => 'システム設定やユーザー管理を含むすべての操作が可能です。',
+            'editor' => '注文・商品・顧客の管理が可能です。',
+            'viewer' => 'データの閲覧のみ可能です。',
+        ],
         'statuses' => [
             'active' => '有効',
             'inactive' => '無効',
             'suspended' => '利用停止',
+        ],
+        'create' => [
+            'title' => 'ユーザー登録',
+            'description' => 'スタッフアカウントを作成し、適切な権限を割り当てます。',
+        ],
+        'form' => [
+            'validation_error_heading' => '入力内容をご確認ください。',
+            'name' => [
+                'label' => '氏名',
+                'placeholder' => '例）山田 太郎',
+            ],
+            'email' => [
+                'label' => 'メールアドレス',
+                'placeholder' => 'user@example.com',
+            ],
+            'phone' => [
+                'label' => '携帯電話',
+                'placeholder' => '例）090-1234-5678',
+            ],
+            'department' => [
+                'label' => '部署',
+                'placeholder' => '部署を選択',
+                'options' => [
+                    'sales' => '営業部',
+                    'support' => 'カスタマーサポート部',
+                    'logistics' => '物流部',
+                    'management' => '管理部',
+                ],
+            ],
+            'authority' => [
+                'label' => '権限',
+            ],
+            'notify_new_orders' => [
+                'label' => '新規注文を通知する',
+                'help' => '新しい注文が登録された際にメール通知します。',
+            ],
+            'require_password_change' => [
+                'label' => '初回ログイン時にパスワード変更を必須にする',
+                'help' => '初回ログイン後に新しいパスワードの設定を促します。',
+            ],
+            'password' => [
+                'label' => '仮パスワード',
+                'placeholder' => '仮パスワードを入力',
+            ],
+            'password_confirmation' => [
+                'label' => 'パスワード（確認）',
+                'placeholder' => 'もう一度入力してください',
+            ],
+            'cancel_button' => 'キャンセル',
+            'submit_button' => 'ユーザーを登録',
+        ],
+        'flash' => [
+            'created' => 'ユーザーを登録しました。',
         ],
     ],
     'settings' => [

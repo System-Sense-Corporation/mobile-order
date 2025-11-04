@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\Customer;
 use App\Models\Order;
 use App\Models\Product;
+use App\Models\Role;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -18,6 +19,8 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        $this->call(RolePermissionSeeder::class);
+
         $customers = collect([
             [
                 'name' => '鮮魚酒場 波しぶき',
@@ -125,9 +128,27 @@ class DatabaseSeeder extends Seeder
             ]);
         }
 
+        $roles = Role::query()->pluck('id', 'name');
+
         User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
+            'name' => 'Admin User',
+            'email' => 'admin@example.com',
+            'telephone' => '080-0000-0001',
+            'role_id' => $roles['admin'] ?? null,
+        ]);
+
+        User::factory()->create([
+            'name' => 'Editor User',
+            'email' => 'editor@example.com',
+            'telephone' => '080-0000-0002',
+            'role_id' => $roles['editor'] ?? null,
+        ]);
+
+        User::factory()->create([
+            'name' => 'Viewer User',
+            'email' => 'viewer@example.com',
+            'telephone' => '080-0000-0003',
+            'role_id' => $roles['viewer'] ?? null,
         ]);
     }
 }
