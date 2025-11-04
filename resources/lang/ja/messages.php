@@ -413,6 +413,18 @@ return [
         'title' => 'プロフィール',
         'description' => 'サインイン方法とアカウントの扱いを管理します。',
         'sections' => [
+            'account_information' => [
+                'title' => 'アカウント情報',
+                'description' => '表示名・部署・連絡先を更新します。',
+                'fields' => [
+                    'name' => '氏名',
+                    'email' => 'メールアドレス',
+                    'department' => '部署',
+                    'department_placeholder' => '部署を選択してください',
+                    'telephone' => '携帯電話番号',
+                ],
+                'button' => '変更を保存',
+            ],
             'password' => [
                 'title' => 'パスワードの更新',
                 'description' => '強固なパスワードでアカウントを保護しましょう。',
@@ -431,6 +443,10 @@ return [
                 'support' => '迷った場合は、実行する前にサポートへご相談ください。',
                 'button' => 'アカウントを削除',
             ],
+        ],
+        'flash' => [
+            'profile_updated' => 'プロフィール情報を更新しました。',
+            'password_updated' => 'パスワードを更新しました。',
         ],
     ],
 ];

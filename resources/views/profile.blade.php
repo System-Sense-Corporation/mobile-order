@@ -20,12 +20,8 @@
     <section class="rounded-lg bg-white p-6 shadow-sm ring-1 ring-black/5">
       <div class="space-y-6">
         <div class="space-y-2">
-          <h2 class="text-lg font-semibold text-accent">
-            {{ __('messages.profile.sections.account_information.title', [], app()->getLocale()) ?? 'ข้อมูลบัญชี' }}
-          </h2>
-          <p class="text-sm text-black/70">
-            {{ __('messages.profile.sections.account_information.description', [], app()->getLocale()) ?? 'แก้ไขชื่อ อีเมล และเบอร์โทรของบัญชีคุณ' }}
-          </p>
+          <h2 class="text-lg font-semibold text-accent">{{ __('messages.profile.sections.account_information.title') }}</h2>
+          <p class="text-sm text-black/70">{{ __('messages.profile.sections.account_information.description') }}</p>
         </div>
 
         <form class="space-y-4" method="POST" action="{{ route('profile.update') }}">
@@ -34,7 +30,7 @@
           <input type="hidden" name="intent" value="profile">
 
           <label class="form-field">
-            <span class="form-label">{{ __('messages.common.name') ?? 'ชื่อ' }}</span>
+            <span class="form-label">{{ __('messages.profile.sections.account_information.fields.name') }}</span>
             <input
               type="text"
               name="name"
@@ -47,7 +43,7 @@
           </label>
 
           <label class="form-field">
-            <span class="form-label">{{ __('messages.common.email') ?? 'อีเมล' }}</span>
+            <span class="form-label">{{ __('messages.profile.sections.account_information.fields.email') }}</span>
             <input
               type="email"
               name="email"
@@ -60,7 +56,26 @@
           </label>
 
           <label class="form-field">
-            <span class="form-label">{{ __('messages.common.telephone') ?? 'เบอร์โทร' }}</span>
+            <span class="form-label">{{ __('messages.profile.sections.account_information.fields.department') }}</span>
+            <select
+              id="department"
+              name="department"
+              class="form-input"
+            >
+              <option value="">
+                {{ __('messages.profile.sections.account_information.fields.department_placeholder') }}
+              </option>
+              @foreach ($departmentOptions as $value => $label)
+                <option value="{{ $value }}" @selected(old('department', $user->department ?? null) === $value)>
+                  {{ $label }}
+                </option>
+              @endforeach
+            </select>
+            @error('department') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
+          </label>
+
+          <label class="form-field">
+            <span class="form-label">{{ __('messages.profile.sections.account_information.fields.telephone') }}</span>
             <input
               type="tel"
               name="telephone"
@@ -74,7 +89,7 @@
 
           <div class="flex justify-end">
             <button type="submit" class="btn-primary">
-              {{ __('messages.common.save') ?? 'บันทึกข้อมูล' }}
+              {{ __('messages.profile.sections.account_information.button') }}
             </button>
           </div>
         </form>
