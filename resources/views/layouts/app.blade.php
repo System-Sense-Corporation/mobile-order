@@ -11,14 +11,22 @@
     <header class="bg-accent text-white">
         @php
             $navigationLinks = [
-                ['route' => 'orders.create', 'label' => __('messages.navigation.mobile-order')],
-                ['route' => 'orders.index',  'label' => __('messages.navigation.orders')],
-                ['route' => 'products',      'label' => __('messages.navigation.products')],
-                ['route' => 'customers',     'label' => __('messages.navigation.customers')],
-                ['route' => 'admin.users',   'label' => __('messages.navigation.admin-users')],
-                ['route' => 'settings',      'label' => __('messages.navigation.settings')],
-                ['route' => 'profile',       'label' => __('messages.navigation.profile')],
+                ['route' => 'orders.create',     'label' => __('messages.navigation.mobile-order')],
+                ['route' => 'orders.index',      'label' => __('messages.navigation.orders')],
+                ['route' => 'products',          'label' => __('messages.navigation.products')],
+                ['route' => 'customers',         'label' => __('messages.navigation.customers')],
+                ['route' => 'admin.users.index', 'label' => __('messages.navigation.admin-users')],
+                ['route' => 'settings',          'label' => __('messages.navigation.settings')],
+                ['route' => 'profile',           'label' => __('messages.navigation.profile')],
             ];
+
+            $user = auth()->user();
+            if ($user) {
+                $navigationLinks = array_values(array_filter($navigationLinks, function (array $item) use ($user): bool {
+                    return $user->hasPermission($item['route']);
+                }));
+            }
+
             $availableLocales = config('app.available_locales', []);
             $currentLocale    = app()->getLocale();
         @endphp

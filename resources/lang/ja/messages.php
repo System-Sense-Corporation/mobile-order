@@ -270,6 +270,8 @@ return [
         'description' => 'スタッフアカウントと権限を管理します。',
         'actions' => [
             'create' => '新規作成',
+            'edit' => '編集',
+            'delete' => '削除',
         ],
         'filters' => [
             'permission' => '権限で絞り込む',
@@ -287,17 +289,89 @@ return [
             'phone' => '携帯電話',
             'status' => 'ステータス',
             'last_login' => '最終ログイン',
+            'actions' => '操作',
         ],
         'authorities' => [
             'admin' => '管理者',
             'editor' => '編集者',
             'viewer' => '閲覧者',
         ],
+        'roles' => [
+            'admin' => '管理者',
+            'editor' => '編集者',
+            'viewer' => '閲覧者',
+        ],
+        'role_descriptions' => [
+            'admin' => 'システム設定やユーザー管理を含むすべての操作が可能です。',
+            'editor' => '注文・商品・顧客の管理が可能です。',
+            'viewer' => 'データの閲覧のみ可能です。',
+        ],
         'statuses' => [
             'active' => '有効',
             'inactive' => '無効',
             'suspended' => '利用停止',
         ],
+        'create' => [
+            'title' => 'ユーザー登録',
+            'description' => 'スタッフアカウントを作成し、適切な権限を割り当てます。',
+        ],
+        'edit' => [
+            'title' => 'ユーザー編集',
+            'description' => 'スタッフ情報や権限を更新します。',
+        ],
+        'form' => [
+            'validation_error_heading' => '入力内容をご確認ください。',
+            'name' => [
+                'label' => '氏名',
+                'placeholder' => '例）山田 太郎',
+            ],
+            'email' => [
+                'label' => 'メールアドレス',
+                'placeholder' => 'user@example.com',
+            ],
+            'phone' => [
+                'label' => '携帯電話',
+                'placeholder' => '例）090-1234-5678',
+            ],
+            'department' => [
+                'label' => '部署',
+                'placeholder' => '部署を選択',
+                'options' => [
+                    'sales' => '営業部',
+                    'support' => 'カスタマーサポート部',
+                    'logistics' => '物流部',
+                    'management' => '管理部',
+                ],
+            ],
+            'authority' => [
+                'label' => '権限',
+            ],
+            'notify_new_orders' => [
+                'label' => '新規注文を通知する',
+                'help' => '新しい注文が登録された際にメール通知します。',
+            ],
+            'require_password_change' => [
+                'label' => '初回ログイン時にパスワード変更を必須にする',
+                'help' => '初回ログイン後に新しいパスワードの設定を促します。',
+            ],
+            'password' => [
+                'label' => '仮パスワード',
+                'placeholder' => '仮パスワードを入力',
+            ],
+            'password_confirmation' => [
+                'label' => 'パスワード（確認）',
+                'placeholder' => 'もう一度入力してください',
+            ],
+            'cancel_button' => 'キャンセル',
+            'submit_button' => 'ユーザーを登録',
+            'submit_button_update' => '変更を保存',
+        ],
+        'flash' => [
+            'created' => 'ユーザーを登録しました。',
+            'updated' => 'ユーザー情報を更新しました。',
+            'deleted' => 'ユーザーを削除しました。',
+        ],
+        'confirm_delete' => ':name を削除してもよろしいですか？',
     ],
     'settings' => [
         'title' => '設定',
@@ -339,6 +413,18 @@ return [
         'title' => 'プロフィール',
         'description' => 'サインイン方法とアカウントの扱いを管理します。',
         'sections' => [
+            'account_information' => [
+                'title' => 'アカウント情報',
+                'description' => '表示名・部署・連絡先を更新します。',
+                'fields' => [
+                    'name' => '氏名',
+                    'email' => 'メールアドレス',
+                    'department' => '部署',
+                    'department_placeholder' => '部署を選択してください',
+                    'telephone' => '携帯電話番号',
+                ],
+                'button' => '変更を保存',
+            ],
             'password' => [
                 'title' => 'パスワードの更新',
                 'description' => '強固なパスワードでアカウントを保護しましょう。',
@@ -357,6 +443,10 @@ return [
                 'support' => '迷った場合は、実行する前にサポートへご相談ください。',
                 'button' => 'アカウントを削除',
             ],
+        ],
+        'flash' => [
+            'profile_updated' => 'プロフィール情報を更新しました。',
+            'password_updated' => 'パスワードを更新しました。',
         ],
     ],
 ];
