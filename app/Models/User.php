@@ -24,7 +24,15 @@ class User extends Authenticatable
         'email',
         'password',
         'role_id',
+        'telephone',
     ];
+
+    /**
+     * Cache of checked permissions for the current request lifecycle.
+     *
+     * @var array<string, bool>
+     */
+    protected array $permissionCache = [];
 
     /**
      * The attributes that should be hidden for serialization.
@@ -70,5 +78,27 @@ class User extends Authenticatable
             'role_id',
             'id'
         )->withTimestamps();
+    }
+
+    /**
+     * Determine if the user has access to a given named route.
+     */
+    public function hasPermission(?string $routeName): bool
+    {
+        if (! $routeName) {
+            return true;
+        }
+
+        if (! $this->role_id) {
+            return false;
+        }
+
+        if (! array_key_exists($routeName, $this->permissionCache)) {
+            $this->permissionCache[$routeName] = $this->permissions()
+                ->where('route', $routeName)
+                ->exists();
+        }
+
+        return $this->permissionCache[$routeName];
     }
 }

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\UserController as AdminUserController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\OrderController;
@@ -17,37 +18,46 @@ Route::middleware('auth')->group(function () {
     // auth
     Route::post('/logout', [AuthController::class, 'destroy'])->name('logout');
 
-    // pages
-    Route::get('/', fn () => view('index'))->name('home');
-    Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
-    Route::get('/orders/export', [OrderController::class, 'export'])->name('orders.export');
-    Route::get('/orders/form', [OrderController::class, 'create'])->name('orders.create');
+    Route::middleware('permission')->group(function () {
+        // pages
+        Route::get('/', fn () => view('index'))->name('home');
+        Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
+        Route::get('/orders/export', [OrderController::class, 'export'])->name('orders.export');
+        Route::get('/orders/form', [OrderController::class, 'create'])->name('orders.create');
+        Route::post('/orders', [OrderController::class, 'store'])->name('orders.store');
+        Route::put('/orders/{order}', [OrderController::class, 'update'])->name('orders.update');
+        Route::patch('/orders/{order}/status', [OrderController::class, 'updateStatus'])->name('orders.status');
+        Route::delete('/orders/{order}', [OrderController::class, 'destroy'])->name('orders.destroy');
+
+        Route::get('/products', [ProductController::class, 'index'])->name('products');
+        Route::get('/products/form', [ProductController::class, 'create'])->name('products.form');
+        Route::post('/products', [ProductController::class, 'store'])->name('products.store');
+        Route::put('/products/{product}', [ProductController::class, 'update'])->name('products.update');
+        Route::delete('/products/{product}', [ProductController::class, 'destroy'])->name('products.destroy');
+
+        Route::get('/customers', [CustomerController::class, 'index'])->name('customers');
+        Route::get('/customers/form', [CustomerController::class, 'create'])->name('customers.form');
+        Route::post('/customers', [CustomerController::class, 'store'])->name('customers.store');
+        Route::get('/customers/{customer}/edit', [CustomerController::class, 'edit'])->name('customers.edit');
+        Route::put('/customers/{customer}', [CustomerController::class, 'update'])->name('customers.update');
+        Route::delete('/customers/{customer}', [CustomerController::class, 'destroy'])->name('customers.destroy');
+
+        Route::get('/admin/users', [AdminUserController::class, 'index'])->name('admin.users.index');
+        Route::get('/admin/users/form', [AdminUserController::class, 'create'])->name('admin.users.form');
+        Route::post('/admin/users', [AdminUserController::class, 'store'])->name('admin.users.store');
+
+        Route::get('/settings', fn () => view('settings'))->name('settings');
+
+        // ✅ Profile (แก้ไข + บันทึก)
+        Route::get('/profile', [ProfileController::class, 'edit'])
+            ->name('profile');
+
+        Route::post('/profile', [ProfileController::class, 'update'])
+            ->name('profile.update');
+    });
+
     Route::redirect('/mobile-order', '/orders/form')->name('mobile-order.legacy');
     Route::redirect('/orders/create', '/orders/form');
-    Route::post('/orders', [OrderController::class, 'store'])->name('orders.store');
-    Route::put('/orders/{order}', [OrderController::class, 'update'])->name('orders.update');
-    Route::patch('/orders/{order}/status', [OrderController::class, 'updateStatus'])->name('orders.status');
-    Route::delete('/orders/{order}', [OrderController::class, 'destroy'])->name('orders.destroy');
-    Route::get('/products', [ProductController::class, 'index'])->name('products');
-    Route::get('/products/form', [ProductController::class, 'create'])->name('products.form');
-    Route::post('/products', [ProductController::class, 'store'])->name('products.store');
-    Route::put('/products/{product}', [ProductController::class, 'update'])->name('products.update');
-    Route::delete('/products/{product}', [ProductController::class, 'destroy'])->name('products.destroy');
-    Route::get('/customers', [CustomerController::class, 'index'])->name('customers');
-    Route::get('/customers/form', [CustomerController::class, 'create'])->name('customers.form');
-    Route::post('/customers', [CustomerController::class, 'store'])->name('customers.store');
-    Route::get('/customers/{customer}/edit', [CustomerController::class, 'edit'])->name('customers.edit');
-    Route::put('/customers/{customer}', [CustomerController::class, 'update'])->name('customers.update');
-    Route::delete('/customers/{customer}', [CustomerController::class, 'destroy'])->name('customers.destroy');
-    Route::get('/admin/users', fn () => view('admin.users'))->name('admin.users');
-    Route::get('/settings', fn () => view('settings'))->name('settings');
-
-    // ✅ Profile (แก้ไข + บันทึก)
-    Route::get('/profile', [ProfileController::class, 'edit'])
-        ->name('profile');
-
-    Route::post('/profile', [ProfileController::class, 'update'])
-        ->name('profile.update');
 });
 
 Route::post('/locale', function (Request $request) {
