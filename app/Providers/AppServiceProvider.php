@@ -1,55 +1,66 @@
 <?php
 
-    namespace App\Providers;
+namespace App\Providers;
 
-    use Illuminate\Support\ServiceProvider;
-    use Illuminate\Support\Facades\Schema; // <-- 1. พี่เพิ่มตัวนี้
-    use App\Models\Setting; // <-- 2. พี่เพิ่ม 'ล่าม' (Model) ของเรา
-    use Illuminate\Support\Facades\Config; // <-- 3. พี่เพิ่มตัว Config
+use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\Schema; // <-- เพิ่มตัวนี้
+use Illuminate\Support\Facades\Config; // <-- เพิ่มตัวนี้
+use App\Models\Setting; // <-- เพิ่ม 'ล่าม' (Model) ของเราเข้ามา
+use Illuminate\Support\Facades\Cache; // <-- เพิ่ม Cache มาช่วย
 
-    class AppServiceProvider extends ServiceProvider
+class AppServiceProvider extends ServiceProvider
+{
+    /**
+     * Register any application services.
+     */
+    public function register(): void
     {
-        /**
-         * Register any application services.
-         */
-        public function register(): void
-        {
-            //
-        }
-
-        /**
-         * Bootstrap any application services.
-         */
-        public function boot(): void
-        {
-            // VVVVVV พี่เพิ่มโค้ดส่วนนี้เข้าไปค่ะ VVVVVV
-
-            // เราจะเช็กก่อนว่า ตาราง 'settings' มันถูกสร้างหรือยัง
-            // (ไม่งั้นตอนรัน migrate:fresh มันจะ Error ค่ะ)
-            if (Schema::hasTable('settings')) {
-                
-                // ดึงค่า Setting ทั้งหมดจาก Database
-                $settings = Setting::all()->pluck('value', 'key')->toArray();
-
-                // เช็กว่ามีค่า mail_host อยู่ใน DB หรือไม่ (กัน Error)
-                if (!empty($settings['mail_host'])) {
-                    
-                    // นี่คือ "การยัดไส้" Config ค่ะ!
-                    // เราจะสั่งให้ Laravel เปลี่ยนค่า Config ของ Mail กลางอากาศเลย
-                    Config::set([
-                        'mail.mailers.smtp.host' => $settings['mail_host'] ?? null,
-                        'mail.mailers.smtp.port' => $settings['mail_port'] ?? null,
-                        'mail.mailers.smtp.encryption' => $settings['mail_encryption'] ?? null,
-                        'mail.mailers.smtp.username' => $settings['mail_username'] ?? null,
-                        'mail.mailers.smtp.password' => $settings['mail_password'] ?? null,
-                        
-                        // อันนี้สำหรับตั้งชื่อ "ผู้ส่ง" (เช่น "BizFlow")
-                        'mail.from.address' => $settings['email'] ?? 'noreply@example.com',
-                        'mail.from.name' => $settings['name'] ?? 'Mobile Order',
-                    ]);
-                }
-            }
-            
-            // ^^^^^^ สิ้นสุดโค้ดที่พี่เพิ่มค่ะ ^^^^^^
-        }
+        //
     }
+
+    /**
+     * Bootstrap any application services.
+     */
+    public function boot(): void
+    {
+        // VVVVVV นี่คือโค้ดที่เราจะเพิ่มเข้าไป VVVVVV
+        
+        // เราต้องเช็กก่อนว่า ตาราง 'settings' มันมีอยู่จริงมั้ย
+        // (ไม่งั้นตอนรัน migrate:fresh ครั้งแรก มันจะพัง)
+        if (Schema::hasTable('settings')) {
+            
+            // เราจะใช้ Cache (ที่เก็บข้อมูลชั่วคราว) มาช่วย
+            // เพื่อจะได้ไม่ต้องดึงข้อมูลจาก Database (DB) ทุกครั้งที่เว็บโหลด (มันช้า!)
+            // มันจะดึงจาก DB แค่ครั้งแรก... แล้วจำไว้ 10 นาที (600 วินาที)
+            $settings = Cache::remember('app_settings', 600, function () {
+                // เราใช้ try...catch ดักไว้ เผื่อ Database ยังไม่พร้อม
+                try {
+                    // ตรวจสอบว่า Model Setting มีอยู่จริงก่อน
+                    if (class_exists(Setting::class)) {
+                        return Setting::all()->pluck('value', 'key')->toArray();
+                    }
+                    return null;
+                } catch (\Exception $e) {
+                    return null; // ถ้าเจ๊ง ให้ส่งค่าว่าง
+                }
+            });
+
+            // ตรวจสอบว่ามีค่า settings (ที่ดึงจาก Cache/DB) และค่า mail ที่จำเป็นหรือไม่
+            if (!empty($settings) && isset($settings['mail_host'])) {
+                
+                // "บังคับ" ให้ Laravel เปลี่ยนค่า config mail เดี๋ยวนี้!
+                Config::set('mail.mailers.smtp.host', $settings['mail_host'] ?? '');
+                Config::set('mail.mailers.smtp.port', $settings['mail_port'] ?? 587);
+                Config::set('mail.mailers.smtp.encryption', $settings['mail_encryption'] ?? 'tls');
+                Config::set('mail.mailers.smtp.username', $settings['mail_username'] ?? '');
+                Config::set('mail.mailers.smtp.password', $settings['mail_password'] ?? '');
+                
+                // (อันนี้แถม... ตั้งค่า "ชื่อผู้ส่ง" (From Name) ด้วย)
+                Config::set('mail.from.address', $settings['email'] ?? 'noreply@example.com');
+                Config::set('mail.from.name', $settings['name'] ?? 'Mobile Order');
+            }
+        }
+        
+        // ^^^^^^ สิ้นสุดโค้dที่เราเพิ่ม ^^^^^^
+    }
+}
