@@ -398,6 +398,9 @@ return [
             'open_time' => '営業開始時間',
             'close_time' => '営業終了時間',
         ],
+        'alerts' => [
+        'saved_success' => '設定が保存されました。',
+    ],
         'buttons' => [
             'save' => '保存',
             'draft' => '下書き保存',

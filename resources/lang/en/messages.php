@@ -398,6 +398,9 @@ return [
             'open_time' => 'Business opening time',
             'close_time' => 'Business closing time',
         ],
+        'alerts' => [
+        'saved_success' => 'Settings saved successfully!',
+    ],
         'buttons' => [
             'save' => 'Save',
             'draft' => 'Save Draft',

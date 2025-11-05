@@ -6,11 +6,18 @@ use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\SettingsController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Session;
 
+// Route สำหรับเปิดหน้า Settings (GET)
+// VVVVV พี่โดนัทแก้ชื่อ .name() ตรงนี้ ให้นะคะ VVVVV
+Route::get('/settings', [SettingsController::class, 'index'])->name('settings');
+
+// Route สำหรับกดปุ่มบันทึก (POST) <-- ตัวนี้แหละค่ะที่จะแก้ Error!
+Route::post('/settings', [SettingsController::class, 'store'])->name('settings.store');
 Route::get('/lang/{locale}', function ($locale) {
     // เช็คว่าภาษาที่ขอมารองรับมั้ย
     if (in_array($locale, ['en', 'th', 'ja'])) {
@@ -69,7 +76,11 @@ Route::middleware('auth')->group(function () {
             ->where('user', 'USR-[0-9]+')
             ->name('admin.users.destroy');
 
-        Route::get('/settings', fn () => view('settings'))->name('settings');
+        //
+        // VVVVV พี่โดนัทลบบรรทัดที่ซ้ำซ้อนตรงนี้ทิ้งไปแล้วนะคะ! VVVVV
+        // Route::get('/settings', fn () => view('settings'))->name('settings');
+        // ^^^^^ ลบทิ้งไปแล้ว! ^^^^^
+        //
 
         // ✅ Profile (แก้ไข + บันทึก)
         Route::get('/profile', [ProfileController::class, 'edit'])

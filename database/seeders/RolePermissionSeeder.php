@@ -100,7 +100,13 @@ class RolePermissionSeeder extends Seeder
                 ['description' => $config['description']]
             );
 
-            $role->permissions()->sync(array_values(Arr::only($permissionIds, $config['permissions'])));
+            //
+            // VVVVVV พี่โดนัทแก้ตรงนี้ให้แล้วค่ะ VVVVVV
+            //
+            // เราต้องเติม ->toArray() ต่อท้าย $permissionIds
+            // เพราะ $permissionIds เป็น 'Collection' แต่ฟังก์ชัน Arr::only ต้องการ 'array' ค่ะ
+            //
+            $role->permissions()->sync(array_values(Arr::only($permissionIds->toArray(), $config['permissions'])));
         }
     }
 }
