@@ -7,6 +7,7 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Hash; // <-- VVVV พี่โดนัทเพิ่ม "เครื่องปั่นรหัส" (Hash) มาค่ะ VVVV
 
 class UserController extends Controller
 {
@@ -70,6 +71,11 @@ class UserController extends Controller
             'last_login' => '—',
             'notify_new_orders' => (bool) ($validated['notify_new_orders'] ?? false),
             'require_password_change' => (bool) ($validated['require_password_change'] ?? false),
+            
+            // --- VVVV พี่โดนัทเพิ่มบรรทัดนี้ค่ะ VVVV ---
+            // 'เข้ารหัส' (Hash) รหัสผ่านก่อน 'บันทึก' (Save)
+            'password' => Hash::make($validated['password']),
+            // --- ^^^^ สิ้นสุดตรงนี้ค่ะ ^^^^ ---
         ];
 
         $request->session()->put('admin_users', $storedUsers);
@@ -97,13 +103,16 @@ class UserController extends Controller
             'authority' => ['required', 'string', Rule::in($roleOptions)],
             'notify_new_orders' => ['nullable', 'boolean'],
             'require_password_change' => ['nullable', 'boolean'],
-            'password' => ['nullable', 'string', 'min:8', 'confirmed'],
+            'password' => ['nullable', 'string', 'min:8', 'confirmed'], // (ช่องรหัสผ่าน... 'ว่าง' (nullable) ได้... ถ้าไม่อยากเปลี่ยน)
         ]);
 
         $storedUsers = $this->storedUsers($request);
         $department = trans('messages.admin_users.form.department.options.' . $validated['department']);
 
-        $storedUsers[$userId] = [
+        // --- VVVV พี่โดนัทแก้ตรรกะตรงนี้ใหม่หมดเลยค่ะ VVVV ---
+
+        // 1. เตรียมข้อมูล User (ยกเว้นรหัสผ่าน)
+        $userData = [
             'user_id' => $userId,
             'name' => $validated['name'],
             'department' => $department,
@@ -116,6 +125,20 @@ class UserController extends Controller
             'notify_new_orders' => (bool) ($validated['notify_new_orders'] ?? false),
             'require_password_change' => (bool) ($validated['require_password_change'] ?? false),
         ];
+
+        // 2. เช็กว่ามีการ "กรอกรหัสผ่านใหม่" (ไม่ว่าง) หรือเปล่า
+        if (!empty($validated['password'])) {
+            // ถ้า "กรอก"... ก็ให้ 'เข้ารหัส' (Hash) อันใหม่
+            $userData['password'] = Hash::make($validated['password']);
+        } else {
+            // ถ้า "ไม่กรอก" (ว่าง)... ก็ให้ใช้ "รหัสผ่านเดิม" (ที่เคยบันทึกไว้ใน Session)
+            $userData['password'] = $user['password'] ?? null; // (กันเหนียว เผื่อ user เก่าไม่มีรหัส)
+        }
+
+        // 3. บันทึกข้อมูลที่สมบูรณ์แล้ว
+        $storedUsers[$userId] = $userData;
+        
+        // --- ^^^^ สิ้นสุดตรงนี้ค่ะ ^^^^ ---
 
         $request->session()->put('admin_users', $storedUsers);
         $this->removeFromDeleted($request, $userId);
