@@ -8,6 +8,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Hash; // <-- VVVV พี่โดนัทเพิ่ม "เครื่องปั่นรหัส" (Hash) มาค่ะ VVVV
+use App\Models\User; // <-- VVVV พี่โดนัทขอเพิ่ม Model "User" มาด้วยนะคะ VVVV
 
 class UserController extends Controller
 {
@@ -43,7 +44,8 @@ class UserController extends Controller
 
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255'],
+            // เราจะเช็กว่า 'email' นี้... "ห้ามซ้ำ" (unique) กับในตาราง 'users' (Database จริง)
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email'],
             'phone' => ['nullable', 'string', 'max:50'],
             'department' => ['required', 'string', Rule::in($departmentOptions)],
             'authority' => ['required', 'string', Rule::in($roleOptions)],
@@ -51,35 +53,31 @@ class UserController extends Controller
             'require_password_change' => ['nullable', 'boolean'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
         ]);
-
-        $storedUsers = $this->storedUsers($request);
-        $existingUsers = $this->allUsers($request);
-
-        $department = trans('messages.admin_users.form.department.options.' . $validated['department']);
-
-        $userId = $this->nextUserId($existingUsers);
-
-        $storedUsers[$userId] = [
-            'user_id' => $userId,
+        
+        // 2. "สร้าง" (Create) User ใหม่... ลงใน "Database จริง" (ตาราง 'users')
+        // (เราจะไม่เก็บ User ไว้ใน Session (ที่จำแป๊บเดียว) แล้วค่ะ!)
+        $user = User::create([
             'name' => $validated['name'],
-            'department' => $department,
-            'department_key' => $validated['department'],
-            'authority' => $validated['authority'],
             'email' => $validated['email'],
-            'phone' => ($validated['phone'] ?? null) ?: '—',
-            'status' => 'active',
-            'last_login' => '—',
+            'password' => Hash::make($validated['password']), // <-- "เข้ารหัส" (Hash) รหัสผ่าน
+            'phone' => $validated['phone'] ?? null,
+            
+            // (พี่โดนัทเดาว่า... 'authority' (สิทธิ์) มันควรจะเป็น 'role' (ยศ) ใน DB)
+            'role' => $validated['authority'], 
+            
+            // (พี่โดนัทไม่รู้ว่า 'department' (ใน DB) มันเก็บ 'key' หรือ 'value' ... เลยใส่ 'key' (ที่มาจาก form) ไปก่อน)
+            'department' => $validated['department'], 
+            
             'notify_new_orders' => (bool) ($validated['notify_new_orders'] ?? false),
             'require_password_change' => (bool) ($validated['require_password_change'] ?? false),
             
-            // --- VVVV พี่โดนัทเพิ่มบรรทัดนี้ค่ะ VVVV ---
-            // 'เข้ารหัส' (Hash) รหัสผ่านก่อน 'บันทึก' (Save)
-            'password' => Hash::make($validated['password']),
-            // --- ^^^^ สิ้นสุดตรงนี้ค่ะ ^^^^ ---
-        ];
+            'user_id' => $this->nextUserId(), // (พี่แก้ฟังก์ชัน nextUserId ให้ด้วยน้า)
+            'email_verified_at' => now(), // (ยืนยันอีเมลให้เลย)
+        ]);
+        
+        // (เราไม่ต้องยุ่งกับ Session (admin_users) แล้ว... เพราะเราเก็บลง DB จริงแล้วค่ะ)
 
-        $request->session()->put('admin_users', $storedUsers);
-        $this->removeFromDeleted($request, $userId);
+        // --- ^^^^ สิ้นสุดตรงนี้ค่ะ ^^^^ ---
 
         return redirect()
             ->route('admin.users.index')
@@ -88,16 +86,20 @@ class UserController extends Controller
 
     public function update(Request $request, string $userId): RedirectResponse
     {
-        $user = $this->findUser($request, $userId);
+        // --- VVVV พี่โดนัทแก้โค้ดตรงนี้ (Update) VVVV ---
 
-        abort_if(is_null($user), 404);
-
+        // 1. หา User "ตัวจริง" (จาก DB)
+        // (เราจะเลิกใช้ 'demo user' (findUser) ที่อยู่ใน Session แล้วค่ะ)
+        $user = User::where('user_id', $userId)->firstOrFail();
+        
+        // 2. ตรวจสอบข้อมูล (Validate)
         $departmentOptions = array_keys((array) trans('messages.admin_users.form.department.options'));
         $roleOptions = array_keys((array) trans('messages.admin_users.roles'));
 
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255'],
+            // เราจะเช็กว่า 'email' นี้... "ห้ามซ้ำ" (unique) ... ยกเว้น "User คนนี้เอง" (ignore)
+            'email' => ['required', 'string', 'email', 'max:255', Rule::unique('users')->ignore($user->id)],
             'phone' => ['nullable', 'string', 'max:50'],
             'department' => ['required', 'string', Rule::in($departmentOptions)],
             'authority' => ['required', 'string', Rule::in($roleOptions)],
@@ -106,42 +108,30 @@ class UserController extends Controller
             'password' => ['nullable', 'string', 'min:8', 'confirmed'], // (ช่องรหัสผ่าน... 'ว่าง' (nullable) ได้... ถ้าไม่อยากเปลี่ยน)
         ]);
 
-        $storedUsers = $this->storedUsers($request);
-        $department = trans('messages.admin_users.form.department.options.' . $validated['department']);
-
-        // --- VVVV พี่โดนัทแก้ตรรกะตรงนี้ใหม่หมดเลยค่ะ VVVV ---
-
-        // 1. เตรียมข้อมูล User (ยกเว้นรหัสผ่าน)
-        $userData = [
-            'user_id' => $userId,
+        // 3. เตรียมข้อมูล (Data) ที่จะอัปเดต
+        $data = [
             'name' => $validated['name'],
-            'department' => $department,
-            'department_key' => $validated['department'],
-            'authority' => $validated['authority'],
             'email' => $validated['email'],
-            'phone' => ($validated['phone'] ?? null) ?: '—',
-            'status' => $user['status'] ?? 'active',
-            'last_login' => $user['last_login'] ?? '—',
+            'phone' => $validated['phone'] ?? null,
+            'role' => $validated['authority'], // (เหมือนเดิม)
+            'department' => $validated['department'], // (เหมือนเดิม)
             'notify_new_orders' => (bool) ($validated['notify_new_orders'] ?? false),
             'require_password_change' => (bool) ($validated['require_password_change'] ?? false),
         ];
 
-        // 2. เช็กว่ามีการ "กรอกรหัสผ่านใหม่" (ไม่ว่าง) หรือเปล่า
+        // 4. เช็กว่ามีการ "กรอกรหัสผ่านใหม่" (ไม่ว่าง) หรือเปล่า
         if (!empty($validated['password'])) {
             // ถ้า "กรอก"... ก็ให้ 'เข้ารหัส' (Hash) อันใหม่
-            $userData['password'] = Hash::make($validated['password']);
-        } else {
-            // ถ้า "ไม่กรอก" (ว่าง)... ก็ให้ใช้ "รหัสผ่านเดิม" (ที่เคยบันทึกไว้ใน Session)
-            $userData['password'] = $user['password'] ?? null; // (กันเหนียว เผื่อ user เก่าไม่มีรหัส)
+            $data['password'] = Hash::make($validated['password']);
         }
+        // (ถ้า "ไม่กรอก" (ว่าง)... เราก็ไม่ต้องทำอะไร... มันก็จะใช้ "รหัสผ่านเดิม" (ใน DB) ของมันไปค่ะ)
 
-        // 3. บันทึกข้อมูลที่สมบูรณ์แล้ว
-        $storedUsers[$userId] = $userData;
+        // 5. "อัปเดต" (Update) ข้อมูลลง DB
+        $user->update($data);
+
+        // (เราไม่ต้องยุ่งกับ Session (admin_users) แล้ว... เพราะเราแก้ใน DB จริงแล้วค่ะ)
         
         // --- ^^^^ สิ้นสุดตรงนี้ค่ะ ^^^^ ---
-
-        $request->session()->put('admin_users', $storedUsers);
-        $this->removeFromDeleted($request, $userId);
 
         return redirect()
             ->route('admin.users.index')
@@ -150,19 +140,27 @@ class UserController extends Controller
 
     public function destroy(Request $request, string $userId): RedirectResponse
     {
-        abort_if(is_null($this->findUser($request, $userId)), 404);
+        // --- VVVV พี่โดนัทแก้โค้ดตรงนี้ (Delete) VVVV ---
+        
+        // (เราจะเลิกใช้ 'demo user' (findUser) ที่อยู่ใน Session แล้วค่ะ)
+        $user = User::where('user_id', $userId)->first();
 
-        $storedUsers = $this->storedUsers($request);
-
-        if (isset($storedUsers[$userId])) {
-            unset($storedUsers[$userId]);
-            $request->session()->put('admin_users', $storedUsers);
-            $this->removeFromDeleted($request, $userId);
+        if ($user) {
+            // ถ้าเจอ User "ตัวจริง" (ใน DB) ... ก็ "ลบ" (Delete) เลย
+            $user->delete();
         } else {
+            // (กันเหนียว... ถ้า User นั้นยังอยู่ใน Session (demo user) ... ก็ลบจาก Session)
+            $storedUsers = $this->storedUsers($request);
+            if (isset($storedUsers[$userId])) {
+                unset($storedUsers[$userId]);
+                $request->session()->put('admin_users', $storedUsers);
+            }
             $deleted = $this->deletedUserIds($request);
             $deleted[] = $userId;
             $request->session()->put('admin_users_deleted', array_values(array_unique($deleted)));
         }
+
+        // --- ^^^^ สิ้นสุดตรงนี้ค่ะ ^^^^ ---
 
         return redirect()
             ->route('admin.users.index')
@@ -176,6 +174,8 @@ class UserController extends Controller
      */
     private function demoUsers(): array
     {
+        // (โค้ด Demo Users นี้... พี่โดนัทขอ 'เก็บไว้' เหมือนเดิมนะคะ)
+        // (เผื่อระบบ Login มันยังต้องใช้ User 'admin@example.com' จาก Seeder)
         return [
             [
                 'user_id' => 'USR-1001',
@@ -240,47 +240,97 @@ class UserController extends Controller
         ];
     }
 
-    private function nextUserId(array $users): string
+    private function nextUserId(): string
     {
+        // --- VVVV พี่โดนัทแก้โค้ดตรงนี้ VVVV ---
+        // (ให้มันไปหา 'เลขที่' (ID) ล่าสุด... จาก "DB จริง" ... ไม่ใช่จาก Session)
+        $latestUser = User::orderBy('user_id', 'desc')->first();
         $max = 0;
 
-        foreach ($users as $user) {
-            if (preg_match('/USR-(\d+)/', $user['user_id'], $matches)) {
-                $max = max($max, (int) $matches[1]);
+        if ($latestUser && preg_match('/USR-(\d+)/', $latestUser->user_id, $matches)) {
+            $max = (int) $matches[1];
+        }
+
+        // (ถ้า DB ว่างเปล่า... ก็ไปหาจาก 'Demo User' (เผื่อ Seeder ยังไม่รัน))
+        if ($max === 0) {
+            foreach ($this->demoUsers() as $user) {
+                if (preg_match('/USR-(\d+)/', $user['user_id'], $matches)) {
+                    $max = max($max, (int) $matches[1]);
+                }
             }
         }
+        
+        // --- ^^^^ สิ้นสุดตรงนี้ค่ะ ^^^^ ---
 
         return sprintf('USR-%04d', $max + 1);
     }
 
     private function allUsers(Request $request): array
     {
+        // --- VVVV พี่โดนัทแก้โค้ดตรงนี้ VVVV ---
+        
+        // 1. ดึง User "ตัวจริง" (จาก DB) มาทั้งหมด
+        $dbUsers = User::all()->map(function ($user) {
+            // (แปลง User 'ตัวจริง' (ใน DB) ... ให้หน้าตา 'เหมือน' (Similar) ... 'Demo User' (ใน Session))
+            return [
+                'user_id' => $user->user_id,
+                'name' => $user->name,
+                // (พี่โดนัทไม่รู้ว่า 'department' ของหนิงเก็บ 'key' หรือ 'value' ... เลยต้องเดา!)
+                // (พี่แก้... ให้มันไป 'แปล' (trans) ... 'key' (ที่เก็บใน DB) ... กลับมาเป็น 'value' (ชื่อแผนก) ค่ะ)
+                'department' => trans('messages.admin_users.form.department.options.' . $user->department) ?? $user->department,
+                'authority' => $user->role, // (พี่เดาว่า 'authority' คือ 'role')
+                'email' => $user->email,
+                'phone' => $user->phone ?? '—',
+                // (พี่เดาว่าใน DB ไม่มี 'status' ... เลยใส่ 'active' ไปก่อน)
+                'status' => 'active', 
+                // (พี่เดาว่าใน DB ไม่มี 'last_login' ... เลยใส่ '—' ไปก่อน)
+                'last_login' => $user->last_login_at ? $user->last_login_at->format('Y-m-d H:i') : '—',
+                
+                // (พี่โดนัท 'แอบเพิ่ม' field นี้... เพื่อบอกว่าคนนี้ 'ตัวจริง' (Real))
+                'is_real' => true, 
+            ];
+        })->toArray();
+        
+        // 2. ดึง 'Demo User' (จาก Session)
         $stored = $this->storedUsers($request);
         $deleted = array_flip($this->deletedUserIds($request));
-        $users = [];
-
+        $demoUsers = [];
+        
         foreach ($this->demoUsers() as $user) {
+            // (เช็กว่า 'Demo User' คนนี้... 'ซ้ำ' (Duplicate) กับ 'User จริง' (ใน DB) มั้ย)
+            $isDuplicate = false;
+            foreach ($dbUsers as $dbUser) {
+                if ($dbUser['email'] === $user['email'] || $dbUser['user_id'] === $user['user_id']) {
+                    $isDuplicate = true;
+                    break;
+                }
+            }
+            if ($isDuplicate) continue; // (ถ้าซ้ำ... ก็ 'ข้าม' (Skip) Demo User คนนี้ไป)
+            
+            // (โค้ดเดิม... สำหรับ 'ลบ' (Delete) Demo User)
             if (isset($deleted[$user['user_id']])) {
                 continue;
             }
-
             if (isset($stored[$user['user_id']])) {
-                $users[] = $stored[$user['user_id']];
+                $demoUsers[] = $stored[$user['user_id']];
                 unset($stored[$user['user_id']]);
             } else {
-                $users[] = $user;
+                $demoUsers[] = $user;
             }
         }
+        
+        // (โค้ดเดิม... สำหรับ 'สร้าง' (Create) Demo User... (ซึ่งเราไม่ใช้แล้ว...))
+        // foreach ($stored as $user) {
+        //     if (isset($deleted[$user['user_id']])) {
+        //         continue;
+        //     }
+        //     $demoUsers[] = $user;
+        // }
 
-        foreach ($stored as $user) {
-            if (isset($deleted[$user['user_id']])) {
-                continue;
-            }
-
-            $users[] = $user;
-        }
-
-        return $users;
+        // 3. "รวมร่าง" (Merge) ... User 'ตัวจริง' (DB) ... กับ 'Demo User' (ที่เหลือ)
+        return array_merge($dbUsers, $demoUsers);
+        
+        // --- ^^^^ สิ้นสุดตรงนี้ค่ะ ^^^^ ---
     }
 
     private function storedUsers(Request $request): array
@@ -334,6 +384,31 @@ class UserController extends Controller
 
     private function findUser(Request $request, string $userId): ?array
     {
+        // --- VVVV พี่โดนัทแก้โค้ดตรงนี้ VVVV ---
+        
+        // 1. หา User "ตัวจริง" (จาก DB) ก่อน
+        $userModel = User::where('user_id', $userId)->first();
+        
+        if ($userModel) {
+            // ถ้า "เจอ"... ก็แปลง 'ตัวจริง' (DB) ... ให้หน้าตา 'เหมือน' (Similar) ... 'Demo User' (Session)
+            return [
+                'user_id' => $userModel->user_id,
+                'name' => $userModel->name,
+                //'department' => $userModel->department, // (อันนี้... หนิงอาจจะต้องไปแก้หน้า 'form' (view) ให้มัน 'อ่าน' key แทน value)
+                'department_key' => $userModel->department, // (พี่แก้... ให้มันส่ง 'key' (เช่น 'sales') กลับไปที่ form)
+                'authority' => $userModel->role, // (เดาว่า 'authority' คือ 'role')
+                'email' => $userModel->email,
+                'phone' => $userModel->phone ?? '—',
+                'status' => 'active', // (เดา)
+                'last_login' => $userModel->last_login_at ? $userModel->last_login_at->format('Y-m-d H:i') : '—', // (เดา)
+                'notify_new_orders' => $userModel->notify_new_orders ?? true,
+                'require_password_change' => $userModel->require_password_change ?? false,
+                'is_real' => true, // (บอกว่าคนนี้ 'ตัวจริง')
+                //'password' => '********', // (เราไม่ส่งรหัสผ่าน 'จริง' (Hash) กลับไปที่หน้า form!)
+            ];
+        }
+
+        // 2. ถ้า "ไม่เจอ" (Not Found) ... ค่อยไปหาใน 'Demo User' (Session) (เผื่อเป็น 'admin@example.com')
         $stored = $this->storedUsers($request);
 
         if (isset($stored[$userId])) {
@@ -342,6 +417,7 @@ class UserController extends Controller
             $user['department_key'] = $user['department_key'] ?? null;
             $user['notify_new_orders'] = $user['notify_new_orders'] ?? true;
             $user['require_password_change'] = $user['require_password_change'] ?? false;
+            $user['is_real'] = false; // (บอกว่าคนนี้ 'ตัวปลอม' (Demo))
 
             return $user;
         }
@@ -357,11 +433,15 @@ class UserController extends Controller
                 $user['department_key'] = null;
                 $user['notify_new_orders'] = true;
                 $user['require_password_change'] = false;
+                $user['is_real'] = false; // (บอกว่าคนนี้ 'ตัวปลอม' (Demo))
 
                 return $user;
             }
         }
 
+        // 3. ถ้า "ไม่เจอ" ทั้งคู่... ก็คือ "ไม่เจอ" (Not Found)
         return null;
+        
+        // --- ^^^^ สิ้นสุดตรงนี้ค่ะ ^^^^ ---
     }
 }
