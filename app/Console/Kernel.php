@@ -19,7 +19,6 @@ class Kernel extends ConsoleKernel
         // ...ไม่ต้องไปลบมันน้า!)
 
         // VVVV "เพิ่ม" (Add) ... บรรทัดนี้... "ต่อท้าย" (At the end) ... เลยค่ะ! VVVV
-        \App\Console\Commands\FixCloudIssues::class,
     ];
 
     /**
