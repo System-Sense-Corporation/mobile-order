@@ -26,6 +26,9 @@ class User extends Authenticatable
         'password',
         'role_id',
         'telephone',
+        'user_id', // <-- ✨ 1. เพิ่มตัวปัญหาหลัก
+        'notify_new_orders', // <-- ✨ 2. เพิ่มตัวที่ขาด
+        'require_password_change', // <-- ✨ 3. เพิ่มตัวที่ขาด
     ];
 
     /**

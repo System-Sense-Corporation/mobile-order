@@ -7,9 +7,10 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
-use Illuminate\Support\Facades\Hash; // <-- VVVV เพิ่ม Hash
-use App\Models\User; // <-- VVVV เพิ่ม Model User
-use Illuminate\Support\Facades\DB; // <-- VVVV เพิ่ม DB
+use Illuminate\Support\Facades\Hash;
+use App\Models\User;
+use App\Models\Role; // <-- (ตัวนี้เราเพิ่มไปรอบที่แล้ว)
+use Illuminate\Support\Facades\DB;
 
 class UserController extends Controller
 {
@@ -40,8 +41,6 @@ class UserController extends Controller
 
     public function store(Request $request): RedirectResponse
     {
-        // --- VVVV ฟังก์ชันสำหรับสร้าง User ใหม่ VVVV ---
-
         // 1. ตรวจสอบข้อมูล (Validate)
         $departmentOptions = array_keys((array) trans('messages.admin_users.form.department.options'));
         $roleOptions = array_keys((array) trans('messages.admin_users.roles'));
@@ -57,17 +56,20 @@ class UserController extends Controller
             'password' => ['required', 'string', 'min:8', 'confirmed'],
         ]);
         
-        // 2. "สร้าง" (Create) User ใหม่... ลงใน "Database จริง" (ตาราง 'users')
+        // "แปลง" ชื่อ Role (เช่น 'admin') ให้เป็น ID (เช่น 1)
+        $role = Role::where('name', $validated['authority'])->firstOrFail();
+
+        // 2. "สร้าง" (Create) User ใหม่
         $user = User::create([
             'name' => $validated['name'],
             'email' => $validated['email'],
-            'password' => Hash::make($validated['password']), // <-- "เข้ารหัส" (Hash) รหัสผ่าน
-            'phone' => $validated['phone'] ?? null,
-            'role' => $validated['authority'], 
+            'password' => Hash::make($validated['password']),
+            'telephone' => $validated['phone'] ?? null,
+            'role_id' => $role->id, // <-- ใช้ ID (ตัวเลข)
             'department' => $validated['department'], 
             'notify_new_orders' => (bool) ($validated['notify_new_orders'] ?? false),
             'require_password_change' => (bool) ($validated['require_password_change'] ?? false),
-            'user_id' => $this->nextUserId(), // <-- กำหนด user_id อัตโนมัติ
+            'user_id' => $this->nextUserId(),
             'email_verified_at' => now(), 
         ]);
         
@@ -78,8 +80,6 @@ class UserController extends Controller
 
     public function update(Request $request, string $userId): RedirectResponse
     {
-        // --- VVVV ฟังก์ชันสำหรับแก้ไข User VVVV ---
-
         $user = User::where('user_id', $userId)->firstOrFail();
         
         $departmentOptions = array_keys((array) trans('messages.admin_users.form.department.options'));
@@ -96,11 +96,14 @@ class UserController extends Controller
             'password' => ['nullable', 'string', 'min:8', 'confirmed'],
         ]);
 
+        // "แปลง" ชื่อ Role (เช่น 'admin') ให้เป็น ID (เช่น 1)
+        $role = Role::where('name', $validated['authority'])->firstOrFail();
+
         $data = [
             'name' => $validated['name'],
             'email' => $validated['email'],
-            'phone' => $validated['phone'] ?? null,
-            'role' => $validated['authority'],
+            'telephone' => $validated['phone'] ?? null,
+            'role_id' => $role->id, // <-- ใช้ ID (ตัวเลข)
             'department' => $validated['department'],
             'notify_new_orders' => (bool) ($validated['notify_new_orders'] ?? false),
             'require_password_change' => (bool) ($validated['require_password_change'] ?? false),
@@ -119,14 +122,11 @@ class UserController extends Controller
 
     public function destroy(Request $request, string $userId): RedirectResponse
     {
-        // --- VVVV ฟังก์ชันสำหรับลบ User VVVV ---
-        
         $user = User::where('user_id', $userId)->first();
 
         if ($user) {
             $user->delete();
         } else {
-            // (จัดการ User Demo ที่เก็บใน Session)
             $storedUsers = $this->storedUsers($request);
             if (isset($storedUsers[$userId])) {
                 unset($storedUsers[$userId]);
@@ -142,14 +142,8 @@ class UserController extends Controller
             ->with('status', __('messages.admin_users.flash.deleted'));
     }
 
-    /**
-     * คืนค่า User ID ถัดไป (เช่น USR-0008)
-     */
     private function nextUserId(): string
     {
-        // --- VVVV พี่โดนัทแก้โค้ดตรงนี้ VVVV ---
-        // (ให้มันไปหา 'เลขที่' (ID) ล่าสุด... จาก "DB จริง" ... ไม่ใช่จาก Session)
-        // (พี่เพิ่ม ->whereNotNull('user_id') ... เพื่อ "ข้าม" (Skip) ... ไอ้ User ที่พัง)
         $latestUser = User::whereNotNull('user_id')->orderBy('user_id', 'desc')->first();
         $max = 0;
 
@@ -173,30 +167,30 @@ class UserController extends Controller
      */
     private function allUsers(Request $request): array
     {
-        // --- VVVV พี่โดนัทแก้โค้ดตรงนี้ VVVV ---
-        
-        // 1. ดึง User "ตัวจริง" (จาก DB) มาทั้งหมด
-        //    (พี่เพิ่ม ->whereNotNull('user_id') ... เพื่อ "กรอง" (Filter) ... ไอ้ User ที่พัง (user_id = NULL) ... ทิ้งไป!)
-        $dbUsers = User::whereNotNull('user_id')->get()->map(function ($user) {
+        // (เพิ่ม ->with('role') เพื่อดึงข้อมูล Role ที่เชื่อมอยู่มาด้วย)
+        $dbUsers = User::whereNotNull('user_id')->with('role')->get()->map(function ($user) {
             return [
                 'user_id' => $user->user_id,
                 'name' => $user->name,
                 'department' => trans('messages.admin_users.form.department.options.' . $user->department) ?? $user->department,
-                'authority' => $user->role,
+                
+                // --- ✨ 1. พี่โดนัทแก้ตรงนี้ ✨ ---
+                // ใช้ Nullsafe (?->) กับ Null Coalescing (??)
+                'authority' => $user->role?->name ?? $user->role_id, 
+                // --- ✨ จบส่วนที่แก้ ✨ ---
+
                 'email' => $user->email,
-                'phone' => $user->phone ?? '—',
+                'phone' => $user->telephone ?? '—',
                 'status' => 'active', 
                 'last_login' => $user->last_login_at ? $user->last_login_at->format('Y-m-d H:i') : '—',
                 'is_real' => true, 
             ];
         })->toArray();
         
-        // 2. ดึง 'Demo User' (จาก Session)
         $stored = $this->storedUsers($request);
         $deleted = array_flip($this->deletedUserIds($request));
         $demoUsers = [];
         
-        // กรอง Demo User ที่ซ้ำกับ DB ออก
         foreach ($this->demoUsers() as $user) {
             $isDuplicate = false;
             foreach ($dbUsers as $dbUser) {
@@ -218,7 +212,6 @@ class UserController extends Controller
             }
         }
 
-        // 3. "รวมร่าง" (Merge) User "ตัวจริง" (DB) กับ "Demo User" (ที่เหลือ)
         return array_merge($dbUsers, $demoUsers);
     }
 
@@ -275,18 +268,22 @@ class UserController extends Controller
 
     private function findUser(Request $request, string $userId): ?array
     {
-        // 1. หา User "ตัวจริง" (จาก DB) ก่อน
-        $userModel = User::where('user_id', $userId)->first();
+        // (เพิ่ม ->with('role') เพื่อดึงข้อมูล Role ที่เชื่อมอยู่มาด้วย)
+        $userModel = User::where('user_id', $userId)->with('role')->first();
         
         if ($userModel) {
-            // ถ้า "เจอ"... ก็แปลง User จาก DB ให้เป็น array
             return [
                 'user_id' => $userModel->user_id,
                 'name' => $userModel->name,
-                'department_key' => $userModel->department, // (key)
-                'authority' => $userModel->role, // (role)
+                'department_key' => $userModel->department,
+
+                // --- ✨ 2. พี่โดนัทแก้ตรงนี้ (จุดที่ Error ฟ้อง) ✨ ---
+                // ใช้ Nullsafe (?->) กับ Null Coalescing (??)
+                'authority' => $userModel->role?->name ?? $userModel->role_id,
+                // --- ✨ จบส่วนที่แก้ ✨ ---
+
                 'email' => $userModel->email,
-                'phone' => $userModel->phone ?? '—',
+                'phone' => $userModel->telephone ?? '—',
                 'status' => 'active', 
                 'last_login' => $userModel->last_login_at ? $userModel->last_login_at->format('Y-m-d H:i') : '—', 
                 'notify_new_orders' => $userModel->notify_new_orders ?? true,
@@ -295,7 +292,6 @@ class UserController extends Controller
             ];
         }
 
-        // 2. ถ้า "ไม่เจอ" (Not Found) ... ค่อยไปหาใน 'Demo User' (Session)
         $stored = $this->storedUsers($request);
         
         if (isset($stored[$userId])) {
@@ -304,7 +300,7 @@ class UserController extends Controller
             $user['department_key'] = $user['department_key'] ?? null;
             $user['notify_new_orders'] = $user['notify_new_orders'] ?? true;
             $user['require_password_change'] = $user['require_password_change'] ?? false;
-            $user['is_real'] = false; // (บอกว่าคนนี้ 'ตัวปลอม' (Demo))
+            $user['is_real'] = false;
 
             return $user;
         }
@@ -320,18 +316,18 @@ class UserController extends Controller
                 $user['department_key'] = null;
                 $user['notify_new_orders'] = true;
                 $user['require_password_change'] = false;
-                $user['is_real'] = false; // (บอกว่าคนนี้ 'ตัวปลอม' (Demo))
+                $user['is_real'] = false;
 
                 return $user;
             }
         }
 
-        // 3. ถ้า "ไม่เจอ" ทั้งคู่... ก็คือ "ไม่เจอ" (Not Found)
         return null;
     }
 
     private function demoUsers(): array
     {
+        // (โค้ดส่วนนี้เหมือนเดิมค่ะ)
         return [
             [
                 'user_id' => 'USR-1001',

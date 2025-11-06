@@ -348,6 +348,9 @@ return [
                 'label' => 'Department',
                 'placeholder' => 'Select a department',
                 'options' => [
+                    // VVVVV พี่โดนัท "เพิ่ม" (Add) ... 'กุญแจ' (Key) 'admin' ... ที่มัน "ขาด" (Missing) ... ให้ตรงนี้น้า! VVVVV
+                    'admin' => 'Administrator', // (หรือ 'แอดมิน'... หรือ 'ผู้ดูแลระบบ'... ก็ได้ค่ะ!)
+                    // VVVVV ^^^^ VVVVV
                     'sales' => 'Sales',
                     'support' => 'Customer Support',
                     'logistics' => 'Logistics',
