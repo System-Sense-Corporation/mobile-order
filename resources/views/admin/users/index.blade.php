@@ -1,7 +1,6 @@
 @extends('layouts.app')
 
 @section('title', __('messages.app.name') . ' - ' . __('messages.admin_users.title'))
-
 @section('page-title', __('messages.admin_users.title'))
 
 @section('content')
@@ -32,7 +31,8 @@
                     {{ __('messages.admin_users.filters.permission') }}
                 </button>
 
-                <a href="{{ route('admin.users.form') }}" class="btn-primary whitespace-nowrap">
+                {{-- เปลี่ยน route ที่นี่ --}}
+                <a href="{{ route('admin.users.create') }}" class="btn-primary whitespace-nowrap">
                     {{ __('messages.admin_users.actions.create') }}
                 </a>
             </div>
