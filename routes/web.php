@@ -12,31 +12,43 @@ use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Session;
 
-// Settings
+/*
+|--------------------------------------------------------------------------
+| Public / Settings
+|--------------------------------------------------------------------------
+*/
 Route::get('/settings', [SettingsController::class, 'index'])->name('settings');
 Route::post('/settings', [SettingsController::class, 'store'])->name('settings.store');
 
-// Switch language
-Route::get('/lang/{locale}', function ($locale) {
-    if (in_array($locale, ['en', 'th', 'ja'])) {
+Route::get('/lang/{locale}', function (string $locale) {
+    if (in_array($locale, ['en', 'th', 'ja'], true)) {
         Session::put('locale', $locale);
         App::setLocale($locale);
     }
     return redirect()->back();
 })->name('switch-lang');
 
-// Guest (auth)
+/*
+|--------------------------------------------------------------------------
+| Guest (Auth)
+|--------------------------------------------------------------------------
+*/
 Route::middleware('guest')->group(function () {
     Route::get('/login', [AuthController::class, 'create'])->name('login');
     Route::post('/login', [AuthController::class, 'store'])->name('login.store');
 });
 
-// Authenticated
+/*
+|--------------------------------------------------------------------------
+| Authenticated
+|--------------------------------------------------------------------------
+*/
 Route::middleware('auth')->group(function () {
     Route::post('/logout', [AuthController::class, 'destroy'])->name('logout');
 
+    // ===== ยังต้องตรวจ permission =====
     Route::middleware('permission')->group(function () {
-        // Pages
+        // Home
         Route::get('/', fn () => view('index'))->name('home');
 
         // Orders
@@ -64,34 +76,29 @@ Route::middleware('auth')->group(function () {
         Route::put('/customers/{customer}', [CustomerController::class, 'update'])->name('customers.update');
         Route::delete('/customers/{customer}', [CustomerController::class, 'destroy'])->name('customers.destroy');
 
-        // Admin Users (accept both USR-#### or numeric id)
-// Admin Users (accept both USR-#### or numeric id)
-Route::prefix('admin')->name('admin.')->group(function () {
-    // List
-    Route::get('/users', [AdminUserController::class, 'index'])->name('users.index');
-
-    // Create
-    Route::get('/users/create', [AdminUserController::class, 'create'])->name('users.create');
-    Route::post('/users', [AdminUserController::class, 'store'])->name('users.store');
-
-    // Edit / Update / Delete
-    Route::get('/users/{user}/edit', [AdminUserController::class, 'edit'])
-        ->where('user', '(USR-\d+|\d+)')
-        ->name('users.edit');
-
-    Route::put('/users/{user}', [AdminUserController::class, 'update'])
-        ->where('user', '(USR-\d+|\d+)')
-        ->name('users.update');
-
-    Route::delete('/users/{user}', [AdminUserController::class, 'destroy'])
-        ->where('user', '(USR-\d+|\d+)')
-        ->name('users.destroy');
-});
-
-
         // Profile
         Route::get('/profile', [ProfileController::class, 'edit'])->name('profile');
         Route::post('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    });
+
+    // ===== แยก Admin Users ออกจาก permission (ชั่วคราว) =====
+    Route::prefix('admin')->name('admin.')->group(function () {
+        // รองรับทั้ง USR-#### และตัวเลข id
+        Route::get('/users', [AdminUserController::class, 'index'])->name('users.index');
+        Route::get('/users/create', [AdminUserController::class, 'create'])->name('users.create');
+        Route::post('/users', [AdminUserController::class, 'store'])->name('users.store');
+
+        Route::get('/users/{user}/edit', [AdminUserController::class, 'edit'])
+            ->where('user', '(USR-\d+|\d+)')
+            ->name('users.edit');
+
+        Route::put('/users/{user}', [AdminUserController::class, 'update'])
+            ->where('user', '(USR-\d+|\d+)')
+            ->name('users.update');
+
+        Route::delete('/users/{user}', [AdminUserController::class, 'destroy'])
+            ->where('user', '(USR-\d+|\d+)')
+            ->name('users.destroy');
     });
 
     // Legacy redirects
@@ -99,15 +106,17 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::redirect('/orders/create', '/orders/form');
 });
 
-// Locale switch (POST)
+/*
+|--------------------------------------------------------------------------
+| Locale switch (POST)
+|--------------------------------------------------------------------------
+*/
 Route::post('/locale', function (Request $request) {
-    $availableLocales = config('app.available_locales', []);
-    $locale = $request->input('locale');
-
-    if (! in_array($locale, $availableLocales, true)) {
+    $available = config('app.available_locales', []);
+    $locale = $request->string('locale');
+    if (! in_array($locale, $available, true)) {
         $locale = config('app.locale');
     }
-
     session()->put('locale', $locale);
     return back();
 })->name('locale.switch');
