@@ -8,18 +8,9 @@ use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 class Kernel extends ConsoleKernel
 {
     /**
-     * The Artisan commands provided by your application.
-     *
-     * @var array
+     * Keep empty to avoid any duplicate command registration.
      */
-    // VVVVV พี่โดนัทจะ "เพิ่ม" (Add) ... "คำสั่งใหม่" (New Command) ... ของเรา...
-    // VVVVV ...ไว้ใน "ตาราง" (Array) ... นี้ค่ะ!
-    protected $commands = [
-        // ... (ที่นี่... อาจจะมี 'คำสั่ง' (Commands) ... 'อันเก่า' (Old) ... ของหนิงอยู่...
-        // ...ไม่ต้องไปลบมันน้า!)
-
-        // VVVV "เพิ่ม" (Add) ... บรรทัดนี้... "ต่อท้าย" (At the end) ... เลยค่ะ! VVVV
-    ];
+    protected $commands = [];
 
     /**
      * Define the application's command schedule.
@@ -30,12 +21,16 @@ class Kernel extends ConsoleKernel
     }
 
     /**
-     * Register the commands for the application.
+     * Do NOT load any console commands or route-based console bindings.
      */
     protected function commands(): void
     {
-        $this->load(__DIR__.'/Commands');
+        // Intentionally disabled to prevent loading any commands:
+        // $this->load(__DIR__.'/Commands');
 
-        require base_path('routes/console.php');
+        // Also disable route-based console commands:
+        // if (file_exists(base_path('routes/console.php'))) {
+        //     require base_path('routes/console.php');
+        // }
     }
 }
