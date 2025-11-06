@@ -1,0 +1,11 @@
+id: [YOUR_PROJECT_ID] # <-- ‼️ สำคัญมาก: หนิงต้องแก้ตรงนี้
+name: mobile-order
+environments:
+  main: # <-- (นี่คือ Environment ของหนิง)
+    build:
+      - 'composer install --no-dev'
+      - 'npm install && npm run build'
+    deploy:
+      - 'composer dump-autoload -o' # <--- ✨ 1. ตัวล้างสมอง Composer
+      - 'php artisan optimize:clear' # <--- ✨ 2. ตัวล้างแคช Laravel
+      - 'php artisan migrate --force' # <--- 3. รัน Migrate
