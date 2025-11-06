@@ -1,65 +1,51 @@
 <?php
 
-namespace App\Console\Commands;
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
-use Illuminate\Console\Command;
-use Illuminate\Support\Facades\DB;
-use App\Models\User;
-
-class FixCloudIssues extends Command
+return new class extends Migration
 {
     /**
-     * The name and signature of the console command.
-     *
-     * @var string
+     * Run the migrations.
      */
-    // นี่คือ "ชื่อ" (Name) ... ของ "คำสั่งใหม่" (New Command) ... ของเราค่ะ!
-    protected $signature = 'fix:cloud'; 
-
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
-    protected $description = 'Fix known issues on the cloud environment (Duplicate Migrations / NULL User IDs)';
-
-    /**
-     * Execute the console command.
-     */
-    public function handle()
+    public function up(): void
     {
-        $this->info('Starting cloud fix...');
-
-        // --- VVVV "ไม้ตาย" (Final Move) ... ที่ 1 VVVV ---
-        // (เราจะ "ฉีก" (Tear) ... "สมุดจด" (Migrations Table) ... หน้าที่มัน 'จดผิด' (Remembered wrong))
-        try {
-            // (พี่โดนัทเอา "ชื่อไฟล์พิมพ์เขียว" (Migration filename) ...
-            // ...มาจาก Error ที่หนิงเคยส่งมา (รูป ...15.53.31.jpg) น้า!)
-            $deleted = DB::table('migrations')->where('migration', '2025_11_05_084542_add_user_fields_to_users_table')->delete();
-            if ($deleted > 0) {
-                $this->info('[SUCCESS] Deleted "add_user_fields" entry from migrations table.');
-            } else {
-                $this->warn('[SKIPPED] Did not find "add_user_fields" entry in migrations table.');
-            }
-        } catch (\Exception $e) {
-            $this->error('[FAIL] Could not delete migration entry: ' . $e->getMessage());
-        }
-
-
-        // --- VVVV "ไม้ตาย" (Final Move) ... ที่ 2 VVVV ---
-        // (เราจะ "ซ่อม" (Fix) ... User 'เก่า' (Old User) (`admin@example.com`) ... ที่ 'พัง' (Broken) (`user_id` = NULL))
-        try {
-            $updated = User::where('email', 'admin@example.com')->update(['user_id' => 'USR-0001', 'role' => 'admin', 'department' => 'admin']);
-            if ($updated > 0) {
-                $this->info('[SUCCESS] Fixed "admin@example.com" user (added missing user_id).');
-            } else {
-                $this->warn('[SKIPPED] Did not find "admin@example.com" user to fix.');
-            }
-        } catch (\Exception $e) {
-            $this->error('[FAIL] Could not fix admin user: ' . $e->getMessage());
-        }
-
-        $this->info('Cloud fix finished!');
-        return 0;
+        // เราจะ "เพิ่มช่อง" (Add Columns) ในตู้ 'users'
+        Schema::table('users', function (Blueprint $table) {
+            
+            // VVVV "Cloud" (เว็บจริง) ... มัน "มี" (Already Has) ... ช่องนี้ "แล้ว" (Already)...
+            // VVVV ...เราเลย "ต้อง" (Must) ... "ขีดฆ่า" (Comment) ... มันทิ้งไปค่ะ! VVVV
+            // $table->string('user_id')->unique()->nullable(); 
+            
+            // VVVV "Cloud" (เว็บจริง) ... มัน "มี" (Already Has) ... ช่องนี้ "แล้ว" (Already)...
+            // VVVV ...เราเลย "ต้อง" (Must) ... "ขีดฆ่า" (Comment) ... มันทิ้งไปค่ะ! VVVV
+            // $table->string('department')->nullable(); 
+            
+            // VVVV "Cloud" (เว็บจริง) ... มัน "มี" (Already Has) ... ช่องนี้ "แล้ว" (Already)... (จาก Error ล่าสุด!)
+            // VVVV ...เราเลย "ต้อง" (Must) ... "ขีดฆ่า" (Comment) ... มันทิ้งไปค่ะ! VVVV
+            // $table->string('role')->nullable(); 
+            
+            // (ส่วน 2 บรรทัดนี้... "Cloud" (เว็บจริง) ... "ยังไม่มี" (Doesn't Have) ... เราเลย "ต้อง" (Must) ... "สร้าง" (Create) ... มันค่ะ!)
+            $table->boolean('notify_new_orders')->default(false);
+            $table->boolean('require_password_change')->default(false);
+        });
     }
-}
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        // (อันนี้คือ 'คำสั่งยกเลิก'... เผื่อเราทำพัง)
+        Schema::table('users', function (Blueprint $table) {
+            $table->dropColumn([
+                // 'user_id', // (ขีดฆ่า "ที่นี่" ... ด้วย!)
+                // 'department', // (ขีดฆ่า "ที่นี่" ... ด้วย!)
+                // 'role', // (ขีดฆ่า "ที่นี่" ... ด้วย!)
+                'notify_new_orders',
+                'require_password_change',
+            ]);
+        });
+    }
+};
