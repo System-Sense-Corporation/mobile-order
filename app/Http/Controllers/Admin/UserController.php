@@ -8,6 +8,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Schema;
 use App\Models\User;
 use App\Models\Role; // <-- (ตัวนี้เราเพิ่มไปรอบที่แล้ว)
 use Illuminate\Support\Facades\DB;
@@ -31,7 +32,6 @@ class UserController extends Controller
     public function edit(Request $request, string $userId): View
     {
         $user = $this->findUser($request, $userId);
-
         abort_if(is_null($user), 404);
 
         return view('admin.users.form', [
@@ -41,9 +41,10 @@ class UserController extends Controller
 
     public function store(Request $request): RedirectResponse
     {
-        // 1. ตรวจสอบข้อมูล (Validate)
+        // 1) Validate
         $departmentOptions = array_keys((array) trans('messages.admin_users.form.department.options'));
         $roleOptions = array_keys((array) trans('messages.admin_users.roles'));
+        $hasUserId = Schema::hasColumn('users', 'user_id');
 
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
@@ -55,24 +56,29 @@ class UserController extends Controller
             'require_password_change' => ['nullable', 'boolean'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
         ]);
-        
-        // "แปลง" ชื่อ Role (เช่น 'admin') ให้เป็น ID (เช่น 1)
+
+        // 2) map role name -> id
         $role = Role::where('name', $validated['authority'])->firstOrFail();
 
-        // 2. "สร้าง" (Create) User ใหม่
-        $user = User::create([
+        // 3) build payload
+        $data = [
             'name' => $validated['name'],
             'email' => $validated['email'],
             'password' => Hash::make($validated['password']),
             'telephone' => $validated['phone'] ?? null,
-            'role_id' => $role->id, // <-- ใช้ ID (ตัวเลข)
-            'department' => $validated['department'], 
+            'role_id' => $role->id,
+            'department' => $validated['department'],
             'notify_new_orders' => (bool) ($validated['notify_new_orders'] ?? false),
             'require_password_change' => (bool) ($validated['require_password_change'] ?? false),
-            'user_id' => $this->nextUserId(),
-            'email_verified_at' => now(), 
-        ]);
-        
+            'email_verified_at' => now(),
+        ];
+
+        if ($hasUserId) {
+            $data['user_id'] = $this->nextUserId();
+        }
+
+        User::create($data);
+
         return redirect()
             ->route('admin.users.index')
             ->with('status', __('messages.admin_users.flash.created'));
@@ -80,8 +86,11 @@ class UserController extends Controller
 
     public function update(Request $request, string $userId): RedirectResponse
     {
-        $user = User::where('user_id', $userId)->firstOrFail();
-        
+        $hasUserId = Schema::hasColumn('users', 'user_id');
+        $user = $hasUserId
+            ? User::where('user_id', $userId)->firstOrFail()
+            : User::where('id', (int) filter_var($userId, FILTER_SANITIZE_NUMBER_INT))->firstOrFail();
+
         $departmentOptions = array_keys((array) trans('messages.admin_users.form.department.options'));
         $roleOptions = array_keys((array) trans('messages.admin_users.roles'));
 
@@ -96,14 +105,13 @@ class UserController extends Controller
             'password' => ['nullable', 'string', 'min:8', 'confirmed'],
         ]);
 
-        // "แปลง" ชื่อ Role (เช่น 'admin') ให้เป็น ID (เช่น 1)
         $role = Role::where('name', $validated['authority'])->firstOrFail();
 
         $data = [
             'name' => $validated['name'],
             'email' => $validated['email'],
             'telephone' => $validated['phone'] ?? null,
-            'role_id' => $role->id, // <-- ใช้ ID (ตัวเลข)
+            'role_id' => $role->id,
             'department' => $validated['department'],
             'notify_new_orders' => (bool) ($validated['notify_new_orders'] ?? false),
             'require_password_change' => (bool) ($validated['require_password_change'] ?? false),
@@ -122,7 +130,10 @@ class UserController extends Controller
 
     public function destroy(Request $request, string $userId): RedirectResponse
     {
-        $user = User::where('user_id', $userId)->first();
+        $hasUserId = Schema::hasColumn('users', 'user_id');
+        $user = $hasUserId
+            ? User::where('user_id', $userId)->first()
+            : User::where('id', (int) filter_var($userId, FILTER_SANITIZE_NUMBER_INT))->first();
 
         if ($user) {
             $user->delete();
@@ -144,6 +155,11 @@ class UserController extends Controller
 
     private function nextUserId(): string
     {
+        // กันพังหากยังไม่มีคอลัมน์ user_id
+        if (! Schema::hasColumn('users', 'user_id')) {
+            return 'USR-0001';
+        }
+
         $latestUser = User::whereNotNull('user_id')->orderBy('user_id', 'desc')->first();
         $max = 0;
 
@@ -158,7 +174,7 @@ class UserController extends Controller
                 }
             }
         }
-        
+
         return sprintf('USR-%04d', $max + 1);
     }
 
@@ -167,30 +183,34 @@ class UserController extends Controller
      */
     private function allUsers(Request $request): array
     {
-        // (เพิ่ม ->with('role') เพื่อดึงข้อมูล Role ที่เชื่อมอยู่มาด้วย)
-        $dbUsers = User::whereNotNull('user_id')->with('role')->get()->map(function ($user) {
-            return [
-                'user_id' => $user->user_id,
-                'name' => $user->name,
-                'department' => trans('messages.admin_users.form.department.options.' . $user->department) ?? $user->department,
-                
-                // --- ✨ 1. พี่โดนัทแก้ตรงนี้ ✨ ---
-                // ใช้ Nullsafe (?->) กับ Null Coalescing (??)
-                'authority' => $user->role?->name ?? $user->role_id, 
-                // --- ✨ จบส่วนที่แก้ ✨ ---
+        $hasUserId = Schema::hasColumn('users', 'user_id');
 
+        // (เพิ่ม ->with('role') เพื่อดึงข้อมูล Role ที่เชื่อมอยู่มาด้วย)
+        $query = User::with('role');
+        if ($hasUserId) {
+            $query->whereNotNull('user_id');
+        }
+
+        $dbUsers = $query->get()->map(function ($user) use ($hasUserId) {
+            return [
+                // ถ้าไม่มี user_id ให้ fallback ใช้ id
+                'user_id' => $hasUserId ? $user->user_id : (string) $user->id,
+                'name' => $user->name,
+                'department' => trans('messages.admin_users.form.department.options.' . ($user->department ?? '')) ?? ($user->department ?? '—'),
+                // ใช้ Nullsafe กับ role
+                'authority' => $user->role?->name ?? $user->role_id,
                 'email' => $user->email,
                 'phone' => $user->telephone ?? '—',
-                'status' => 'active', 
+                'status' => 'active',
                 'last_login' => $user->last_login_at ? $user->last_login_at->format('Y-m-d H:i') : '—',
-                'is_real' => true, 
+                'is_real' => true,
             ];
         })->toArray();
-        
+
         $stored = $this->storedUsers($request);
         $deleted = array_flip($this->deletedUserIds($request));
         $demoUsers = [];
-        
+
         foreach ($this->demoUsers() as $user) {
             $isDuplicate = false;
             foreach ($dbUsers as $dbUser) {
@@ -200,11 +220,11 @@ class UserController extends Controller
                 }
             }
             if ($isDuplicate) continue;
-            
+
             if (isset($deleted[$user['user_id']])) {
                 continue;
             }
-            if (isset($stored[$user['user_id']])) { 
+            if (isset($stored[$user['user_id']])) {
                 $demoUsers[] = $stored[$user['user_id']];
                 unset($stored[$user['user_id']]);
             } else {
@@ -214,8 +234,6 @@ class UserController extends Controller
 
         return array_merge($dbUsers, $demoUsers);
     }
-
-    // --- VVVV โค้ดส่วน Helper function เดิมของหนิง VVVV ---
 
     private function storedUsers(Request $request): array
     {
@@ -268,24 +286,23 @@ class UserController extends Controller
 
     private function findUser(Request $request, string $userId): ?array
     {
-        // (เพิ่ม ->with('role') เพื่อดึงข้อมูล Role ที่เชื่อมอยู่มาด้วย)
-        $userModel = User::where('user_id', $userId)->with('role')->first();
-        
+        $hasUserId = Schema::hasColumn('users', 'user_id');
+
+        $userQuery = User::with('role');
+        $userModel = $hasUserId
+            ? $userQuery->where('user_id', $userId)->first()
+            : $userQuery->where('id', (int) filter_var($userId, FILTER_SANITIZE_NUMBER_INT))->first();
+
         if ($userModel) {
             return [
-                'user_id' => $userModel->user_id,
+                'user_id' => $hasUserId ? $userModel->user_id : (string) $userModel->id,
                 'name' => $userModel->name,
                 'department_key' => $userModel->department,
-
-                // --- ✨ 2. พี่โดนัทแก้ตรงนี้ (จุดที่ Error ฟ้อง) ✨ ---
-                // ใช้ Nullsafe (?->) กับ Null Coalescing (??)
                 'authority' => $userModel->role?->name ?? $userModel->role_id,
-                // --- ✨ จบส่วนที่แก้ ✨ ---
-
                 'email' => $userModel->email,
                 'phone' => $userModel->telephone ?? '—',
-                'status' => 'active', 
-                'last_login' => $userModel->last_login_at ? $userModel->last_login_at->format('Y-m-d H:i') : '—', 
+                'status' => 'active',
+                'last_login' => $userModel->last_login_at ? $userModel->last_login_at->format('Y-m-d H:i') : '—',
                 'notify_new_orders' => $userModel->notify_new_orders ?? true,
                 'require_password_change' => $userModel->require_password_change ?? false,
                 'is_real' => true, 
@@ -293,7 +310,6 @@ class UserController extends Controller
         }
 
         $stored = $this->storedUsers($request);
-        
         if (isset($stored[$userId])) {
             $user = $stored[$userId];
 
@@ -306,7 +322,6 @@ class UserController extends Controller
         }
 
         $deleted = array_flip($this->deletedUserIds($request));
-
         if (isset($deleted[$userId])) {
             return null;
         }
@@ -327,7 +342,6 @@ class UserController extends Controller
 
     private function demoUsers(): array
     {
-        // (โค้ดส่วนนี้เหมือนเดิมค่ะ)
         return [
             [
                 'user_id' => 'USR-1001',
