@@ -2,8 +2,10 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\Role;
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
 use Symfony\Component\HttpFoundation\Response;
 
 class EnsureUserHasPermission
@@ -11,58 +13,81 @@ class EnsureUserHasPermission
     public function handle(Request $request, Closure $next): Response
     {
         $user = $request->user();
-
-        // ✅ Admin ผ่านหมด
-        if ($user && ($user->role?->name === 'admin' || $user->role_id === 1)) {
-            return $next($request);
+        if (! $user) {
+            return redirect()->route('login');
         }
 
-        // ✅ อนุญาตเส้นทางสาธารณะ/ทุกคนใช้ได้ (ถ้ามี)
-        $publicRoutes = [
-            'home',
-            'orders.create',
-            // …เติมตามต้องการ
-        ];
-        if ($request->routeIs($publicRoutes)) {
-            return $next($request);
+        // ---- Derive $roleName (robust) ----
+        $roleName = null;
+
+        // 1) ถ้าเป็น relation object
+        if (is_object($user->role) && method_exists($user->role, 'getAttribute')) {
+            $roleName = $user->role->name ?? null;
         }
 
-        // ✅ map อนุญาตราย role (ถ้าต้องการแยก)
-        $roleAllowMap = [
+        // 2) ถ้าเป็นสตริง เช่น column ชื่อ 'role'
+        if (! $roleName && is_string($user->role ?? null)) {
+            $roleName = $user->role;
+        }
+
+        // 3) ถ้าเป็นตัวเลข role_id
+        if (! $roleName && is_numeric($user->role_id ?? null)) {
+            $roleName = optional(Role::find($user->role_id))->name;
+        }
+
+        // 4) Fallback
+        $roleName = $roleName ?: 'viewer';
+
+        $routeName = Route::currentRouteName();
+
+        // ---- กฎพื้นฐาน (ปรับได้ตามต้องการ) ----
+        $rules = [
+            'admin'  => ['*'], // admin เข้าทุก route
             'editor' => [
+                'home',
                 'orders.*',
                 'products.*',
                 'customers.*',
-                // ถ้าจะให้เข้าหน้า list ผู้ใช้ได้เฉย ๆ ก็เพิ่ม 'admin.users.index'
+                'profile', 'profile.update',
+                // ถ้าอยากให้ editor เห็นรายชื่อ user ให้เปิดคอมเมนต์:
+                // 'admin.users.index', 'admin.users.edit',
             ],
             'viewer' => [
+                'home',
                 'orders.index',
-                // …
+                'products',
+                'customers',
+                'profile', 'profile.update',
             ],
         ];
 
-        $roleName = $user?->role?->name;
-        if ($roleName && isset($roleAllowMap[$roleName])) {
-            if ($request->routeIs($roleAllowMap[$roleName])) {
-                return $next($request);
+        if ($this->allowed($rules, $roleName, $routeName)) {
+            return $next($request);
+        }
+
+        // ปิดไว้เงียบ ๆ ตาม requirement เดิม
+        abort(404);
+    }
+
+    private function allowed(array $rules, string $role, string $routeName): bool
+    {
+        $list = $rules[$role] ?? [];
+        if (in_array('*', $list, true)) {
+            return true;
+        }
+
+        foreach ($list as $pattern) {
+            if ($pattern === $routeName) {
+                return true;
+            }
+            if (str_ends_with($pattern, '.*')) {
+                $prefix = substr($pattern, 0, -2);
+                if (str_starts_with($routeName, $prefix)) {
+                    return true;
+                }
             }
         }
-// วางไว้ก่อน abort(404);
-$alwaysAllow = [
-    'admin.users.index',
-    'admin.users.create',
-    'admin.users.store',
-    'admin.users.edit',
-    'admin.users.update',
-    'admin.users.destroy',
-];
 
-if ($request->routeIs($alwaysAllow)) {
-    // หรือจะเช็คเพิ่มเติมว่าเฉพาะ admin/editor ก็ได้
-    return $next($request);
-}
-
-        // ❌ ไม่อนุญาต -> ทำให้เป็น 404 (เดิม)
-        abort(404);
+        return false;
     }
 }
