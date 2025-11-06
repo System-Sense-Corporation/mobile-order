@@ -14,12 +14,14 @@ return new class extends Migration
         // เราจะ "เพิ่มช่อง" (Add Columns) ในตู้ 'users'
         Schema::table('users', function (Blueprint $table) {
             
-            // VVVV พี่ "เอาขีดฆ่า" (Uncomment) ... 2 บรรทัดนี้ "ออก" (Out) VVVV
-            // VVVV ...เพื่อให้ "Cloud" (เว็บจริง) ... มัน "สร้าง" (Create) 2 ช่องนี้! VVVV
+            // VVVV "Cloud" (เว็บจริง) ... มัน "ยังไม่มี" (Doesn't Have) ... ช่องนี้ ...
+            // VVVV ...เราเลย "ต้อง" (Must) ... "สร้าง" (Create) ... มันค่ะ! VVVV
             $table->string('user_id')->unique()->nullable(); // (พี่ "เอา" (Remove) ... ->after('phone') ... ออกแล้ว!)
-            $table->string('department')->nullable(); // (พี่ "เอา" (Remove) ... ->after('user_id') ... ออกแล้ว!)
-            // VVVV ^^^^ VVVV
-
+            
+            // VVVV "Cloud" (เว็บจริง) ... มัน "มี" (Already Has) ... ช่องนี้ "แล้ว" (Already)...
+            // VVVV ...เราเลย "ต้อง" (Must) ... "ขีดฆ่า" (Comment) ... มันทิ้งไปค่ะ! VVVV
+            // $table->string('department')->nullable(); // (พี่ "เอา" (Remove) ... ->after('user_id') ... ออกแล้ว!)
+            
             // (ส่วน 3 บรรทัดนี้... "Cloud" (เว็บจริง) ... ก็ "ยังไม่มี" (Doesn't Have) ... เหมือนกัน)
             $table->string('role')->nullable(); // (พี่ "เอา" (Remove) ... ->after('department') ... ออกแล้ว!)
             $table->boolean('notify_new_orders')->default(false);
@@ -35,8 +37,8 @@ return new class extends Migration
         // (อันนี้คือ 'คำสั่งยกเลิก'... เผื่อเราทำพัง)
         Schema::table('users', function (Blueprint $table) {
             $table->dropColumn([
-                'user_id', // (เอา "ขีดฆ่า" (Comment) ... ออก... เพื่อให้มัน 'ยกเลิก' (Drop) ได้)
-                'department', // (เอา "ขีดฆ่า" (Comment) ... ออก... เพื่อให้มัน 'ยกเลิก' (Drop) ได้)
+                'user_id',
+                // 'department', // (ขีดฆ่า "ที่นี่" ... ด้วย!)
                 'role',
                 'notify_new_orders',
                 'require_password_change',
