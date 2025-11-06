@@ -1,0 +1,63 @@
+<?php
+
+namespace App\Console\Commands;
+
+use Illuminate\Console\Command;
+use Illuminate\Support\Facades\DB;
+use App\Models\User;
+
+class FixCloudIssues extends Command
+{
+    /**
+     * The name and signature of the console command.
+     *
+     * @var string
+     */
+    // นี่คือ "ชื่อ" (Name) ... ของ "คำสั่งใหม่" (New Command) ... ของเราค่ะ!
+    protected $signature = 'fix:cloud'; 
+
+    /**
+     * The console command description.
+     *
+     * @var string
+     */
+    protected $description = 'Fix known issues on the cloud environment (Duplicate Migrations / NULL User IDs)';
+
+    /**
+     * Execute the console command.
+     */
+    public function handle()
+    {
+        $this->info('Starting cloud fix...');
+
+        // --- VVVV "ไม้ตาย" (Final Move) ... ที่ 1 VVVV ---
+        // (เราจะ "ฉีก" (Tear) ... "สมุดจด" (Migrations Table) ... หน้าที่มัน 'จดผิด' (Remembered wrong))
+        try {
+            $deleted = DB::table('migrations')->where('migration', '2025_11_05_084542_add_user_fields_to_users_table')->delete();
+            if ($deleted > 0) {
+                $this->info('[SUCCESS] Deleted "add_user_fields" entry from migrations table.');
+            } else {
+                $this->warn('[SKIPPED] Did not find "add_user_fields" entry in migrations table.');
+            }
+        } catch (\Exception $e) {
+            $this->error('[FAIL] Could not delete migration entry: ' . $e->getMessage());
+        }
+
+
+        // --- VVVV "ไม้ตาย" (Final Move) ... ที่ 2 VVVV ---
+        // (เราจะ "ซ่อม" (Fix) ... User 'เก่า' (Old User) (`admin@example.com`) ... ที่ 'พัง' (Broken) (`user_id` = NULL))
+        try {
+            $updated = User::where('email', 'admin@example.com')->update(['user_id' => 'USR-0001', 'role' => 'admin', 'department' => 'admin']);
+            if ($updated > 0) {
+                $this->info('[SUCCESS] Fixed "admin@example.com" user (added missing user_id).');
+            } else {
+                $this->warn('[SKIPPED] Did not find "admin@example.com" user to fix.');
+            }
+        } catch (\Exception $e) {
+            $this->error('[FAIL] Could not fix admin user: ' . $e->getMessage());
+        }
+
+        $this->info('Cloud fix finished!');
+        return 0;
+    }
+}
