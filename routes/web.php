@@ -65,12 +65,29 @@ Route::middleware('auth')->group(function () {
         Route::delete('/customers/{customer}', [CustomerController::class, 'destroy'])->name('customers.destroy');
 
         // Admin Users (accept both USR-#### or numeric id)
-        Route::prefix('admin')->name('admin.')->group(function () {
-            Route::resource('users', AdminUserController::class)
-                ->only(['index', 'create', 'store', 'edit', 'update', 'destroy'])
-                ->parameters(['users' => 'user'])
-                ->where(['user' => '(USR-\d+|\d+)']);
-        });
+// Admin Users (accept both USR-#### or numeric id)
+Route::prefix('admin')->name('admin.')->group(function () {
+    // List
+    Route::get('/users', [AdminUserController::class, 'index'])->name('users.index');
+
+    // Create
+    Route::get('/users/create', [AdminUserController::class, 'create'])->name('users.create');
+    Route::post('/users', [AdminUserController::class, 'store'])->name('users.store');
+
+    // Edit / Update / Delete
+    Route::get('/users/{user}/edit', [AdminUserController::class, 'edit'])
+        ->where('user', '(USR-\d+|\d+)')
+        ->name('users.edit');
+
+    Route::put('/users/{user}', [AdminUserController::class, 'update'])
+        ->where('user', '(USR-\d+|\d+)')
+        ->name('users.update');
+
+    Route::delete('/users/{user}', [AdminUserController::class, 'destroy'])
+        ->where('user', '(USR-\d+|\d+)')
+        ->name('users.destroy');
+});
+
 
         // Profile
         Route::get('/profile', [ProfileController::class, 'edit'])->name('profile');
