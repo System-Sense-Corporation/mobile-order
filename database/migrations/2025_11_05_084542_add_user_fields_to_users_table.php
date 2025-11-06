@@ -14,20 +14,16 @@ return new class extends Migration
         // เราจะ "เพิ่มช่อง" (Add Columns) ในตู้ 'users'
         Schema::table('users', function (Blueprint $table) {
             
-            // VVVV "บอส" ตัวที่ 2 คือบรรทัดนี้ค่ะ VVVV
-            // $table->string('user_id')->unique()->nullable()->after('phone'); // ช่อง 'USR-1007'
-            // (พี่โดนัท "ลบ" (Comment) มันทิ้ง... เพราะ Error มันฟ้องว่า "มีช่องนี้อยู่แล้ว"!)
+            // VVVV พี่ "เอาขีดฆ่า" (Uncomment) ... 2 บรรทัดนี้ "ออก" (Out) VVVV
+            // VVVV ...เพื่อให้ "Cloud" (เว็บจริง) ... มัน "สร้าง" (Create) 2 ช่องนี้! VVVV
+            $table->string('user_id')->unique()->nullable(); // (พี่ "เอา" (Remove) ... ->after('phone') ... ออกแล้ว!)
+            $table->string('department')->nullable(); // (พี่ "เอา" (Remove) ... ->after('user_id') ... ออกแล้ว!)
             // VVVV ^^^^ VVVV
 
-            // VVVV "บอส" ตัวที่ 1 คือบรรทัดนี้ค่ะ VVVV
-            // $table->string('department')->nullable()->after('user_id'); // ช่อง 'แผนก'
-            // (พี่โดนัท "ลบ" (Comment) มันทิ้ง... เพราะ Error มันฟ้องว่า "มีช่องนี้อยู่แล้ว"!)
-            // VVVV ^^^^ VVVV
-
-            // (ส่วนบรรทัดนี้... มันจะเพิ่ม 'role' ... 'ต่อจาก' (after) ... 'department' (ที่มีอยู่แล้ว)... ถูกต้องค่ะ!)
-            $table->string('role')->nullable()->after('department'); // ช่อง 'สิทธิ์' (admin, editor)
-            $table->boolean('notify_new_orders')->default(false)->after('role');
-            $table->boolean('require_password_change')->default(false)->after('notify_new_orders');
+            // (ส่วน 3 บรรทัดนี้... "Cloud" (เว็บจริง) ... ก็ "ยังไม่มี" (Doesn't Have) ... เหมือนกัน)
+            $table->string('role')->nullable(); // (พี่ "เอา" (Remove) ... ->after('department') ... ออกแล้ว!)
+            $table->boolean('notify_new_orders')->default(false);
+            $table->boolean('require_password_change')->default(false);
         });
     }
 
@@ -39,8 +35,8 @@ return new class extends Migration
         // (อันนี้คือ 'คำสั่งยกเลิก'... เผื่อเราทำพัง)
         Schema::table('users', function (Blueprint $table) {
             $table->dropColumn([
-                // 'user_id', // (ลบออกจาก 'ยกเลิก' ด้วย... เพราะเราไม่ได้สร้างมัน)
-                // 'department', // (ลบออกจาก 'ยกเลิก' ด้วย... เพราะเราไม่ได้สร้างมัน)
+                'user_id', // (เอา "ขีดฆ่า" (Comment) ... ออก... เพื่อให้มัน 'ยกเลิก' (Drop) ได้)
+                'department', // (เอา "ขีดฆ่า" (Comment) ... ออก... เพื่อให้มัน 'ยกเลิก' (Drop) ได้)
                 'role',
                 'notify_new_orders',
                 'require_password_change',
