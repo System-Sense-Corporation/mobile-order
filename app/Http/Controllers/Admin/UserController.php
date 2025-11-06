@@ -10,8 +10,7 @@ use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Schema;
 use App\Models\User;
-use App\Models\Role; // <-- (ตัวนี้เราเพิ่มไปรอบที่แล้ว)
-use Illuminate\Support\Facades\DB;
+use App\Models\Role;
 
 class UserController extends Controller
 {
@@ -57,10 +56,10 @@ class UserController extends Controller
             'password' => ['required', 'string', 'min:8', 'confirmed'],
         ]);
 
-        // 2) map role name -> id
+        // 2) role name -> id
         $role = Role::where('name', $validated['authority'])->firstOrFail();
 
-        // 3) build payload
+        // 3) payload
         $data = [
             'name' => $validated['name'],
             'email' => $validated['email'],
@@ -87,6 +86,7 @@ class UserController extends Controller
     public function update(Request $request, string $userId): RedirectResponse
     {
         $hasUserId = Schema::hasColumn('users', 'user_id');
+
         $user = $hasUserId
             ? User::where('user_id', $userId)->firstOrFail()
             : User::where('id', (int) filter_var($userId, FILTER_SANITIZE_NUMBER_INT))->firstOrFail();
@@ -131,6 +131,7 @@ class UserController extends Controller
     public function destroy(Request $request, string $userId): RedirectResponse
     {
         $hasUserId = Schema::hasColumn('users', 'user_id');
+
         $user = $hasUserId
             ? User::where('user_id', $userId)->first()
             : User::where('id', (int) filter_var($userId, FILTER_SANITIZE_NUMBER_INT))->first();
@@ -138,6 +139,7 @@ class UserController extends Controller
         if ($user) {
             $user->delete();
         } else {
+            // fallback สำหรับ demo/stored users ใน session
             $storedUsers = $this->storedUsers($request);
             if (isset($storedUsers[$userId])) {
                 unset($storedUsers[$userId]);
@@ -155,7 +157,6 @@ class UserController extends Controller
 
     private function nextUserId(): string
     {
-        // กันพังหากยังไม่มีคอลัมน์ user_id
         if (! Schema::hasColumn('users', 'user_id')) {
             return 'USR-0001';
         }
@@ -163,14 +164,14 @@ class UserController extends Controller
         $latestUser = User::whereNotNull('user_id')->orderBy('user_id', 'desc')->first();
         $max = 0;
 
-        if ($latestUser && preg_match('/USR-(\d+)/', $latestUser->user_id, $matches)) {
-            $max = (int) $matches[1];
+        if ($latestUser && preg_match('/USR-(\d+)/', $latestUser->user_id, $m)) {
+            $max = (int) $m[1];
         }
 
         if ($max === 0) {
-            foreach ($this->demoUsers() as $user) {
-                if (preg_match('/USR-(\d+)/', $user['user_id'], $matches)) {
-                    $max = max($max, (int) $matches[1]);
+            foreach ($this->demoUsers() as $u) {
+                if (preg_match('/USR-(\d+)/', $u['user_id'], $m)) {
+                    $max = max($max, (int) $m[1]);
                 }
             }
         }
@@ -178,14 +179,11 @@ class UserController extends Controller
         return sprintf('USR-%04d', $max + 1);
     }
 
-    /**
-     * คืนค่า User ทั้งหมด (จาก DB จริง + Demo Users)
-     */
+    /** รวม Users จาก DB + Demo/Stored */
     private function allUsers(Request $request): array
     {
         $hasUserId = Schema::hasColumn('users', 'user_id');
 
-        // (เพิ่ม ->with('role') เพื่อดึงข้อมูล Role ที่เชื่อมอยู่มาด้วย)
         $query = User::with('role');
         if ($hasUserId) {
             $query->whereNotNull('user_id');
@@ -193,88 +191,71 @@ class UserController extends Controller
 
         $dbUsers = $query->get()->map(function ($user) use ($hasUserId) {
             return [
-                // ถ้าไม่มี user_id ให้ fallback ใช้ id
-                'user_id' => $hasUserId ? $user->user_id : (string) $user->id,
-                'name' => $user->name,
-                'department' => trans('messages.admin_users.form.department.options.' . ($user->department ?? '')) ?? ($user->department ?? '—'),
-                // ใช้ Nullsafe กับ role
-                'authority' => $user->role?->name ?? $user->role_id,
-                'email' => $user->email,
-                'phone' => $user->telephone ?? '—',
-                'status' => 'active',
+                'user_id'    => $hasUserId ? $user->user_id : (string) $user->id,
+                'name'       => $user->name,
+                'department' => trans('messages.admin_users.form.department.options.' . ($user->department ?? '')) 
+                                ?? ($user->department ?? '—'),
+                'authority'  => $user->role?->name ?? $user->role_id,
+                'email'      => $user->email,
+                'phone'      => $user->telephone ?? '—',
+                'status'     => 'active',
                 'last_login' => $user->last_login_at ? $user->last_login_at->format('Y-m-d H:i') : '—',
-                'is_real' => true,
+                'is_real'    => true,
             ];
         })->toArray();
 
-        $stored = $this->storedUsers($request);
+        $stored  = $this->storedUsers($request);
         $deleted = array_flip($this->deletedUserIds($request));
-        $demoUsers = [];
+        $demo    = [];
 
-        foreach ($this->demoUsers() as $user) {
-            $isDuplicate = false;
-            foreach ($dbUsers as $dbUser) {
-                if ($dbUser['email'] === $user['email'] || $dbUser['user_id'] === $user['user_id']) {
-                    $isDuplicate = true;
-                    break;
+        foreach ($this->demoUsers() as $u) {
+            $dup = false;
+            foreach ($dbUsers as $d) {
+                if ($d['email'] === $u['email'] || $d['user_id'] === $u['user_id']) {
+                    $dup = true; break;
                 }
             }
-            if ($isDuplicate) continue;
+            if ($dup) continue;
+            if (isset($deleted[$u['user_id']])) continue;
 
-            if (isset($deleted[$user['user_id']])) {
-                continue;
-            }
-            if (isset($stored[$user['user_id']])) {
-                $demoUsers[] = $stored[$user['user_id']];
-                unset($stored[$user['user_id']]);
+            if (isset($stored[$u['user_id']])) {
+                $demo[] = $stored[$u['user_id']];
+                unset($stored[$u['user_id']]);
             } else {
-                $demoUsers[] = $user;
+                $demo[] = $u;
             }
         }
 
-        return array_merge($dbUsers, $demoUsers);
+        return array_merge($dbUsers, $demo);
     }
 
     private function storedUsers(Request $request): array
     {
         $stored = $request->session()->get('admin_users', []);
-        
-        if (! is_array($stored)) {
-            return [];
-        }
+        if (! is_array($stored)) return [];
 
         $normalized = [];
-
-        foreach ($stored as $user) {
-            if (is_array($user) && isset($user['user_id'])) {
-                $normalized[$user['user_id']] = $user;
+        foreach ($stored as $u) {
+            if (is_array($u) && isset($u['user_id'])) {
+                $normalized[$u['user_id']] = $u;
             }
         }
-
         return $normalized;
     }
 
     private function deletedUserIds(Request $request): array
     {
         $deleted = $request->session()->get('admin_users_deleted', []);
-        
-        if (! is_array($deleted)) {
-            return [];
-        }
-
-        return array_values(array_filter($deleted, static fn ($value) => is_string($value) && $value !== ''));
+        if (! is_array($deleted)) return [];
+        return array_values(array_filter($deleted, fn ($v) => is_string($v) && $v !== ''));
     }
 
     private function removeFromDeleted(Request $request, string $userId): void
     {
         $deleted = $this->deletedUserIds($request);
-        
-        if (empty($deleted)) {
-            return;
-        }
+        if (empty($deleted)) return;
 
-        $filtered = array_values(array_filter($deleted, static fn ($value) => $value !== $userId));
-
+        $filtered = array_values(array_filter($deleted, fn ($v) => $v !== $userId));
         if (count($filtered) !== count($deleted)) {
             if (empty($filtered)) {
                 $request->session()->forget('admin_users_deleted');
@@ -288,52 +269,47 @@ class UserController extends Controller
     {
         $hasUserId = Schema::hasColumn('users', 'user_id');
 
-        $userQuery = User::with('role');
-        $userModel = $hasUserId
-            ? $userQuery->where('user_id', $userId)->first()
-            : $userQuery->where('id', (int) filter_var($userId, FILTER_SANITIZE_NUMBER_INT))->first();
+        $q = User::with('role');
+        $model = $hasUserId
+            ? $q->where('user_id', $userId)->first()
+            : $q->where('id', (int) filter_var($userId, FILTER_SANITIZE_NUMBER_INT))->first();
 
-        if ($userModel) {
+        if ($model) {
             return [
-                'user_id' => $hasUserId ? $userModel->user_id : (string) $userModel->id,
-                'name' => $userModel->name,
-                'department_key' => $userModel->department,
-                'authority' => $userModel->role?->name ?? $userModel->role_id,
-                'email' => $userModel->email,
-                'phone' => $userModel->telephone ?? '—',
-                'status' => 'active',
-                'last_login' => $userModel->last_login_at ? $userModel->last_login_at->format('Y-m-d H:i') : '—',
-                'notify_new_orders' => $userModel->notify_new_orders ?? true,
-                'require_password_change' => $userModel->require_password_change ?? false,
-                'is_real' => true, 
+                'user_id'                => $hasUserId ? $model->user_id : (string) $model->id,
+                'name'                   => $model->name,
+                'department_key'         => $model->department,
+                'authority'              => $model->role?->name ?? $model->role_id,
+                'email'                  => $model->email,
+                'phone'                  => $model->telephone ?? '—',
+                'status'                 => 'active',
+                'last_login'             => $model->last_login_at ? $model->last_login_at->format('Y-m-d H:i') : '—',
+                'notify_new_orders'      => $model->notify_new_orders ?? true,
+                'require_password_change'=> $model->require_password_change ?? false,
+                'is_real'                => true,
             ];
         }
 
         $stored = $this->storedUsers($request);
         if (isset($stored[$userId])) {
-            $user = $stored[$userId];
-
-            $user['department_key'] = $user['department_key'] ?? null;
-            $user['notify_new_orders'] = $user['notify_new_orders'] ?? true;
-            $user['require_password_change'] = $user['require_password_change'] ?? false;
-            $user['is_real'] = false;
-
-            return $user;
+            $u = $stored[$userId];
+            $u['department_key']         = $u['department_key']         ?? null;
+            $u['notify_new_orders']      = $u['notify_new_orders']      ?? true;
+            $u['require_password_change']= $u['require_password_change']?? false;
+            $u['is_real']                = false;
+            return $u;
         }
 
         $deleted = array_flip($this->deletedUserIds($request));
-        if (isset($deleted[$userId])) {
-            return null;
-        }
+        if (isset($deleted[$userId])) return null;
 
-        foreach ($this->demoUsers() as $user) {
-            if ($user['user_id'] === $userId) {
-                $user['department_key'] = null;
-                $user['notify_new_orders'] = true;
-                $user['require_password_change'] = false;
-                $user['is_real'] = false;
-
-                return $user;
+        foreach ($this->demoUsers() as $u) {
+            if ($u['user_id'] === $userId) {
+                $u['department_key']          = null;
+                $u['notify_new_orders']       = true;
+                $u['require_password_change'] = false;
+                $u['is_real']                 = false;
+                return $u;
             }
         }
 
@@ -343,66 +319,12 @@ class UserController extends Controller
     private function demoUsers(): array
     {
         return [
-            [
-                'user_id' => 'USR-1001',
-                'name' => '山田 太郎',
-                'department' => '営業統括部',
-                'authority' => 'admin',
-                'email' => 'taro.yamada@example.com',
-                'phone' => '090-1234-5678',
-                'status' => 'active',
-                'last_login' => '2024-04-18 09:42',
-            ],
-            [
-                'user_id' => 'USR-1002',
-                'name' => '佐藤 花',
-                'department' => '商品開発部',
-                'authority' => 'editor',
-                'email' => 'hana.sato@example.com',
-                'phone' => '080-9876-5432',
-                'status' => 'active',
-                'last_login' => '2024-04-18 08:15',
-            ],
-            [
-                'user_id' => 'USR-1003',
-                'name' => 'Michael Chen',
-                'department' => 'International Sales',
-                'authority' => 'viewer',
-                'email' => 'michael.chen@example.com',
-                'phone' => '070-3456-7890',
-                'status' => 'inactive',
-                'last_login' => '2024-04-12 17:28',
-            ],
-            [
-                'user_id' => 'USR-1004',
-                'name' => '鈴木 健',
-                'department' => '物流管理部',
-                'authority' => 'editor',
-                'email' => 'ken.suzuki@example.com',
-                'phone' => '090-2468-1357',
-                'status' => 'active',
-                'last_login' => '2024-04-17 19:03',
-            ],
-            [
-                'user_id' => 'USR-1005',
-                'name' => 'Amanda Reyes',
-                'department' => 'Customer Success',
-                'authority' => 'viewer',
-                'email' => 'amanda.reyes@example.com',
-                'phone' => '080-1122-3344',
-                'status' => 'suspended',
-                'last_login' => '2024-03-29 11:52',
-            ],
-            [
-                'user_id' => 'USR-1006',
-                'name' => '高橋 さくら',
-                'department' => '経理部',
-                'authority' => 'admin',
-                'email' => 'sakura.takahashi@example.com',
-                'phone' => '070-9988-7766',
-                'status' => 'active',
-                'last_login' => '2024-04-18 07:55',
-            ],
+            ['user_id'=>'USR-1001','name'=>'山田 太郎','department'=>'営業統括部','authority'=>'admin','email'=>'taro.yamada@example.com','phone'=>'090-1234-5678','status'=>'active','last_login'=>'2024-04-18 09:42'],
+            ['user_id'=>'USR-1002','name'=>'佐藤 花','department'=>'商品開発部','authority'=>'editor','email'=>'hana.sato@example.com','phone'=>'080-9876-5432','status'=>'active','last_login'=>'2024-04-18 08:15'],
+            ['user_id'=>'USR-1003','name'=>'Michael Chen','department'=>'International Sales','authority'=>'viewer','email'=>'michael.chen@example.com','phone'=>'070-3456-7890','status'=>'inactive','last_login'=>'2024-04-12 17:28'],
+            ['user_id'=>'USR-1004','name'=>'鈴木 健','department'=>'物流管理部','authority'=>'editor','email'=>'ken.suzuki@example.com','phone'=>'090-2468-1357','status'=>'active','last_login'=>'2024-04-17 19:03'],
+            ['user_id'=>'USR-1005','name'=>'Amanda Reyes','department'=>'Customer Success','authority'=>'viewer','email'=>'amanda.reyes@example.com','phone'=>'080-1122-3344','status'=>'suspended','last_login'=>'2024-03-29 11:52'],
+            ['user_id'=>'USR-1006','name'=>'高橋 さくら','department'=>'経理部','authority'=>'admin','email'=>'sakura.takahashi@example.com','phone'=>'070-9988-7766','status'=>'active','last_login'=>'2024-04-18 07:55'],
         ];
     }
 }
