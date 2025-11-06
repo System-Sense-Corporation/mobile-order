@@ -147,7 +147,10 @@ class UserController extends Controller
      */
     private function nextUserId(): string
     {
-        $latestUser = User::orderBy('user_id', 'desc')->first();
+        // --- VVVV พี่โดนัทแก้โค้ดตรงนี้ VVVV ---
+        // (ให้มันไปหา 'เลขที่' (ID) ล่าสุด... จาก "DB จริง" ... ไม่ใช่จาก Session)
+        // (พี่เพิ่ม ->whereNotNull('user_id') ... เพื่อ "ข้าม" (Skip) ... ไอ้ User ที่พัง)
+        $latestUser = User::whereNotNull('user_id')->orderBy('user_id', 'desc')->first();
         $max = 0;
 
         if ($latestUser && preg_match('/USR-(\d+)/', $latestUser->user_id, $matches)) {
@@ -170,8 +173,11 @@ class UserController extends Controller
      */
     private function allUsers(Request $request): array
     {
+        // --- VVVV พี่โดนัทแก้โค้ดตรงนี้ VVVV ---
+        
         // 1. ดึง User "ตัวจริง" (จาก DB) มาทั้งหมด
-        $dbUsers = User::all()->map(function ($user) {
+        //    (พี่เพิ่ม ->whereNotNull('user_id') ... เพื่อ "กรอง" (Filter) ... ไอ้ User ที่พัง (user_id = NULL) ... ทิ้งไป!)
+        $dbUsers = User::whereNotNull('user_id')->get()->map(function ($user) {
             return [
                 'user_id' => $user->user_id,
                 'name' => $user->name,
@@ -204,7 +210,6 @@ class UserController extends Controller
             if (isset($deleted[$user['user_id']])) {
                 continue;
             }
-            // FIX 2: แก้ไขตรงนี้
             if (isset($stored[$user['user_id']])) { 
                 $demoUsers[] = $stored[$user['user_id']];
                 unset($stored[$user['user_id']]);
