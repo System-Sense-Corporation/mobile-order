@@ -1,37 +1,45 @@
 @extends('layouts.app')
 
 @php
-    // --- safe helpers ---
-    $roles = (array) trans('messages.admin_users.roles');
-    $deptOpts = (array) data_get(trans('messages.admin_users.form.department.options'), null, []);
+    use Illuminate\Support\Facades\Route as RouteFac;
 
-    $isEdit = isset($user) && $user !== null;
+    // --- safe helpers ---
+    $roles     = (array) trans('messages.admin_users.roles');
+    $deptOpts  = (array) data_get(trans('messages.admin_users.form.department.options'), null, []);
+
+    $isEdit    = isset($user) && $user !== null;
 
     // รับได้ทั้ง user_id (USR-####) หรือ id ตัวเลข
     $routeParam = $isEdit
         ? ($user['user_id'] ?? ($user['id'] ?? null))
         : null;
 
-    $pageTitle = $isEdit
-        ? __('messages.admin_users.edit.title')
-        : __('messages.admin_users.create.title');
+    $pageTitle       = $isEdit ? __('messages.admin_users.edit.title')   : __('messages.admin_users.create.title');
+    $pageDescription = $isEdit ? __('messages.admin_users.edit.description') : __('messages.admin_users.create.description');
 
-    $pageDescription = $isEdit
-        ? __('messages.admin_users.edit.description')
-        : __('messages.admin_users.create.description');
+    // สร้าง action URL แบบกันพลาด (เช็คว่ามี route จริงไหม)
+    if ($isEdit) {
+        if ($routeParam && RouteFac::has('admin.users.update')) {
+            $formActionUrl = route('admin.users.update', $routeParam);
+        } else {
+            // fallback (ไม่งั้นกดเซฟจะ 404)
+            $formActionUrl = url('/admin/users/' . urlencode((string) $routeParam));
+        }
+    } else {
+        $formActionUrl = RouteFac::has('admin.users.store')
+            ? route('admin.users.store')
+            : url('/admin/users');
+    }
 
-    $formAction = $isEdit
-        ? route('admin.users.update', $routeParam)
-        : route('admin.users.store');
+    // phone + toggles
+    $initialPhone           = $isEdit && isset($user['phone']) && $user['phone'] !== '—' ? $user['phone'] : '';
+    $phoneValue             = old('phone', $initialPhone);
+    $notifyNewOrders        = (bool) old('notify_new_orders', $user['notify_new_orders'] ?? true);
+    $requirePasswordChange  = (bool) old('require_password_change', $user['require_password_change'] ?? false);
 
-    $initialPhone = $isEdit && isset($user['phone']) && $user['phone'] !== '—' ? $user['phone'] : '';
-    $phoneValue = old('phone', $initialPhone);
-
-    $notifyNewOrders = (bool) old('notify_new_orders', $user['notify_new_orders'] ?? true);
-    $requirePasswordChange = (bool) old('require_password_change', $user['require_password_change'] ?? false);
-
-    $selectedDeptKey = old('department', $user['department_key'] ?? null);
-    $selectedAuthority = old('authority', $user['authority'] ?? 'editor');
+    // selects
+    $selectedDeptKey    = old('department', $user['department_key'] ?? null);
+    $selectedAuthority  = old('authority',  $user['authority'] ?? 'editor');
 @endphp
 
 @section('title', __('messages.app.name') . ' - ' . $pageTitle)
@@ -53,7 +61,7 @@
         @endif
 
         <form
-            action="{{ $formAction }}"
+            action="{{ $formActionUrl }}"
             method="POST"
             class="space-y-6 rounded-lg bg-white p-6 shadow-sm ring-1 ring-black/5"
             x-data="{ submitting:false }"
@@ -67,32 +75,24 @@
             <div class="grid gap-6 md:grid-cols-2">
                 <div>
                     <label for="name" class="flex items-center gap-1 text-sm font-medium text-black/80">
-                        {{ __('messages.admin_users.form.name.label') }}
-                        <span class="text-red-500">*</span>
+                        {{ __('messages.admin_users.form.name.label') }} <span class="text-red-500">*</span>
                     </label>
                     <input
-                        type="text"
-                        id="name"
-                        name="name"
+                        id="name" name="name" type="text" required
                         value="{{ old('name', $user['name'] ?? '') }}"
-                        required
-                        class="form-input mt-2 w-full rounded border border-black/10 bg-white px-3 py-2 text-sm text-black shadow-none focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/40"
+                        class="form-input mt-2 w-full rounded border border-black/10 bg-white px-3 py-2 text-sm text-black focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/40"
                     >
                     @error('name') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
                 </div>
 
                 <div>
                     <label for="email" class="flex items-center gap-1 text-sm font-medium text-black/80">
-                        {{ __('messages.admin_users.form.email.label') }}
-                        <span class="text-red-500">*</span>
+                        {{ __('messages.admin_users.form.email.label') }} <span class="text-red-500">*</span>
                     </label>
                     <input
-                        type="email"
-                        id="email"
-                        name="email"
+                        id="email" name="email" type="email" required
                         value="{{ old('email', $user['email'] ?? '') }}"
-                        required
-                        class="form-input mt-2 w-full rounded border border-black/10 bg-white px-3 py-2 text-sm text-black shadow-none focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/40"
+                        class="form-input mt-2 w-full rounded border border-black/10 bg-white px-3 py-2 text-sm text-black focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/40"
                     >
                     @error('email') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
                 </div>
@@ -102,26 +102,21 @@
                         {{ __('messages.admin_users.form.phone.label') }}
                     </label>
                     <input
-                        type="tel"
-                        id="phone"
-                        name="phone"
+                        id="phone" name="phone" type="tel"
                         value="{{ $phoneValue }}"
-                        class="form-input mt-2 w-full rounded border border-black/10 bg-white px-3 py-2 text-sm text-black shadow-none focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/40"
                         placeholder="{{ __('messages.admin_users.form.phone.placeholder') }}"
+                        class="form-input mt-2 w-full rounded border border-black/10 bg-white px-3 py-2 text-sm text-black focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/40"
                     >
                     @error('phone') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
                 </div>
 
                 <div>
                     <label for="department" class="flex items-center gap-1 text-sm font-medium text-black/80">
-                        {{ __('messages.admin_users.form.department.label') }}
-                        <span class="text-red-500">*</span>
+                        {{ __('messages.admin_users.form.department.label') }} <span class="text-red-500">*</span>
                     </label>
                     <select
-                        id="department"
-                        name="department"
-                        required
-                        class="form-select mt-2 w-full rounded border border-black/10 bg-white px-3 py-2 text-sm text-black shadow-none focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/40"
+                        id="department" name="department" required
+                        class="form-select mt-2 w-full rounded border border-black/10 bg-white px-3 py-2 text-sm text-black focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/40"
                     >
                         <option value="" disabled @selected(! $selectedDeptKey)>{{ __('messages.admin_users.form.department.placeholder') }}</option>
                         @foreach ($deptOpts as $value => $label)
@@ -140,20 +135,13 @@
                     @foreach ($roles as $value => $label)
                         <label class="flex items-start gap-2 rounded border border-black/10 p-3 text-sm text-black/80">
                             <input
-                                type="radio"
-                                name="authority"
-                                value="{{ $value }}"
+                                type="radio" name="authority" value="{{ $value }}" required
                                 @checked($selectedAuthority === $value)
-                                required
                                 class="mt-1 h-4 w-4 border-black/30 text-accent focus:ring-accent"
                             >
                             <span>
                                 <span class="font-medium text-black/90">{{ $label }}</span>
-                                <span class="block text-xs text-black/60">
-                                    {{ __(
-                                        'messages.admin_users.role_descriptions.' . $value
-                                    ) }}
-                                </span>
+                                <span class="block text-xs text-black/60">{{ __('messages.admin_users.role_descriptions.' . $value) }}</span>
                             </span>
                         </label>
                     @endforeach
@@ -162,11 +150,11 @@
             </div>
 
             <div class="grid gap-4 md:grid-cols-2">
+                {{-- ส่งค่า 0 เมื่อไม่ได้ติ๊ก --}}
+                <input type="hidden" name="notify_new_orders" value="0">
                 <label class="flex items-start gap-3 rounded border border-black/10 bg-black/2 p-4 text-sm text-black/80">
                     <input
-                        type="checkbox"
-                        name="notify_new_orders"
-                        value="1"
+                        type="checkbox" name="notify_new_orders" value="1"
                         @checked($notifyNewOrders)
                         class="mt-1 h-4 w-4 rounded border-black/30 text-accent focus:ring-accent"
                     >
@@ -176,11 +164,11 @@
                     </span>
                 </label>
 
+                {{-- ส่งค่า 0 เมื่อไม่ได้ติ๊ก --}}
+                <input type="hidden" name="require_password_change" value="0">
                 <label class="flex items-start gap-3 rounded border border-black/10 bg-black/2 p-4 text-sm text-black/80">
                     <input
-                        type="checkbox"
-                        name="require_password_change"
-                        value="1"
+                        type="checkbox" name="require_password_change" value="1"
                         @checked($requirePasswordChange)
                         class="mt-1 h-4 w-4 rounded border-black/30 text-accent focus:ring-accent"
                     >
@@ -195,16 +183,12 @@
                 <div>
                     <label for="password" class="flex items-center gap-1 text-sm font-medium text-black/80">
                         {{ __('messages.admin_users.form.password.label') }}
-                        @unless ($isEdit)
-                            <span class="text-red-500">*</span>
-                        @endunless
+                        @unless ($isEdit) <span class="text-red-500">*</span> @endunless
                     </label>
                     <input
-                        type="password"
-                        id="password"
-                        name="password"
+                        id="password" name="password" type="password"
                         @unless ($isEdit) required @endunless
-                        class="form-input mt-2 w-full rounded border border-black/10 bg-white px-3 py-2 text-sm text-black shadow-none focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/40"
+                        class="form-input mt-2 w-full rounded border border-black/10 bg-white px-3 py-2 text-sm text-black focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/40"
                         placeholder="{{ __('messages.admin_users.form.password.placeholder') }}"
                     >
                     @error('password') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
@@ -213,33 +197,25 @@
                 <div>
                     <label for="password_confirmation" class="flex items-center gap-1 text-sm font-medium text-black/80">
                         {{ __('messages.admin_users.form.password_confirmation.label') }}
-                        @unless ($isEdit)
-                            <span class="text-red-500">*</span>
-                        @endunless
+                        @unless ($isEdit) <span class="text-red-500">*</span> @endunless
                     </label>
                     <input
-                        type="password"
-                        id="password_confirmation"
-                        name="password_confirmation"
+                        id="password_confirmation" name="password_confirmation" type="password"
                         @unless ($isEdit) required @endunless
-                        class="form-input mt-2 w-full rounded border border-black/10 bg-white px-3 py-2 text-sm text-black shadow-none focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/40"
+                        class="form-input mt-2 w-full rounded border border-black/10 bg-white px-3 py-2 text-sm text-black focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/40"
                         placeholder="{{ __('messages.admin_users.form.password_confirmation.placeholder') }}"
                     >
                 </div>
             </div>
 
             <div class="flex items-center justify-end gap-3">
-                <a
-                    href="{{ route('admin.users.index') }}"
-                    class="inline-flex items-center justify-center rounded border border-black/20 px-4 py-2 text-sm font-semibold text-black/70 transition hover:bg-black/5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent/40"
-                >
+                <a href="{{ route('admin.users.index') }}"
+                   class="inline-flex items-center justify-center rounded border border-black/20 px-4 py-2 text-sm font-semibold text-black/70 transition hover:bg-black/5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent/40">
                     {{ __('messages.admin_users.form.cancel_button') }}
                 </a>
-                <button
-                    type="submit"
-                    :disabled="submitting"
-                    class="inline-flex items-center justify-center rounded bg-accent px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-accent/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent/70 disabled:opacity-60"
-                >
+                <button type="submit"
+                        :disabled="submitting"
+                        class="inline-flex items-center justify-center rounded bg-accent px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-accent/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent/70 disabled:opacity-60">
                     {{ $isEdit ? __('messages.admin_users.form.submit_button_update') : __('messages.admin_users.form.submit_button') }}
                 </button>
             </div>
