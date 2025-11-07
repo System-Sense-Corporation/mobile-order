@@ -194,88 +194,104 @@ return [
             ],
         ],
     ],
-    'customers' => [
-        'title' => 'Customer Master',
-        'description' => 'Manage client contact information and internal notes.',
-        'contact_label' => 'Contact',
-        'contact_person' => 'Contact person',
-        'notes_label' => 'Notes',
-        'notes' => [
-            'wave' => 'Deliver every morning at 8:00',
-            'shiosai' => 'Prefers premium white fish',
-            'blue_sands' => 'Places bulk orders regularly',
+'customers' => [
+    'title' => 'Customer Master',
+    'description' => 'Manage client contact information and internal notes.',
+    'contact_label' => 'Contact',
+    'contact_person' => 'Contact Person',
+    'internal_note_label' => 'Internal Note',
+    'notes_label' => 'Notes',
+    'notes' => [
+        'wave' => 'Deliver every morning at 8:00',
+        'shiosai' => 'Prefers premium white fish',
+        'blue_sands' => 'Places bulk orders regularly',
+    ],
+    'demo_notice' => 'Sample customer data is shown for preview only.',
+
+    'table' => [
+        'customer' => 'Customer',
+        'contact_person' => 'Contact Person',
+        'contact' => 'Contact',
+        'internal_note' => 'Internal Note',
+        'actions' => 'Actions',
+    ],
+
+    'actions' => [
+        'create' => 'Add customer',
+        'create_short' => 'Add one',
+        'edit' => 'Edit',
+        'delete' => 'Delete',
+        'update' => 'Save changes',
+        'confirm_delete' => 'Are you sure you want to delete ":name"? This action cannot be undone.',
+    ],
+
+    'empty' => [
+        'title' => 'No customers registered yet',
+        'description' => 'Start by adding a customer using the button above.',
+    ],
+
+    'flash' => [
+        'saved' => 'Customer ":name" was saved successfully.',
+        'updated' => 'Customer ":name" was updated successfully.',
+        'deleted' => 'Customer ":name" was deleted successfully.',
+    ],
+
+    'form' => [
+        'title' => 'Customer details',
+        'description' => 'Review and update registration details for this customer.',
+        'status' => [
+            'editing' => 'Editing draft',
+            'creating' => 'New customer',
         ],
-        'demo_notice' => 'Sample customer data is shown for preview only.',
-        'actions' => [
-            'create' => 'Add customer',
-            'edit' => 'Edit',
-            'delete' => 'Delete',
-            'update' => 'Save changes',
-            'confirm_delete' => 'Are you sure you want to delete ":name"? This action cannot be undone.',
+        'fields' => [
+            'name' => 'Customer name',
+            'contact' => 'Contact information',
+            'person' => 'Primary contact person',
+            'note' => 'Internal note',
         ],
-        'empty' => [
-            'title' => 'No customers registered yet',
-            'description' => 'Start by adding a customer using the button above.',
+        'placeholders' => [
+            'name' => 'Enter customer name',
+            'contact' => 'Enter phone number or email',
+            'person' => 'Enter contact person',
+            'note' => 'Add reminders for deliveries, preferences, etc.',
         ],
-        'flash' => [
-            'saved' => 'Customer ":name" was saved successfully.',
-            'updated' => 'Customer ":name" was updated successfully.',
-            'deleted' => 'Customer ":name" was deleted successfully.',
+        'buttons' => [
+            'cancel' => 'Cancel',
+            'save' => 'Save customer',
+            'update' => 'Update customer',
         ],
-        'form' => [
-            'title' => 'Customer details',
-            'description' => 'Review and update registration details for this customer.',
-            'status' => [
-                'editing' => 'Editing draft',
-                'creating' => 'New customer',
+        'sidebar' => [
+            'title' => 'Registration summary',
+            'labels' => [
+                'customer_code' => 'Customer code',
+                'created_at' => 'Created on',
+                'last_updated' => 'Last updated',
             ],
-            'fields' => [
-                'name' => 'Customer name',
-                'contact' => 'Contact information',
-                'person' => 'Primary contact person',
-                'note' => 'Internal note',
-            ],
-            'placeholders' => [
-                'name' => 'Enter customer name',
-                'contact' => 'Enter phone number or email',
-                'person' => 'Enter contact person',
-                'note' => 'Add reminders for deliveries, preferences, etc.',
-            ],
-            'buttons' => [
-                'cancel' => 'Cancel',
-                'save' => 'Save customer',
-                'update' => 'Update customer',
-            ],
-            'sidebar' => [
-                'title' => 'Registration summary',
-                'labels' => [
-                    'customer_code' => 'Customer code',
-                    'created_at' => 'Created on',
-                    'last_updated' => 'Last updated',
-                ],
-                'note' => 'Use this form to keep customer contact details consistent with the master list.',
-            ],
-        ],
-        'validation' => [
-            'name' => [
-                'required' => 'Please enter a customer name.',
-                'string' => 'Customer name must be text.',
-                'max' => 'Customer name may not be greater than :max characters.',
-            ],
-            'contact' => [
-                'string' => 'Contact information must be text.',
-                'max' => 'Contact information may not be greater than :max characters.',
-            ],
-            'contact_person' => [
-                'string' => 'Contact person must be text.',
-                'max' => 'Contact person may not be greater than :max characters.',
-            ],
-            'notes' => [
-                'string' => 'Notes must be text.',
-                'max' => 'Notes may not be greater than :max characters.',
-            ],
+            'note' => 'Use this form to keep customer contact details consistent with the master list.',
         ],
     ],
+
+    'validation' => [
+        'name' => [
+            'required' => 'Please enter a customer name.',
+            'string' => 'Customer name must be text.',
+            'max' => 'Customer name may not be greater than :max characters.',
+        ],
+        'contact' => [
+            'string' => 'Contact information must be text.',
+            'max' => 'Contact information may not be greater than :max characters.',
+        ],
+        'contact_person' => [
+            'string' => 'Contact person must be text.',
+            'max' => 'Contact person may not be greater than :max characters.',
+        ],
+        'notes' => [
+            'string' => 'Notes must be text.',
+            'max' => 'Notes may not be greater than :max characters.',
+        ],
+    ],
+],
+
     'admin_users' => [
         'title' => 'User Management',
         'description' => 'Manage staff accounts and their permissions.',

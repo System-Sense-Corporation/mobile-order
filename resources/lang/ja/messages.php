@@ -194,88 +194,104 @@ return [
             ],
         ],
     ],
-    'customers' => [
-        'title' => '顧客マスタ',
-        'description' => '取引先の連絡先情報と社内メモを管理します。',
-        'contact_label' => '連絡先',
-        'contact_person' => '担当',
-        'notes_label' => 'メモ',
-        'notes' => [
-            'wave' => '毎朝8時納品',
-            'shiosai' => '高級白身魚を希望',
-            'blue_sands' => '大量注文あり',
+'customers' => [
+    'title' => '顧客マスター',
+    'description' => '顧客の連絡先情報と社内メモを管理します。',
+    'contact_label' => '連絡先',
+    'contact_person' => '担当者',
+    'internal_note_label' => '社内メモ',
+    'notes_label' => 'メモ',
+    'notes' => [
+        'wave' => '毎朝8時に配達',
+        'shiosai' => '高品質の白身魚を希望',
+        'blue_sands' => '定期的に大量注文あり',
+    ],
+    'demo_notice' => 'このデータはサンプルです。',
+
+    'table' => [
+        'customer' => '顧客名',
+        'contact_person' => '担当者',
+        'contact' => '連絡先',
+        'internal_note' => '社内メモ',
+        'actions' => '操作',
+    ],
+
+    'actions' => [
+        'create' => '顧客を追加',
+        'create_short' => '追加する',
+        'edit' => '編集',
+        'delete' => '削除',
+        'update' => '変更を保存',
+        'confirm_delete' => '顧客「:name」を削除しますか？ この操作は元に戻せません。',
+    ],
+
+    'empty' => [
+        'title' => '顧客が登録されていません',
+        'description' => '右上のボタンから顧客を追加できます。',
+    ],
+
+    'flash' => [
+        'saved' => '顧客「:name」を保存しました。',
+        'updated' => '顧客「:name」を更新しました。',
+        'deleted' => '顧客「:name」を削除しました。',
+    ],
+
+    'form' => [
+        'title' => '顧客情報',
+        'description' => '顧客の登録内容を確認・更新します。',
+        'status' => [
+            'editing' => '編集中',
+            'creating' => '新規顧客',
         ],
-        'demo_notice' => 'プレビュー用にサンプルの顧客データを表示しています。',
-        'actions' => [
-            'create' => '顧客を追加',
-            'edit' => '編集',
-            'delete' => '削除',
-            'update' => '変更を保存',
-            'confirm_delete' => '顧客「:name」を削除しますか？この操作は元に戻せません。',
+        'fields' => [
+            'name' => '顧客名',
+            'contact' => '連絡先',
+            'person' => '担当者',
+            'note' => '社内メモ',
         ],
-        'empty' => [
-            'title' => '登録されている顧客がありません',
-            'description' => '右上のボタンから顧客を登録してください。',
+        'placeholders' => [
+            'name' => '顧客名を入力してください',
+            'contact' => '電話番号またはメールアドレスを入力してください',
+            'person' => '担当者名を入力してください',
+            'note' => '納品・希望事項などを入力してください',
         ],
-        'flash' => [
-            'saved' => '顧客「:name」を保存しました。',
-            'updated' => '顧客「:name」を更新しました。',
-            'deleted' => '顧客「:name」を削除しました。',
+        'buttons' => [
+            'cancel' => 'キャンセル',
+            'save' => '顧客を保存',
+            'update' => '顧客を更新',
         ],
-        'form' => [
-            'title' => '顧客情報の編集',
-            'description' => 'この顧客の登録内容を確認し、必要に応じて更新します。',
-            'status' => [
-                'editing' => '編集中',
-                'creating' => '新規登録',
+        'sidebar' => [
+            'title' => '登録概要',
+            'labels' => [
+                'customer_code' => '顧客コード',
+                'created_at' => '作成日',
+                'last_updated' => '最終更新日',
             ],
-            'fields' => [
-                'name' => '顧客名',
-                'contact' => '連絡先',
-                'person' => '担当者名',
-                'note' => '社内メモ',
-            ],
-            'placeholders' => [
-                'name' => '顧客名を入力してください',
-                'contact' => '電話番号やメールアドレスを入力してください',
-                'person' => '担当者名を入力してください',
-                'note' => '配送時間や注意事項などを記入してください',
-            ],
-            'buttons' => [
-                'cancel' => 'キャンセル',
-                'save' => '顧客情報を保存',
-                'update' => '顧客情報を更新',
-            ],
-            'sidebar' => [
-                'title' => '登録サマリー',
-                'labels' => [
-                    'customer_code' => '顧客コード',
-                    'created_at' => '登録日',
-                    'last_updated' => '最終更新',
-                ],
-                'note' => '顧客一覧と同じ内容になるよう、このフォームで連絡先情報を整備してください。',
-            ],
-        ],
-        'validation' => [
-            'name' => [
-                'required' => '顧客名を入力してください。',
-                'string' => '顧客名は文字列で入力してください。',
-                'max' => '顧客名は:max文字以内で入力してください。',
-            ],
-            'contact' => [
-                'string' => '連絡先は文字列で入力してください。',
-                'max' => '連絡先は:max文字以内で入力してください。',
-            ],
-            'contact_person' => [
-                'string' => '担当者名は文字列で入力してください。',
-                'max' => '担当者名は:max文字以内で入力してください。',
-            ],
-            'notes' => [
-                'string' => 'メモは文字列で入力してください。',
-                'max' => 'メモは:max文字以内で入力してください。',
-            ],
+            'note' => 'このフォームを使用して、顧客情報をマスターリストと一致させます。',
         ],
     ],
+
+    'validation' => [
+        'name' => [
+            'required' => '顧客名を入力してください。',
+            'string' => '顧客名は文字列である必要があります。',
+            'max' => '顧客名は:max文字以内で入力してください。',
+        ],
+        'contact' => [
+            'string' => '連絡先は文字列である必要があります。',
+            'max' => '連絡先は:max文字以内で入力してください。',
+        ],
+        'contact_person' => [
+            'string' => '担当者名は文字列である必要があります。',
+            'max' => '担当者名は:max文字以内で入力してください。',
+        ],
+        'notes' => [
+            'string' => 'メモは文字列である必要があります。',
+            'max' => 'メモは:max文字以内で入力してください。',
+        ],
+    ],
+],
+
     'admin_users' => [
         'title' => 'ユーザー管理',
         'description' => 'スタッフアカウントと権限を管理します。',
