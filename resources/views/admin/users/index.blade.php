@@ -67,7 +67,8 @@
                 </form>
 
                 {{-- 3. Create Button (อยู่นอกฟอร์ม) --}}
-                <a href="{{ route('admin.users.form') }}" class="inline-flex items-center gap-2 rounded-full bg-accent text-white px-4 py-2 text-xs font-semibold shadow-sm hover:bg-accent/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent whitespace-nowrap">
+                {{-- ▼▼▼ พี่โดนัทแก้บรรทัดนี้ให้แล้วจ้า! ▼▼▼ --}}
+                <a href="{{ route('admin.users.create') }}" class="inline-flex items-center gap-2 rounded-full bg-accent text-white px-4 py-2 text-xs font-semibold shadow-sm hover:bg-accent/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent whitespace-nowrap">
                     {{-- plus icon --}}
                     <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M10 4v12M4 10h12"/></svg>
                     <span>{{ __('messages.admin_users.actions.create') }}</span>
@@ -98,7 +99,8 @@
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-black/5">
-                            @forelse ($users as $index => $user)
+                            {{-- พี่แก้ @forelse ($users...) ให้เป็น @foreach ($users...) เหมือนโค้ดที่ชนกันตอนแรกนะ --}}
+                            @foreach ($users as $index => $user)
                                 <tr class="hover:bg-black/5">
                                     {{-- 1. รหัสผู้ใช้ --}}
                                     <td class="px-4 py-3 font-medium text-accent/90">{{ $user['user_id'] }}</td>
@@ -147,14 +149,7 @@
                                         </div>
                                     </td>
                                 </tr>
-                            @empty
-                                <tr>
-                                    {{-- (เหลือ 4 คอลัมน์) --}}
-                                    <td colspan="4" class="px-4 py-12 text-center text-black/50">
-                                        {{ __('messages.admin_users.empty') }}
-                                    </td>
-                                </tr>
-                            @endforelse
+                            @endforeach {{-- พี่แก้เป็น @foreach ให้เหมือนโค้ดที่ชนกันตอนแรกนะ --}}
                         </tbody>
                     </table>
                 </div>
@@ -162,7 +157,8 @@
 
             {{-- VVVV 3. พี่โดนัท "แก้" Mobile cards ให้ยุบเหมือนกัน VVVV --}}
             <ul class="divide-y divide-black/5 md:hidden">
-                @forelse ($users as $index => $user)
+                {{-- พี่แก้ @forelse ($users...) ให้เป็น @foreach ($users...) เหมือนโค้ดที่ชนกันตอนแรกนะ --}}
+                @foreach ($users as $index => $user)
                     <li class="p-4">
                         <div class="rounded-lg ring-1 ring-black/10 p-4">
                             <div class="flex items-start justify-between gap-3">
@@ -217,12 +213,7 @@
                             </div>
                         </div>
                     </li>
-                @empty
-                    {{-- (ข้อความ "ไม่พบ" สำหรับ Mobile) --}}
-                    <li class="px-4 py-12 text-center text-black/50">
-                        {{ __('messages.admin_users.empty') }}
-                    </li>
-                @endforelse
+                @endforeach {{-- พี่แก้เป็น @foreach ให้เหมือนโค้ดที่ชนกันตอนแรกนะ --}}
             </ul>
         </div>
     </div>
