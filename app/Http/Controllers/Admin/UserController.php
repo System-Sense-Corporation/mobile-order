@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Schema;
 use App\Models\User;
 use App\Models\Role;
+use Illuminate\Support\Facades\DB; // <-- พี่โดนัทเพิ่มบรรทัดนี้จากโค้ดของน้องหนิงนะ
 
 class UserController extends Controller
 {
@@ -182,51 +183,93 @@ class UserController extends Controller
     /** รวม Users จาก DB + Demo/Stored */
     private function allUsers(Request $request): array
     {
-        $hasUserId = Schema::hasColumn('users', 'user_id');
+        // VVVV ✨ นี่คือโค้ดใหม่ของน้องหนิงที่พี่เลือกมา VVVV
 
-        $query = User::with('role');
-        if ($hasUserId) {
-            $query->whereNotNull('user_id');
+        // 1. ดึง "ค่า" ที่ส่งมาจากฟอร์ม (Search และ Authority)
+        $search = $request->query('search');
+        $authority = $request->query('authority');
+
+        // --- 2. กรองข้อมูล "User จริง" (จาก DB) ---
+        $dbQuery = User::whereNotNull('user_id')->with('role');
+
+        // (เพิ่มโค้ดกรอง... ถ้ามี ?search=... ส่งมา)
+        if ($search) {
+            $dbQuery->where(function ($query) use ($search) {
+                $query->where('name', 'like', "%{$search}%")
+                      ->orWhere('email', 'like', "%{$search}%");
+                // (เราไม่ค้นหา 'department' ที่เป็นภาษาไทย... เพราะใน DB มันเก็บเป็น 'key' (sales))
+            });
         }
 
-        $dbUsers = $query->get()->map(function ($user) use ($hasUserId) {
+        // (เพิ่มโค้ดกรอง... ถ้ามี ?authority=... ส่งมา)
+        if ($authority) {
+            // (เราจะค้นหา "ชื่อ" (name) ...ในตาราง 'roles' ที่เราเชื่อม (join) ไว้)
+            $dbQuery->whereHas('role', function ($query) use ($authority) {
+                $query->where('name', $authority);
+            });
+        }
+
+        // (รัน DB Query... แล้วแปลงผลลัพธ์)
+        $dbUsers = $dbQuery->get()->map(function ($user) {
             return [
-                'user_id'    => $hasUserId ? $user->user_id : (string) $user->id,
-                'name'       => $user->name,
-                'department' => trans('messages.admin_users.form.department.options.' . ($user->department ?? '')) 
-                                ?? ($user->department ?? '—'),
-                'authority'  => $user->role?->name ?? $user->role_id,
-                'email'      => $user->email,
-                'phone'      => $user->telephone ?? '—',
-                'status'     => 'active',
+                'user_id' => $user->user_id,
+                'name' => $user->name,
+                'department' => trans('messages.admin_users.form.department.options.' . $user->department) ?? $user->department,
+                'authority' => $user->role?->name ?? $user->role_id, 
+                'email' => $user->email,
+                'phone' => $user->telephone ?? '—',
+                'status' => 'active', 
                 'last_login' => $user->last_login_at ? $user->last_login_at->format('Y-m-d H:i') : '—',
                 'is_real'    => true,
             ];
         })->toArray();
-
-        $stored  = $this->storedUsers($request);
+        
+        // --- 3. กรองข้อมูล "Demo User" (จาก Session) ---
+        $stored = $this->storedUsers($request);
         $deleted = array_flip($this->deletedUserIds($request));
-        $demo    = [];
+        $demo    = []; // <-- ใช้ $demo (จากโค้ดของน้องหนิง)
 
-        foreach ($this->demoUsers() as $u) {
-            $dup = false;
+        foreach ($this->demoUsers() as $u) { // <-- ใช้ $u (จากโค้ดของน้องหนิง)
+            $dup = false; // <-- ใช้ $dup (จากโค้ดของน้องหนิง)
             foreach ($dbUsers as $d) {
                 if ($d['email'] === $u['email'] || $d['user_id'] === $u['user_id']) {
                     $dup = true; break;
                 }
             }
-            if ($dup) continue;
-            if (isset($deleted[$u['user_id']])) continue;
+            if ($dup) continue; // <-- ใช้ $dup
+            
+            if (isset($deleted[$u['user_id']])) { // <-- ใช้ $u
+                continue;
+            }
 
-            if (isset($stored[$u['user_id']])) {
-                $demo[] = $stored[$u['user_id']];
-                unset($stored[$u['user_id']]);
+            // (เพิ่มโค้ดกรอง... ถ้ามี ?search=... ส่งมา)
+            if ($search) {
+                $searchLower = strtolower($search);
+                $nameMatch = str_contains(strtolower($u['name']), $searchLower); // <-- ใช้ $u
+                $emailMatch = str_contains(strtolower($u['email']), $searchLower); // <-- ใช้ $u
+                if (!$nameMatch && !$emailMatch) {
+                    continue; // (ถ้าไม่เจอ... ข้าม user นี้ไป)
+                }
+            }
+
+            // (เพิ่มโค้ดกรอง... ถ้ามี ?authority=... ส่งมา)
+            if ($authority) {
+                if (!isset($u['authority']) || $u['authority'] !== $authority) { // <-- ใช้ $u
+                    continue; // (ถ้าสิทธิ์ไม่ตรง... ข้าม user นี้ไป)
+                }
+            }
+
+            // (ถ้าผ่านหมด... ก็เก็บ user นี้ไว้)
+            if (isset($stored[$u['user_id']])) { // <-- ใช้ $u
+                $demo[] = $stored[$u['user_id']]; // <-- ใช้ $demo
+                unset($stored[$u['user_id']]); // <-- ใช้ $u
             } else {
-                $demo[] = $u;
+                $demo[] = $u; // <-- ใช้ $demo และ $u
             }
         }
 
-        return array_merge($dbUsers, $demo);
+        // 4. "รวมร่าง" (Merge) ... (ตอนนี้ user ทั้ง 2 กอง... ถูก "กรอง" (Filter) มาเรียบร้อยแล้ว)
+        return array_merge($dbUsers, $demo); // <-- ใช้ $demo
     }
 
     private function storedUsers(Request $request): array
@@ -276,6 +319,7 @@ class UserController extends Controller
 
         if ($model) {
             return [
+                // VVVV ✨ นี่คือโค้ดส่วนบน (HEAD) ที่พี่เลือกมา เพราะมันใช้ `$model` ถูกต้อง VVVV
                 'user_id'                => $hasUserId ? $model->user_id : (string) $model->id,
                 'name'                   => $model->name,
                 'department_key'         => $model->department,

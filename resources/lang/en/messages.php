@@ -302,6 +302,9 @@ return [
         ],
         'filters' => [
             'permission' => 'Filter by Authority',
+            // VVVV ✨ 1. พี่โดนัทเพิ่ม "Key" ที่ขาด... ให้ตรงนี้ VVVV
+            'all_permissions' => 'All Permissions', // <-- (Key ที่ dropdown ใช้อยู่)
+            'apply' => 'Filter', // (อันนี้ปุ่มเก่า... แต่เติมเผื่อไว้)
         ],
         'placeholders' => [
             'search' => 'Search by name, email, or department',
@@ -364,8 +367,8 @@ return [
                 'label' => 'Department',
                 'placeholder' => 'Select a department',
                 'options' => [
-                    // VVVVV พี่โดนัท "เพิ่ม" (Add) ... 'กุญแจ' (Key) 'admin' ... ที่มัน "ขาด" (Missing) ... ให้ตรงนี้น้า! VVVVV
-                    'admin' => 'Administrator', // (หรือ 'แอดมิน'... หรือ 'ผู้ดูแลระบบ'... ก็ได้ค่ะ!)
+                    // VVVV ✨ 2. พี่โดนัท "เพิ่ม" (Add) ... 'กุญแจ' (Key) 'admin' ... ที่มัน "ขาด" (Missing) ... ให้ตรงนี้น้า! VVVVV
+                    'admin' => 'Administrator',
                     // VVVVV ^^^^ VVVVV
                     'sales' => 'Sales',
                     'support' => 'Customer Support',

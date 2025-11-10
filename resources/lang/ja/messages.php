@@ -302,6 +302,9 @@ return [
         ],
         'filters' => [
             'permission' => '権限で絞り込む',
+            // VVVV ✨ 1. พี่โดนัทเพิ่ม "Key" ที่ขาด... ให้ตรงนี้ VVVV
+            'all_permissions' => 'すべての権限', // (Key ที่ dropdown ใช้อยู่)
+            'apply' => '絞り込む', // (อันนี้ปุ่มเก่า... แต่เติมเผื่อไว้)
         ],
         'placeholders' => [
             'search' => '氏名・メール・部署で検索',
@@ -364,6 +367,9 @@ return [
                 'label' => '部署',
                 'placeholder' => '部署を選択',
                 'options' => [
+                    // VVVV ✨ 2. พี่โดนัท "เพิ่ม" (Add) ... 'กุญแจ' (Key) 'admin' ... ที่มัน "ขาด" (Missing) ... ให้ตรงนี้น้า! VVVVV
+                    'admin' => '管理者', // (หรือ 'システム管理' ก็ได้ค่ะ)
+                    // VVVVV ^^^^ VVVVV
                     'sales' => '営業部',
                     'support' => 'カスタマーサポート部',
                     'logistics' => '物流部',
