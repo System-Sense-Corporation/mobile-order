@@ -34,8 +34,6 @@ Route::post('/settings/store', [SettingsController::class, 'store'])
  * Settings (ต้องไว้ข้างนอก permission เพื่อให้ admin เห็นแน่ ๆ)
  */
 Route::get('/settings', [SettingsController::class, 'index'])->name('settings');
-Route::post('/settings', [SettingsController::class, 'store'])->name('settings.store');
-
 
 
 /** Language switch */
