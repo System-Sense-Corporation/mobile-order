@@ -425,7 +425,7 @@ return [
     ],
         'buttons' => [
             'save' => 'Save',
-            'draft' => 'Save Draft',
+            'draft' => 'Save',
         ],
         'placeholders' => [
             'order_mail' => 'orders@example.com',

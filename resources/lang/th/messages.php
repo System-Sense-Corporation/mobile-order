@@ -422,7 +422,7 @@ return [
         ],
         'buttons' => [
             'save' => 'บันทึก',
-            'draft' => 'บันทึกร่าง',
+            'draft' => 'บันทึก',
         ],
         'placeholders' => [
             'order_mail' => 'orders@example.com',

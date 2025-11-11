@@ -425,7 +425,7 @@ return [
     ],
         'buttons' => [
             'save' => '保存',
-            'draft' => '下書き保存',
+            'draft' => '保存',
         ],
         'placeholders' => [
             'order_mail' => 'orders@example.com',

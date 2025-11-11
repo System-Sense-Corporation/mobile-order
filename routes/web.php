@@ -20,11 +20,23 @@ Route::middleware('guest')->group(function () {
     Route::post('/login', [AuthController::class, 'store'])->name('login.store');
 });
 
+
+Route::post('/settings/notification', [SettingsController::class, 'updateNotification'])
+    ->name('settings.notification.update');
+
+Route::post('/settings/system', [SettingsController::class, 'updateSystem'])
+    ->name('settings.system.update');
+
+Route::post('/settings/store', [SettingsController::class, 'store'])
+    ->name('settings.store');
+
 /**
  * Settings (ต้องไว้ข้างนอก permission เพื่อให้ admin เห็นแน่ ๆ)
  */
 Route::get('/settings', [SettingsController::class, 'index'])->name('settings');
 Route::post('/settings', [SettingsController::class, 'store'])->name('settings.store');
+
+
 
 /** Language switch */
 Route::get('/lang/{locale}', function ($locale) {
