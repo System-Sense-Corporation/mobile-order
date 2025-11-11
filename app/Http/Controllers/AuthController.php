@@ -19,27 +19,13 @@ class AuthController extends Controller
     {
         $remember = (bool) $request->boolean('remember');
 
-        if (! $request->filled('email') && ! $request->filled('password')) {
-            $user = User::query()->first();
-
-            if (! $user) {
-                return back()
-                    ->withErrors([
-                        'email' => __('messages.auth.failed'),
-                    ]);
-            }
-
-            Auth::login($user, $remember);
-            $request->session()->regenerate();
-
-            return redirect()->intended(route('home'));
-        }
-
+        // Server-side validation — ถ้าไม่ผ่าน จะ throw ValidationException และย้อนกลับอัตโนมัติ
         $credentials = $request->validate([
             'email' => ['required', 'email'],
-            'password' => ['required'],
+            'password' => ['required', 'string'],
         ]);
 
+        // พยายามล็อกอินด้วย credentials ที่ถูก validate แล้ว
         if (Auth::attempt($credentials, $remember)) {
             $request->session()->regenerate();
 
@@ -63,4 +49,3 @@ class AuthController extends Controller
         return redirect()->route('login');
     }
 }
-
