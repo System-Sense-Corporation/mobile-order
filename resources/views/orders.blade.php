@@ -108,6 +108,77 @@
                                 <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">{{ __('messages.orders.table.status') }}</th>
                                 <th class="px-6 py-3 text-right text-xs font-semibold uppercase tracking-wide text-slate-500">{{ __('messages.orders.table.actions') }}</th>
                             </tr>
+                            <tr class="hidden border-t border-slate-200 bg-slate-50 text-xs text-slate-500 md:table-row">
+                                <th class="px-6 py-3 align-top">
+                                    <div class="flex flex-col gap-2">
+                                        <label class="font-medium" for="filter-received-start-desktop">{{ __('messages.orders.filters.received_at.start_label') }}</label>
+                                        <input
+                                            id="filter-received-start-desktop"
+                                            type="date"
+                                            class="w-full rounded-lg border border-slate-200 px-2 py-1 text-sm text-slate-700 focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
+                                            data-filter-start
+                                        >
+                                        <label class="font-medium" for="filter-received-end-desktop">{{ __('messages.orders.filters.received_at.end_label') }}</label>
+                                        <input
+                                            id="filter-received-end-desktop"
+                                            type="date"
+                                            class="w-full rounded-lg border border-slate-200 px-2 py-1 text-sm text-slate-700 focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
+                                            data-filter-end
+                                        >
+                                    </div>
+                                </th>
+                                <th class="px-6 py-3 align-top">
+                                    <label class="sr-only" for="filter-customer-desktop">{{ __('messages.orders.filters.customer.title') }}</label>
+                                    <input
+                                        id="filter-customer-desktop"
+                                        type="text"
+                                        class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-700 focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
+                                        placeholder="{{ __('messages.orders.filters.customer.placeholder') }}"
+                                        data-filter-customer
+                                    >
+                                </th>
+                                <th class="px-6 py-3 align-top">
+                                    <label class="sr-only" for="filter-details-desktop">{{ __('messages.orders.filters.details.title') }}</label>
+                                    <input
+                                        id="filter-details-desktop"
+                                        type="text"
+                                        class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-700 focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
+                                        placeholder="{{ __('messages.orders.filters.details.placeholder') }}"
+                                        data-filter-details
+                                    >
+                                </th>
+                                <th class="px-6 py-3 align-top">
+                                    <fieldset class="space-y-2">
+                                        <legend class="font-medium">{{ __('messages.orders.filters.status.title') }}</legend>
+                                        @foreach ($statusLabels as $statusValue => $label)
+                                            <label class="flex items-center gap-2">
+                                                <input type="checkbox" value="{{ $statusValue }}" class="h-4 w-4 rounded border-slate-300 text-accent focus:ring-accent" data-filter-status>
+                                                <span>{{ $label }}</span>
+                                            </label>
+                                        @endforeach
+                                    </fieldset>
+                                </th>
+                                <th class="px-6 py-3 align-top text-right">
+                                    <fieldset class="flex flex-col items-end gap-2">
+                                        <legend class="sr-only">{{ __('messages.orders.filters.actions.title') }}</legend>
+                                        <label class="flex items-center gap-2 text-slate-600">
+                                            <input type="checkbox" value="status" class="h-4 w-4 rounded border-slate-300 text-accent focus:ring-accent" data-filter-action>
+                                            <span>{{ __('messages.orders.filters.actions.status') }}</span>
+                                        </label>
+                                        <label class="flex items-center gap-2 text-slate-600">
+                                            <input type="checkbox" value="edit" class="h-4 w-4 rounded border-slate-300 text-accent focus:ring-accent" data-filter-action>
+                                            <span>{{ __('messages.orders.filters.actions.edit') }}</span>
+                                        </label>
+                                        <label class="flex items-center gap-2 text-slate-600">
+                                            <input type="checkbox" value="delete" class="h-4 w-4 rounded border-slate-300 text-accent focus:ring-accent" data-filter-action>
+                                            <span>{{ __('messages.orders.filters.actions.delete') }}</span>
+                                        </label>
+                                        <button type="button" class="mt-2 inline-flex items-center gap-2 rounded-full border border-slate-200 px-3 py-1 text-xs font-semibold text-slate-600 hover:bg-slate-100" data-filter-reset>
+                                            {{ __('messages.orders.filters.reset') }}
+                                        </button>
+                                    </fieldset>
+                                </th>
+                            </tr>
                         </thead>
                         <tbody class="divide-y divide-slate-100 bg-white text-sm text-slate-700">
                             @foreach ($orders as $order)
@@ -117,7 +188,36 @@
                                     $statusKey  = $order->status ?? \App\Models\Order::STATUS_PENDING;
                                     $badgeClass = $statusClassMap[$statusKey] ?? $statusStyles['default'];
                                 @endphp
-                                <tr class="hover:bg-slate-50 align-top">
+                                @php
+                                    $filterReceivedAt = optional($timestamp)?->timezone(config('app.timezone'))->toIso8601String();
+                                    $filterCustomer   = mb_strtolower((string) ($order->customer?->name ?? $order->customer_name ?? ''));
+                                    $filterDetailsParts = [];
+                                    if ($order->product) {
+                                        $filterDetailsParts[] = $order->product->name;
+                                    } elseif (! empty($order->items)) {
+                                        $filterDetailsParts[] = $order->items;
+                                    }
+                                    if (! empty($order->quantity)) {
+                                        $filterDetailsParts[] = $order->quantity;
+                                    }
+                                    if (! empty($order->notes)) {
+                                        $filterDetailsParts[] = $order->notes;
+                                    }
+                                    if (! empty($order->delivery_date)) {
+                                        $filterDetailsParts[] = optional($order->delivery_date)?->format('Y-m-d');
+                                    }
+                                    $filterDetails = mb_strtolower(trim(collect($filterDetailsParts)->filter()->implode(' ')));
+                                    $filterActions = 'status,edit,delete';
+                                @endphp
+                                <tr
+                                    class="hover:bg-slate-50 align-top"
+                                    data-order-row
+                                    data-received-at="{{ $filterReceivedAt ?? '' }}"
+                                    data-customer="{{ e($filterCustomer) }}"
+                                    data-details="{{ e($filterDetails) }}"
+                                    data-status="{{ $statusKey }}"
+                                    data-actions="{{ $filterActions }}"
+                                >
                                     <td class="whitespace-nowrap px-6 py-4 text-sm font-medium text-slate-900 tabular-nums">{{ $createdAt }}</td>
                                     <td class="max-w-xs px-6 py-4 text-sm font-medium text-slate-900">
                                         {{ $order->customer?->name ?? $order->customer_name ?? '—' }}
@@ -196,6 +296,87 @@
                 </div>
             </div>
 
+            {{-- ===== Mobile filters ===== --}}
+            <div class="border-t border-slate-200 bg-slate-50 px-6 py-4 md:hidden">
+                <div class="space-y-4">
+                    <div class="grid grid-cols-1 gap-3">
+                        <div class="grid grid-cols-1 gap-2">
+                            <label class="text-xs font-semibold text-slate-600" for="filter-received-start-mobile">{{ __('messages.orders.filters.received_at.start_label') }}</label>
+                            <input
+                                id="filter-received-start-mobile"
+                                type="date"
+                                class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-700 focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
+                                data-filter-start
+                            >
+                        </div>
+                        <div class="grid grid-cols-1 gap-2">
+                            <label class="text-xs font-semibold text-slate-600" for="filter-received-end-mobile">{{ __('messages.orders.filters.received_at.end_label') }}</label>
+                            <input
+                                id="filter-received-end-mobile"
+                                type="date"
+                                class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-700 focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
+                                data-filter-end
+                            >
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 gap-3">
+                        <div>
+                            <label class="text-xs font-semibold text-slate-600" for="filter-customer-mobile">{{ __('messages.orders.filters.customer.title') }}</label>
+                            <input
+                                id="filter-customer-mobile"
+                                type="text"
+                                class="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-700 focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
+                                placeholder="{{ __('messages.orders.filters.customer.placeholder') }}"
+                                data-filter-customer
+                            >
+                        </div>
+                        <div>
+                            <label class="text-xs font-semibold text-slate-600" for="filter-details-mobile">{{ __('messages.orders.filters.details.title') }}</label>
+                            <input
+                                id="filter-details-mobile"
+                                type="text"
+                                class="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-700 focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
+                                placeholder="{{ __('messages.orders.filters.details.placeholder') }}"
+                                data-filter-details
+                            >
+                        </div>
+                    </div>
+                    <div>
+                        <span class="text-xs font-semibold text-slate-600">{{ __('messages.orders.filters.status.title') }}</span>
+                        <div class="mt-2 space-y-2">
+                            @foreach ($statusLabels as $statusValue => $label)
+                                <label class="flex items-center gap-2 text-xs font-medium text-slate-600">
+                                    <input type="checkbox" value="{{ $statusValue }}" class="h-4 w-4 rounded border-slate-300 text-accent focus:ring-accent" data-filter-status>
+                                    <span>{{ $label }}</span>
+                                </label>
+                            @endforeach
+                        </div>
+                    </div>
+                    <div>
+                        <span class="text-xs font-semibold text-slate-600">{{ __('messages.orders.filters.actions.title') }}</span>
+                        <div class="mt-2 space-y-2">
+                            <label class="flex items-center gap-2 text-xs font-medium text-slate-600">
+                                <input type="checkbox" value="status" class="h-4 w-4 rounded border-slate-300 text-accent focus:ring-accent" data-filter-action>
+                                <span>{{ __('messages.orders.filters.actions.status') }}</span>
+                            </label>
+                            <label class="flex items-center gap-2 text-xs font-medium text-slate-600">
+                                <input type="checkbox" value="edit" class="h-4 w-4 rounded border-slate-300 text-accent focus:ring-accent" data-filter-action>
+                                <span>{{ __('messages.orders.filters.actions.edit') }}</span>
+                            </label>
+                            <label class="flex items-center gap-2 text-xs font-medium text-slate-600">
+                                <input type="checkbox" value="delete" class="h-4 w-4 rounded border-slate-300 text-accent focus:ring-accent" data-filter-action>
+                                <span>{{ __('messages.orders.filters.actions.delete') }}</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="flex justify-end">
+                        <button type="button" class="inline-flex items-center gap-2 rounded-full border border-slate-200 px-4 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-100" data-filter-reset>
+                            {{ __('messages.orders.filters.reset') }}
+                        </button>
+                    </div>
+                </div>
+            </div>
+
             {{-- ===== Mobile (cards) ===== --}}
             <ul class="divide-y divide-slate-100 md:hidden">
                 @foreach ($orders as $order)
@@ -205,7 +386,36 @@
                         $statusKey  = $order->status ?? \App\Models\Order::STATUS_PENDING;
                         $badgeClass = $statusClassMap[$statusKey] ?? $statusStyles['default'];
                     @endphp
-                    <li class="p-4">
+                    @php
+                        $filterReceivedAt = optional($timestamp)?->timezone(config('app.timezone'))->toIso8601String();
+                        $filterCustomer   = mb_strtolower((string) ($order->customer?->name ?? $order->customer_name ?? ''));
+                        $filterDetailsParts = [];
+                        if ($order->product) {
+                            $filterDetailsParts[] = $order->product->name;
+                        } elseif (! empty($order->items)) {
+                            $filterDetailsParts[] = $order->items;
+                        }
+                        if (! empty($order->quantity)) {
+                            $filterDetailsParts[] = $order->quantity;
+                        }
+                        if (! empty($order->notes)) {
+                            $filterDetailsParts[] = $order->notes;
+                        }
+                        if (! empty($order->delivery_date)) {
+                            $filterDetailsParts[] = optional($order->delivery_date)?->format('Y-m-d');
+                        }
+                        $filterDetails = mb_strtolower(trim(collect($filterDetailsParts)->filter()->implode(' ')));
+                        $filterActions = 'status,edit,delete';
+                    @endphp
+                    <li
+                        class="p-4"
+                        data-order-card
+                        data-received-at="{{ $filterReceivedAt ?? '' }}"
+                        data-customer="{{ e($filterCustomer) }}"
+                        data-details="{{ e($filterDetails) }}"
+                        data-status="{{ $statusKey }}"
+                        data-actions="{{ $filterActions }}"
+                    >
                         <div class="rounded-2xl ring-1 ring-slate-200 p-4">
                             <div class="flex items-start justify-between gap-3">
                                 <div>
@@ -283,6 +493,9 @@
                     </li>
                 @endforeach
             </ul>
+            <div class="hidden px-6 py-12 text-center text-slate-500" data-empty-state>
+                {{ __('messages.orders.filters.empty') }}
+            </div>
         @endif
     </div>
 </div>
@@ -294,7 +507,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('[data-order-status-select]').forEach((select) => {
         const baseClass = select.dataset.baseClass || select.className;
         let statusClasses = {};
-        try { statusClasses = JSON.parse(select.dataset.statusClasses || '{}'); } catch(e) {}
+        try { statusClasses = JSON.parse(select.dataset.statusClasses || '{}'); } catch (e) {}
 
         const applyClasses = () => {
             const style = statusClasses[select.value] || statusClasses.default || '';
@@ -309,6 +522,231 @@ document.addEventListener('DOMContentLoaded', () => {
             if (form) form.submit();
         });
     });
+
+    const parseDate = (value) => {
+        if (!value) return null;
+        const date = new Date(value);
+        return Number.isNaN(date.getTime()) ? null : date;
+    };
+
+    const parseBoundaryDate = (value, endOfDay = false) => {
+        if (!value) return null;
+        const suffix = endOfDay ? 'T23:59:59.999' : 'T00:00:00';
+        return parseDate(value.includes('T') ? value : `${value}${suffix}`);
+    };
+
+    const filterState = {
+        received: { start: '', end: '' },
+        customer: '',
+        details: '',
+        statuses: new Set(),
+        actions: new Set(),
+    };
+
+    const rows = Array.from(document.querySelectorAll('[data-order-row]'));
+    const cards = Array.from(document.querySelectorAll('[data-order-card]'));
+    const emptyStates = Array.from(document.querySelectorAll('[data-empty-state]'));
+
+    const matchesElement = (element) => {
+        const data = element.dataset || {};
+        const { start, end } = filterState.received;
+
+        if (start || end) {
+            const rowDate = parseDate(data.receivedAt);
+            if (!rowDate) {
+                return false;
+            }
+
+            if (start) {
+                const startDate = parseBoundaryDate(start);
+                if (startDate && rowDate < startDate) {
+                    return false;
+                }
+            }
+
+            if (end) {
+                const endDate = parseBoundaryDate(end, true);
+                if (endDate && rowDate > endDate) {
+                    return false;
+                }
+            }
+        }
+
+        const customerQuery = filterState.customer.trim().toLowerCase();
+        if (customerQuery) {
+            const haystack = (data.customer || '').toString();
+            if (!haystack.includes(customerQuery)) {
+                return false;
+            }
+        }
+
+        const detailQuery = filterState.details.trim().toLowerCase();
+        if (detailQuery) {
+            const haystack = (data.details || '').toString();
+            if (!haystack.includes(detailQuery)) {
+                return false;
+            }
+        }
+
+        if (filterState.statuses.size > 0) {
+            const status = data.status || '';
+            if (!filterState.statuses.has(status)) {
+                return false;
+            }
+        }
+
+        if (filterState.actions.size > 0) {
+            const actions = (data.actions || '')
+                .split(',')
+                .map((value) => value.trim())
+                .filter(Boolean);
+            const actionSet = new Set(actions);
+            for (const action of filterState.actions) {
+                if (!actionSet.has(action)) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    };
+
+    const applyFilters = () => {
+        let anyVisibleRow = false;
+        let anyVisibleCard = false;
+
+        rows.forEach((row) => {
+            const visible = matchesElement(row);
+            row.classList.toggle('hidden', !visible);
+            if (visible) {
+                anyVisibleRow = true;
+            }
+        });
+
+        cards.forEach((card) => {
+            const visible = matchesElement(card);
+            card.classList.toggle('hidden', !visible);
+            if (visible) {
+                anyVisibleCard = true;
+            }
+        });
+
+        const hasVisible = anyVisibleRow || anyVisibleCard;
+        emptyStates.forEach((state) => {
+            state.classList.toggle('hidden', hasVisible);
+        });
+    };
+
+    const syncTextInputs = (inputs, value, changed = null) => {
+        inputs.forEach((input) => {
+            if (input === changed) return;
+            if (input.value !== value) {
+                input.value = value;
+            }
+        });
+    };
+
+    const syncCheckboxes = (inputs, values, changed = null) => {
+        inputs.forEach((input) => {
+            if (input === changed) return;
+            input.checked = values.has(input.value);
+        });
+    };
+
+    const startInputs = Array.from(document.querySelectorAll('[data-filter-start]'));
+    const endInputs = Array.from(document.querySelectorAll('[data-filter-end]'));
+    const customerInputs = Array.from(document.querySelectorAll('[data-filter-customer]'));
+    const detailInputs = Array.from(document.querySelectorAll('[data-filter-details]'));
+    const statusInputs = Array.from(document.querySelectorAll('[data-filter-status]'));
+    const actionInputs = Array.from(document.querySelectorAll('[data-filter-action]'));
+    const resetButtons = Array.from(document.querySelectorAll('[data-filter-reset]'));
+
+    startInputs.forEach((input) => {
+        input.addEventListener('change', () => {
+            const value = (input.value || '').trim();
+            filterState.received.start = value;
+            syncTextInputs(startInputs, value, input);
+            applyFilters();
+        });
+    });
+
+    endInputs.forEach((input) => {
+        input.addEventListener('change', () => {
+            const value = (input.value || '').trim();
+            filterState.received.end = value;
+            syncTextInputs(endInputs, value, input);
+            applyFilters();
+        });
+    });
+
+    customerInputs.forEach((input) => {
+        input.addEventListener('input', () => {
+            const value = (input.value || '').trim();
+            filterState.customer = value;
+            syncTextInputs(customerInputs, value, input);
+            applyFilters();
+        });
+    });
+
+    detailInputs.forEach((input) => {
+        input.addEventListener('input', () => {
+            const value = (input.value || '').trim();
+            filterState.details = value;
+            syncTextInputs(detailInputs, value, input);
+            applyFilters();
+        });
+    });
+
+    statusInputs.forEach((input) => {
+        input.addEventListener('change', () => {
+            if (input.checked) {
+                filterState.statuses.add(input.value);
+            } else {
+                filterState.statuses.delete(input.value);
+            }
+            syncCheckboxes(statusInputs, filterState.statuses, input);
+            applyFilters();
+        });
+    });
+
+    actionInputs.forEach((input) => {
+        input.addEventListener('change', () => {
+            if (input.checked) {
+                filterState.actions.add(input.value);
+            } else {
+                filterState.actions.delete(input.value);
+            }
+            syncCheckboxes(actionInputs, filterState.actions, input);
+            applyFilters();
+        });
+    });
+
+    const resetFilters = () => {
+        filterState.received.start = '';
+        filterState.received.end = '';
+        filterState.customer = '';
+        filterState.details = '';
+        filterState.statuses.clear();
+        filterState.actions.clear();
+
+        syncTextInputs(startInputs, '');
+        syncTextInputs(endInputs, '');
+        syncTextInputs(customerInputs, '');
+        syncTextInputs(detailInputs, '');
+        syncCheckboxes(statusInputs, filterState.statuses);
+        syncCheckboxes(actionInputs, filterState.actions);
+
+        applyFilters();
+    };
+
+    resetButtons.forEach((button) => {
+        button.addEventListener('click', (event) => {
+            event.preventDefault();
+            resetFilters();
+        });
+    });
+
+    applyFilters();
 });
 </script>
 @endpush

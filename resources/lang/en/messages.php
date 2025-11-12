@@ -87,6 +87,34 @@ return [
             'status' => 'Status',
             'actions' => 'Actions',
         ],
+        'filters' => [
+            'toggle' => 'Filter :label',
+            'apply' => 'Apply',
+            'reset' => 'Reset',
+            'empty' => 'No orders match your filters.',
+            'received_at' => [
+                'title' => 'Filter by received time',
+                'start_label' => 'From',
+                'end_label' => 'To',
+            ],
+            'customer' => [
+                'title' => 'Filter by customer',
+                'placeholder' => 'Search customer name…',
+            ],
+            'details' => [
+                'title' => 'Filter by order details',
+                'placeholder' => 'Search product, quantity, or notes…',
+            ],
+            'status' => [
+                'title' => 'Filter by status',
+            ],
+            'actions' => [
+                'title' => 'Filter by actions',
+                'status' => 'Can change status',
+                'edit' => 'Can edit',
+                'delete' => 'Can delete',
+            ],
+        ],
         'labels' => [
             'delivery' => 'Delivery',
             'notes' => 'Notes',

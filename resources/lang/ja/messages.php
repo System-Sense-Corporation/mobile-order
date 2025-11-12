@@ -87,6 +87,34 @@ return [
             'status' => 'ステータス',
             'actions' => '操作',
         ],
+        'filters' => [
+            'toggle' => ':label を絞り込む',
+            'apply' => '適用',
+            'reset' => 'リセット',
+            'empty' => '条件に一致する受注がありません。',
+            'received_at' => [
+                'title' => '受信時間で絞り込む',
+                'start_label' => '開始',
+                'end_label' => '終了',
+            ],
+            'customer' => [
+                'title' => '顧客で絞り込む',
+                'placeholder' => '顧客名を検索…',
+            ],
+            'details' => [
+                'title' => '注文内容で絞り込む',
+                'placeholder' => '商品・数量・メモを検索…',
+            ],
+            'status' => [
+                'title' => 'ステータスで絞り込む',
+            ],
+            'actions' => [
+                'title' => '操作で絞り込む',
+                'status' => 'ステータス変更可能',
+                'edit' => '編集可能',
+                'delete' => '削除可能',
+            ],
+        ],
         'labels' => [
             'delivery' => '納品',
             'notes' => 'メモ',
