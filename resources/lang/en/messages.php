@@ -120,7 +120,19 @@ return [
         ],
         'notification' => [
             'subject' => 'New order submitted',
+            'subjects' => [
+                'submitted' => 'New order submitted',
+                'updated' => 'Order details updated',
+                'status' => 'Order status updated',
+                'deleted' => 'Order deleted',
+            ],
             'intro' => 'A new order has been submitted with the following details:',
+            'intros' => [
+                'submitted' => 'A new order has been submitted with the following details:',
+                'updated' => 'Order details have been updated. Review the latest information below.',
+                'status' => 'The order status has been updated to :status.',
+                'deleted' => 'An order has been deleted. Details of the removed order are shown below.',
+            ],
             'order_date' => 'Order date',
             'delivery_date' => 'Requested delivery date',
             'customer' => 'Customer',
@@ -128,6 +140,7 @@ return [
             'quantity' => 'Quantity',
             'notes' => 'Notes',
             'notes_empty' => 'None provided',
+            'status_label' => 'Current status: :status',
             'outro' => 'This notification was sent automatically from Mobile Order.',
         ],
         'empty' => 'No orders have been submitted yet.',

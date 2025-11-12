@@ -2,10 +2,14 @@
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
     <head>
         <meta charset="utf-8">
-        <title>{{ __('messages.orders.notification.subject') }}</title>
+        <title>{{ $subject }}</title>
     </head>
     <body>
-        <p>{{ __('messages.orders.notification.intro') }}</p>
+        <p>{{ $intro }}</p>
+
+        @isset($statusLabel)
+            <p>{{ __('messages.orders.notification.status_label', ['status' => $statusLabel]) }}</p>
+        @endisset
 
         <table role="presentation" cellpadding="0" cellspacing="0" style="border-collapse: collapse; width: 100%; max-width: 600px;">
             <tbody>
@@ -36,6 +40,6 @@
             </tbody>
         </table>
 
-        <p>{{ __('messages.orders.notification.outro') }}</p>
+        <p>{{ $outro }}</p>
     </body>
 </html>
