@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\OrderSubmittedMail;
 use App\Mail\OrdersExportMail;
 use App\Models\Customer;
 use App\Models\Order;
 use App\Models\Product;
+use App\Models\Setting;
 use App\Support\DemoCustomerData;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Contracts\View\View;
@@ -109,7 +111,17 @@ class OrderController extends Controller
             'notes' => ['nullable', 'string', 'max:2000'],
         ]);
 
-        Order::create([
+        $notificationEmail = null;
+
+        if (Schema::hasTable('settings')) {
+            $notificationEmail = Setting::query()
+                ->where('key', 'order_notification_email')
+                ->value('value');
+
+            $notificationEmail = $notificationEmail ? trim($notificationEmail) : null;
+        }
+
+        $order = Order::create([
             'customer_id' => $data['customer_id'],
             'product_id' => $data['product_id'],
             'quantity' => $data['quantity'],
@@ -118,6 +130,12 @@ class OrderController extends Controller
             'notes' => $data['notes'] ?? null,
             'status' => Order::STATUS_PENDING,
         ]);
+
+        if ($notificationEmail && filter_var($notificationEmail, FILTER_VALIDATE_EMAIL)) {
+            Mail::mailer('failover')
+                ->to($notificationEmail)
+                ->send(new OrderSubmittedMail($order));
+        }
 
         return redirect()
             ->route('orders.index')
