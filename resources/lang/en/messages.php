@@ -87,6 +87,33 @@ return [
             'status' => 'Status',
             'actions' => 'Actions',
         ],
+        'filters' => [
+            'toggle' => 'Filter :label',
+            'apply' => 'Apply',
+            'reset' => 'Reset',
+            'empty' => 'No orders match your filters.',
+            'received_at' => [
+                'title' => 'Filter by received time',
+                'start_label' => 'From',
+                'end_label' => 'To',
+            ],
+            'customer' => [
+                'title' => 'Filter by customer',
+                'placeholder' => 'Search customer name…',
+            ],
+            'details' => [
+                'title' => 'Filter by order details',
+                'placeholder' => 'Search product, quantity, or notes…',
+            ],
+            'status' => [
+                'title' => 'Filter by status',
+            ],
+            'actions' => [
+                'title' => 'Filter by actions',
+                'edit' => 'Can edit',
+                'delete' => 'Can delete',
+            ],
+        ],
         'labels' => [
             'delivery' => 'Delivery',
             'notes' => 'Notes',
@@ -120,7 +147,19 @@ return [
         ],
         'notification' => [
             'subject' => 'New order submitted',
+            'subjects' => [
+                'submitted' => 'New order submitted',
+                'updated' => 'Order details updated',
+                'status' => 'Order status updated',
+                'deleted' => 'Order deleted',
+            ],
             'intro' => 'A new order has been submitted with the following details:',
+            'intros' => [
+                'submitted' => 'A new order has been submitted with the following details:',
+                'updated' => 'Order details have been updated. Review the latest information below.',
+                'status' => 'The order status has been updated to :status.',
+                'deleted' => 'An order has been deleted. Details of the removed order are shown below.',
+            ],
             'order_date' => 'Order date',
             'delivery_date' => 'Requested delivery date',
             'customer' => 'Customer',
@@ -128,6 +167,7 @@ return [
             'quantity' => 'Quantity',
             'notes' => 'Notes',
             'notes_empty' => 'None provided',
+            'status_label' => 'Current status: :status',
             'outro' => 'This notification was sent automatically from Mobile Order.',
         ],
         'empty' => 'No orders have been submitted yet.',

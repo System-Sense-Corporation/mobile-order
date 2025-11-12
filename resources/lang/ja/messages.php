@@ -87,6 +87,33 @@ return [
             'status' => 'ステータス',
             'actions' => '操作',
         ],
+        'filters' => [
+            'toggle' => ':label を絞り込む',
+            'apply' => '適用',
+            'reset' => 'リセット',
+            'empty' => '条件に一致する受注がありません。',
+            'received_at' => [
+                'title' => '受信時間で絞り込む',
+                'start_label' => '開始',
+                'end_label' => '終了',
+            ],
+            'customer' => [
+                'title' => '顧客で絞り込む',
+                'placeholder' => '顧客名を検索…',
+            ],
+            'details' => [
+                'title' => '注文内容で絞り込む',
+                'placeholder' => '商品・数量・メモを検索…',
+            ],
+            'status' => [
+                'title' => 'ステータスで絞り込む',
+            ],
+            'actions' => [
+                'title' => '操作で絞り込む',
+                'edit' => '編集可能',
+                'delete' => '削除可能',
+            ],
+        ],
         'labels' => [
             'delivery' => '納品',
             'notes' => 'メモ',
@@ -120,7 +147,19 @@ return [
         ],
         'notification' => [
             'subject' => '新しい受注が登録されました',
+            'subjects' => [
+                'submitted' => '新しい受注が登録されました',
+                'updated' => '受注内容が更新されました',
+                'status' => '受注ステータスが更新されました',
+                'deleted' => '受注が削除されました',
+            ],
             'intro' => '以下の内容で新しい受注が登録されました。',
+            'intros' => [
+                'submitted' => '以下の内容で新しい受注が登録されました。',
+                'updated' => '受注内容が更新されました。以下の最新情報をご確認ください。',
+                'status' => '受注ステータスが :status に更新されました。',
+                'deleted' => '受注が削除されました。以下は削除された受注の詳細です。',
+            ],
             'order_date' => '受注日',
             'delivery_date' => '納品希望日',
             'customer' => '顧客',
@@ -128,6 +167,7 @@ return [
             'quantity' => '数量',
             'notes' => 'メモ',
             'notes_empty' => '記載なし',
+            'status_label' => '現在のステータス：:status',
             'outro' => '本メールはモバイルオーダーから自動送信されています。',
         ],
         'empty' => 'まだ受注はありません。',
