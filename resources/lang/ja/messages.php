@@ -91,6 +91,9 @@ return [
             'toggle' => ':label を絞り込む',
             'apply' => '適用',
             'reset' => 'リセット',
+            'select_all' => 'すべて選択',
+            'clear' => '選択をクリア',
+            'none' => '利用できる選択肢がありません。',
             'empty' => '条件に一致する受注がありません。',
             'received_at' => [
                 'title' => '受信時間で絞り込む',

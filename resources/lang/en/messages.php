@@ -91,6 +91,9 @@ return [
             'toggle' => 'Filter :label',
             'apply' => 'Apply',
             'reset' => 'Reset',
+            'select_all' => 'Select all',
+            'clear' => 'Clear selection',
+            'none' => 'No options available.',
             'empty' => 'No orders match your filters.',
             'received_at' => [
                 'title' => 'Filter by received time',
