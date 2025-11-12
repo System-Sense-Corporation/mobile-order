@@ -2,13 +2,17 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\OrderDeletedMail;
+use App\Mail\OrderStatusUpdatedMail;
 use App\Mail\OrderSubmittedMail;
+use App\Mail\OrderUpdatedMail;
 use App\Mail\OrdersExportMail;
 use App\Models\Customer;
 use App\Models\Order;
 use App\Models\Product;
 use App\Models\Setting;
 use App\Support\DemoCustomerData;
+use Closure;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
@@ -24,6 +28,10 @@ use Throwable;
 
 class OrderController extends Controller
 {
+    private ?string $notificationEmail = null;
+
+    private bool $notificationEmailResolved = false;
+
     /**
      * Display a listing of the orders that have been submitted.
      */
@@ -111,16 +119,6 @@ class OrderController extends Controller
             'notes' => ['nullable', 'string', 'max:2000'],
         ]);
 
-        $notificationEmail = null;
-
-        if (Schema::hasTable('settings')) {
-            $notificationEmail = Setting::query()
-                ->where('key', 'order_notification_email')
-                ->value('value');
-
-            $notificationEmail = $notificationEmail ? trim($notificationEmail) : null;
-        }
-
         $order = Order::create([
             'customer_id' => $data['customer_id'],
             'product_id' => $data['product_id'],
@@ -131,11 +129,7 @@ class OrderController extends Controller
             'status' => Order::STATUS_PENDING,
         ]);
 
-        if ($notificationEmail && filter_var($notificationEmail, FILTER_VALIDATE_EMAIL)) {
-            Mail::mailer('failover')
-                ->to($notificationEmail)
-                ->send(new OrderSubmittedMail($order));
-        }
+        $this->notify($order, fn (Order $mailOrder) => new OrderSubmittedMail($mailOrder));
 
         return redirect()
             ->route('orders.index')
@@ -167,6 +161,10 @@ class OrderController extends Controller
             'notes' => $data['notes'] ?? null,
         ]);
 
+        if ($order->wasChanged(['customer_id', 'product_id', 'quantity', 'order_date', 'delivery_date', 'notes'])) {
+            $this->notify($order, fn (Order $mailOrder) => new OrderUpdatedMail($mailOrder));
+        }
+
         return redirect()
             ->route('orders.index')
             ->with('status', __('messages.mobile_order.flash.updated'));
@@ -183,6 +181,15 @@ class OrderController extends Controller
         $order->update([
             'status' => $validated['status'],
         ]);
+
+        if ($order->wasChanged('status') && in_array($order->status, $this->notifiableStatuses(), true)) {
+            $statusLabel = __('messages.orders.statuses.' . $order->status);
+
+            $this->notify(
+                $order,
+                fn (Order $mailOrder) => new OrderStatusUpdatedMail($mailOrder, $statusLabel)
+            );
+        }
 
         if ($request->wantsJson()) {
             $styles = $this->statusStyleMap();
@@ -204,7 +211,12 @@ class OrderController extends Controller
     {
         $this->ensureOrdersTableSupportsForm();
 
+        $order->loadMissing(['customer', 'product']);
+        $notificationOrder = clone $order;
+
         $order->delete();
+
+        $this->notify($notificationOrder, fn (Order $mailOrder) => new OrderDeletedMail($mailOrder));
 
         return redirect()
             ->route('orders.index')
@@ -253,6 +265,65 @@ class OrderController extends Controller
         return redirect()
             ->route('orders.index')
             ->with('status', __('messages.orders.flash.emailed'));
+    }
+
+    /**
+     * @param  Closure(Order): \Illuminate\Mail\Mailable  $mailableFactory
+     */
+    protected function notify(Order $order, Closure $mailableFactory): void
+    {
+        $email = $this->notificationEmail();
+
+        if (! $email) {
+            return;
+        }
+
+        $order->loadMissing(['customer', 'product']);
+
+        Mail::mailer('failover')
+            ->to($email)
+            ->send($mailableFactory($order));
+    }
+
+    protected function notificationEmail(): ?string
+    {
+        if ($this->notificationEmailResolved) {
+            return $this->notificationEmail;
+        }
+
+        $this->notificationEmailResolved = true;
+
+        if (! Schema::hasTable('settings')) {
+            $this->notificationEmail = null;
+
+            return $this->notificationEmail;
+        }
+
+        $value = Setting::query()
+            ->where('key', 'order_notification_email')
+            ->value('value');
+
+        $email = $value ? trim($value) : null;
+
+        if (! $email || ! filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $this->notificationEmail = null;
+
+            return $this->notificationEmail;
+        }
+
+        return $this->notificationEmail = $email;
+    }
+
+    /**
+     * @return array<int, string>
+     */
+    protected function notifiableStatuses(): array
+    {
+        return [
+            Order::STATUS_PENDING,
+            Order::STATUS_PREPARING,
+            Order::STATUS_SHIPPED,
+        ];
     }
 
     /**
