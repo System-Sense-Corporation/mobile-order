@@ -118,6 +118,18 @@ return [
             'greeting' => 'Hello,',
             'signoff' => 'Thank you for using Mobile Order.',
         ],
+        'notification' => [
+            'subject' => 'New order submitted',
+            'intro' => 'A new order has been submitted with the following details:',
+            'order_date' => 'Order date',
+            'delivery_date' => 'Requested delivery date',
+            'customer' => 'Customer',
+            'product' => 'Product',
+            'quantity' => 'Quantity',
+            'notes' => 'Notes',
+            'notes_empty' => 'None provided',
+            'outro' => 'This notification was sent automatically from Mobile Order.',
+        ],
         'empty' => 'No orders have been submitted yet.',
         'samples' => [
             'tuna' => 'Bluefin tuna block 500g × 2',

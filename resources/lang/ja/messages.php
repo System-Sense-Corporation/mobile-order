@@ -118,6 +118,18 @@ return [
             'greeting' => 'こんにちは。',
             'signoff' => 'モバイルオーダーをご利用いただきありがとうございます。',
         ],
+        'notification' => [
+            'subject' => '新しい受注が登録されました',
+            'intro' => '以下の内容で新しい受注が登録されました。',
+            'order_date' => '受注日',
+            'delivery_date' => '納品希望日',
+            'customer' => '顧客',
+            'product' => '商品',
+            'quantity' => '数量',
+            'notes' => 'メモ',
+            'notes_empty' => '記載なし',
+            'outro' => '本メールはモバイルオーダーから自動送信されています。',
+        ],
         'empty' => 'まだ受注はありません。',
         'samples' => [
             'tuna' => '本マグロ 柵 500g × 2',
