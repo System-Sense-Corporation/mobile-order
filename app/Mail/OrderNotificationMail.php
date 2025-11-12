@@ -18,7 +18,7 @@ class OrderNotificationMail extends Mailable
         public Order $order,
         protected string $subjectLine,
         protected string $introLine,
-        protected array $viewData = []
+        protected array $additionalViewData = []
     ) {
         $this->order->loadMissing(['customer', 'product']);
     }
@@ -33,6 +33,6 @@ class OrderNotificationMail extends Mailable
                 'subject' => $this->subjectLine,
                 'intro' => $this->introLine,
                 'outro' => __('messages.orders.notification.outro'),
-            ], $this->viewData));
+            ], $this->additionalViewData));
     }
 }
