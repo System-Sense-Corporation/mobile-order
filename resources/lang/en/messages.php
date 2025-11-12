@@ -110,6 +110,7 @@ return [
             ],
             'actions' => [
                 'title' => 'Filter by actions',
+                'status' => 'Can change status',
                 'edit' => 'Can edit',
                 'delete' => 'Can delete',
             ],
